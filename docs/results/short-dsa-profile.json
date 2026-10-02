@@ -1,0 +1,7 @@
+{
+  "protocol": "Lever 6 short-context DSA shortcut on native MTP K2 async; one added environment switch, no argument change",
+  "added_env": {
+    "GLM_INDEXER_SHORTCUT": "1"
+  },
+  "module": "overlay/bringup/glm_dsa_short.py"
+}

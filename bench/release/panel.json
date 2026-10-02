@@ -1,0 +1,8 @@
+[
+  {"id":"prose","text":"A river carries water from the hills toward the sea. Seasons change its flow, and communities share responsibility for the banks. A careful account distinguishes observations from predictions and records the evidence for each conclusion."},
+  {"id":"code","text":"def stable_unique(values):\n    seen = set()\n    result = []\n    for value in values:\n        if value not in seen:\n            seen.add(value)\n            result.append(value)\n    return result\n\nassert stable_unique([3, 1, 3, 2]) == [3, 1, 2]\n"},
+  {"id":"structured","text":"Inventory report\nItem | Count | Location\nApples | 12 | North\nPears | 7 | South\nPlums | 19 | East\nTotal count: 38. Each row refers to one distinct item and one storage location."},
+  {"id":"json","text":"{\"items\":[{\"name\":\"apple\",\"count\":12},{\"name\":\"pear\",\"count\":7}],\"total\":19,\"valid\":true,\"metadata\":{\"source\":\"public-example\",\"version\":1}}"},
+  {"id":"math","text":"Seventeen times nineteen equals three hundred and twenty-three. Multiplication can be checked by splitting nineteen into twenty minus one: seventeen times twenty is three hundred and forty, and subtracting seventeen yields three hundred and twenty-three."},
+  {"id":"polish","text":"Warszawa jest stolicą Polski. Wisła przepływa przez miasto. W opisie doświadczenia należy podać warunki, wyniki oraz granice wnioskowania. Nieznana wartość pozostaje nieznana do chwili wykonania pomiaru."}
+]

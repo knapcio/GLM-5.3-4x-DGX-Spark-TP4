@@ -1,0 +1,50 @@
+GLM-5.3 on four DGX Sparks
+
+Repository-authored recipe scripts and documentation: MIT, see LICENSE.
+Apache-2.0-labelled runtime adapters and kernels retain that licence, see
+LICENSES/Apache-2.0.txt. No model weights or container images are distributed.
+
+The unmodified b12x/RoCEnante subset in roce/b12x is from Local Inference Lab
+at b58f34eaf978277621efced6678e6713fd7122e4. Its original Apache-2.0 licence,
+source headers, authors and per-file SHA256 provenance are retained there.
+Luke Alonso and Jason Cook are credited for b12x#295 and the vLLM#597 shim.
+The roce/glm_roce wrappers come from the local Flash recipe and credit that
+shim plus tonyd2wild's v11-specific port and rhys101's runtime lineage.
+This package does not assign a new blanket licence to Tony-specific source
+whose separate redistribution grant is undocumented. The base image is
+referenced by digest and retains its own third-party terms.
+
+The split-layout sparse-MLA design credits CosmicRaisins' Apache-2.0 sm12x
+work and Matt Mastracci's sparse-MLA ideas. No CosmicRaisins source file is
+vendored. Local full-model Triton kernels are Apache-2.0-labelled. Their
+arithmetic bodies match the saved deployed control; source adaptation and
+startup-hook changes are recorded in docs/results/source-provenance.json.
+
+The local fast loader follows Willian-Zhang's vLLM#58726 observation and the
+author's local DeepSeek loader port. It is not a blanket relicensing of the
+DeepSeek repository. The benchmark/checker files and the fresh-clone release gate are local
+recipe tools by the repository author, following the Flash/DeepSeek gate protocols; the external sparkDash collector is not vendored. Its MIT
+notice is retained in LICENSES/MIT-sparkDash.txt.
+
+Z.ai's native GLM-5.3 MTP and Tech2wild's target checkpoint use the GLM-5.3
+model licence, separately from the code licences. RedHat's historical DSpark
+fallback retains that licence. keys/@u1tra_instinct's TensorFold results
+pointed to native MTP; TensorFold, its contributors and vLLM are credited in
+CREDITS.md. The local packed-module mapping fix is Apache-2.0-labelled. Incoai DFlash2 is
+CC BY-NC-ND 4.0 and is not a default dependency, modified or distributed.
+The short-context DSA adapter is Apache-2.0-labelled local code that
+transforms pinned vLLM sources at import; it relies on DeepSeek's DSA design
+and vLLM's indexer/persistent_topk and adds no kernel. The short-sequence
+all-selected case it applies is described by the Guess-Verify-Refine authors
+(arXiv 2604.22312); no code from that work is used.
+The dirty-L2 reduce kernel and its adapter are Apache-2.0-labelled local code. The
+reduce repeats the local split32 MLA reduce arithmetic and adds an NVIDIA PTX
+discard.global.L2 through Triton inline assembly; nothing is vendored. The
+diagnosis and the fix are the recipe author's own work.
+The alternate CPU allocator fixtures contain configuration geometry only;
+they do not contain model weights or select an alternative runtime.
+
+FlashInfer, vLLM, Triton, PyTorch, Marlin, CUDA, NCCL and other dependencies
+in external images retain their respective licences. This notice is not a
+complete inventory or relicensing of an external image. See CREDITS.md for
+pinned source links and provenance.

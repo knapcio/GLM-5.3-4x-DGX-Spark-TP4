@@ -1,0 +1,66 @@
+{
+  "current_default": {
+    "configuration": "native-mtp-k2-async",
+    "profile": "profiles/current.env",
+    "serve_args": "profiles/serve-args.json",
+    "alternative_profile": "dspark-k3",
+    "qualified": true,
+    "quality_receipt": "e5-qeval-admission.json",
+    "serving_receipt": "e5-serving.json",
+    "performance_receipt": "e5-comparison.json",
+    "quality": {
+      "scores": [
+        71,
+        72,
+        72
+      ],
+      "mean": 71.66666666666667,
+      "threshold": 70.55347603224445,
+      "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
+      "intelligence_equivalence_proven": false
+    }
+  },
+  "clock_cap_MHz": 2200,
+  "historical_boot_a": {
+    "prose_c1": 33.62,
+    "code_c1": 39.97,
+    "prose_c4_aggregate": 61.27,
+    "source": "w4-rh-k3-retry",
+    "c1_repeats": 3,
+    "c4_waves": 1
+  },
+  "historical_boot_b": {
+    "c1_prose_tok_s": 30.18,
+    "c1_code_tok_s": 38.6,
+    "c4_aggregate_tok_s": 62.68,
+    "repeats_each": 3,
+    "warmup": "discarded",
+    "source": "control/bench_dash.jsonl",
+    "KV_tokens_by_rank": {
+      "0": 41728,
+      "1": "unknown (not separately logged)",
+      "2": "unknown (not separately logged)",
+      "3": "unknown (not separately logged)"
+    },
+    "KV_bytes_per_rank": 2147483648,
+    "max_model_len": 32768,
+    "max_sequences": 4,
+    "boot_wall_s": 335.2421893749852,
+    "boot_source": "control-boot.json",
+    "profile_source": "control/profile-summary.json",
+    "unprofiled_and_profiled_scope": "Separate measurements; no mixed-scope throughput calculation",
+    "KV_tokens_engine_reported": 41728,
+    "KV_scope": "Engine reported 41728 tokens; configured KV allocation 2GiB per rank. No summed/shared-memory token-capacity claim.",
+    "prose_50_tok_s_goal_met": false
+  },
+  "historical_boot_b_quality": {
+    "boot_b_qeval": [
+      71,
+      72,
+      72
+    ],
+    "tasks": 75,
+    "status": "HOLD",
+    "intelligence_equivalence_proven": false
+  }
+}

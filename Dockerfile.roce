@@ -1,0 +1,73 @@
+# GLM-5.3-Flash vLLM image + RoCEnante one-shot collectives, opt-in (GLM_ROCE_ALLREDUCE=1).
+#
+# Adds, on top of the pinned base image and without editing any vLLM file:
+#   /opt/glm-roce-b12x/b12x   b12x at b58f34ea, comm.roce subset (RoCEnante, Local Inference Lab,
+#                             local-inference-lab/b12x#295, Apache-2.0); on sys.path only when enabled
+#   /opt/glm-roce/glm_roce    port of local-inference-lab/vllm#597 (Jason Cook, @original-el8) via
+#                             tonyd2wild's v11 port, applied as import-time wrappers (roce/glm_roce)
+#   <site-packages>/glm_roce.pth   imports glm_roce.boot in every Python process; a no-op unless
+#                             GLM_ROCE_ALLREDUCE=1
+#   the RDMA proxy (plain C over libibverbs) compiled in a builder stage, into B12X_ROCE_CACHE_DIR
+#
+# Build from the repository root (modest: no CUDA compile, a few MB of apt + gcc of one C file):
+#   docker build -f Dockerfile.roce -t glm53-roce:v11-b58f34ea .
+# Knobs: --build-arg BASE_IMAGE=...   --build-arg ROCE_DEFAULT=1 (bake GLM_ROCE_ALLREDUCE=1 in, for a
+# launcher that cannot pass env)   --build-arg ROCE_HCA=rocep1s0f0 (single rail)   --build-arg RUN_TESTS=0
+ARG BASE_IMAGE=ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
+
+# Stage 1: compile the RDMA proxy (b12x comm/roce/_roce_proxy.c, plain C over libibverbs). Any apt
+# install happens here only; the final image gets the .so and keeps its own rdma-core untouched.
+FROM ${BASE_IMAGE} AS proxy
+COPY roce/b12x/b12x /opt/glm-roce-b12x/b12x
+RUN set -eu; \
+    if [ -f /usr/include/infiniband/verbs.h ] && command -v gcc >/dev/null; then echo "verbs.h + gcc present"; else \
+      apt-get update; \
+      v=$(dpkg-query -W -f='${Version}' libibverbs1 2>/dev/null || true); \
+      apt-get install -y --no-install-recommends "libibverbs-dev=$v" gcc libc6-dev \
+        || apt-get install -y --no-install-recommends libibverbs-dev gcc libc6-dev; \
+    fi; \
+    cd /opt/glm-roce-b12x && B12X_ROCE_CACHE_DIR=/proxy-cache python3 -c "from b12x.comm.roce import _proxy; print('proxy', _proxy._build())"
+
+# Stage 2: the serving image.
+FROM ${BASE_IMAGE}
+
+ARG ROCE_DEFAULT=0
+ARG ROCE_HCA=rocep1s0f0,roceP2p1s0f0
+ARG ROCE_SPIN_LIMIT=300000000
+ARG RUN_TESTS=1
+
+# The shim brings its own b12x; refuse to shadow one the base already ships.
+RUN python3 -c "import importlib.util as u, sys; s = u.find_spec('b12x'); sys.exit(f'base image already has b12x at {s.origin}: reconcile before adding RoCEnante') if s else print('no b12x in base: ok')"
+
+COPY roce/b12x/b12x /opt/glm-roce-b12x/b12x
+COPY roce/b12x/LICENSE roce/b12x/PROVENANCE.json /opt/glm-roce-b12x/
+COPY roce/glm_roce /opt/glm-roce/glm_roce
+COPY roce/tests /opt/glm-roce/tests
+COPY roce/glm_roce.pth /opt/glm-roce/glm_roce.pth
+# Install the .pth next to vllm, i.e. in a directory site.py is known to process.
+RUN python3 -c "import importlib.util as u, os, shutil; d = os.path.dirname(os.path.dirname(u.find_spec('vllm').origin)); shutil.copy('/opt/glm-roce/glm_roce.pth', d); print('glm_roce.pth ->', d)"
+
+# Runtime defaults (a docker run -e overrides any of them). B12X_ROCE_HCA: both ConnectX-7 rails
+# (10.100.96.x and 10.100.97.x on this fleet). Spin limit 300M polls (~5 min, tonyd2wild's value):
+# vLLM's eager profile/warm-up can JIT-compile on one rank while its peers wait inside a RoCE
+# kernel, and b12x's default (20M, ~20 s) would poison the runtime on a cold-cache boot. A real
+# transport stall therefore surfaces after ~5 min instead of ~20 s.
+ENV GLM_ROCE_ALLREDUCE=${ROCE_DEFAULT} \
+    B12X_ROCE_HCA=${ROCE_HCA} \
+    B12X_ROCE_SPIN_LIMIT=${ROCE_SPIN_LIMIT} \
+    B12X_ROCE_CACHE_DIR=/opt/glm-roce-b12x/proxy-cache
+
+# The proxy built in stage 1; containers never need a compiler or a writable cache for it. The
+# image test below dlopens it against this image's libibverbs.
+COPY --from=proxy /proxy-cache /opt/glm-roce-b12x/proxy-cache
+RUN chmod -R a+rX /opt/glm-roce /opt/glm-roce-b12x
+
+RUN if [ "$RUN_TESTS" = 1 ]; then cd /opt/glm-roce \
+ && env -u GLM_ROCE_ALLREDUCE CUDA_VISIBLE_DEVICES= python3 tests/test_glm_roce_cpu.py \
+ && env -u GLM_ROCE_ALLREDUCE CUDA_VISIBLE_DEVICES= python3 tests/test_glm_roce_image.py; fi
+
+# Refuse a base whose vLLM bytes differ from the full-model control.
+COPY overlay/source_pins.json /opt/glm-full/source_pins.json
+COPY scripts/check_source_pins.py /opt/glm-full/scripts/check_source_pins.py
+RUN mkdir -p /opt/glm-full/overlay && cp /opt/glm-full/source_pins.json /opt/glm-full/overlay/source_pins.json \
+ && python3 /opt/glm-full/scripts/check_source_pins.py /usr/local/lib/python3.12/dist-packages

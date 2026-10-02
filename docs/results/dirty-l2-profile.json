@@ -1,0 +1,17 @@
+{
+  "protocol": "Dirty-L2 fix on native MTP K2 async + short-context DSA; one added environment switch, no argument change",
+  "added_env": {
+    "GLM_DIRTY_L2": "discard"
+  },
+  "modules": [
+    "overlay/bringup/glm_dirty_l2.py",
+    "overlay/bringup/glm_dirty_l2_kernel.py"
+  ],
+  "split_kernel_sha256": "16eebe816e7c77b387e091aa71c4090b7af9c22cb47d42b9985745c3bfb9f54c",
+  "kernel_source_sha256": {
+    "_l2_discard": "073557d54e8d19e89191fd79460c1bbc9b491012f38f5d23ceb90ef3435c427d",
+    "_discard_lines": "26367d119c33845546a5964f1ea92bf50883cdb4750427b860f3463de80beda9",
+    "_mla_reduce_discard": "71965577ccba59b6f1c0cfd06a6c82fb835c5be0cf33a77fae0fceb9c91c920b"
+  },
+  "kernel_source_note": "SHA256 of each @triton.jit function source text (ast.get_source_segment, decorator excluded); identical to the microbenchmarked and in-boot A/B kernels"
+}

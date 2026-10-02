@@ -1,0 +1,18 @@
+{
+  "status": "QUALIFIED_OPERATIONAL_SERVING_PROFILE",
+  "changed_arguments": {
+    "--max-num-batched-tokens": "4096",
+    "--speculative-config": "{\"method\": \"dspark\", \"model\": \"/draft\", \"num_speculative_tokens\": 3, \"kv_cache_dtype\": \"auto\", \"draft_sample_method\": \"greedy\", \"rejection_sample_method\": \"standard\", \"enable_adaptive_verification\": false}"
+  },
+  "added_env": {
+    "GLM_W2_PREFILL_CONTROL": "/cache/d2w2-prefill-control.json",
+    "GLM_W2_PREFILL_CHUNK": "2048"
+  },
+  "qualification_receipt": "w4-prefill-admission.json",
+  "constructor_capacity": 4096,
+  "serving_cap": 2048,
+  "startup_cap": 512,
+  "explicit_speculation": "freeze served greedy draft, standard rejection, adaptive verification disabled; fixedK3",
+  "qeval_receipt": "w4-qeval-admission.json",
+  "live_kv_tokens": 34304
+}

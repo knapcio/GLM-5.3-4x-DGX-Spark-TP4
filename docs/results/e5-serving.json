@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "time": "2026-10-01T07:40:36.430212+02:00",
+  "ctn": "glm53full-e4-20261001-072047",
+  "model": "GLM-5.3",
+  "drafter": "native MTP K2 async",
+  "endpoint": "Spark_01 loopback:8095",
+  "health": 200,
+  "ranks": [
+    {
+      "rank": 0,
+      "host": "Spark_01",
+      "running": true,
+      "OOMKilled": false,
+      "restarts": 0,
+      "mem_available_kib": 10477616
+    },
+    {
+      "rank": 1,
+      "host": "Spark_02",
+      "running": true,
+      "OOMKilled": false,
+      "restarts": 0,
+      "mem_available_kib": 11538764
+    },
+    {
+      "rank": 2,
+      "host": "Spark_03",
+      "running": true,
+      "OOMKilled": false,
+      "restarts": 0,
+      "mem_available_kib": 11913336
+    },
+    {
+      "rank": 3,
+      "host": "Spark_04",
+      "running": true,
+      "OOMKilled": false,
+      "restarts": 0,
+      "mem_available_kib": 11735104
+    }
+  ],
+  "recipe_sha256": "0f8063f298365967b1cf23cc2b5368080e2f3e7a950a1cbabc06c2c5b58a827d",
+  "runtime_prefill_cap": 2048,
+  "constructor_cap": 4096,
+  "context": 32768,
+  "slots": 4,
+  "scope": "Exact async source-bound prepared snapshot; fresh functional/admission/worker audit and corrected qeval x3; performance receipts reused from exact E4 config",
+  "smoke": "OK",
+  "catalog": [
+    "GLM-5.3"
+  ],
+  "async_scheduling": true,
+  "KV_block_size": 64,
+  "GLM_MTP_FIX": 1,
+  "boot_overall_s": 265.69874283415265,
+  "boot_launch_s": 189.06956150010228,
+  "steady_admission_s": 60,
+  "snapshot_cache": "e2b-a-mtp-k2-async",
+  "bootfast_hits": {
+    "0": [
+      "bootfast: hit rank=0 bytes=100977676288 seconds=65.140",
+      "bootfast: hit rank=0 bytes=3782180864 seconds=2.468"
+    ],
+    "1": [
+      "bootfast: hit rank=1 bytes=100977676288 seconds=64.576",
+      "bootfast: hit rank=1 bytes=3782180864 seconds=2.410"
+    ],
+    "2": [
+      "bootfast: hit rank=2 bytes=100977676288 seconds=65.356",
+      "bootfast: hit rank=2 bytes=3782180864 seconds=2.392"
+    ],
+    "3": [
+      "bootfast: hit rank=3 bytes=100977676288 seconds=64.086",
+      "bootfast: hit rank=3 bytes=3782180864 seconds=2.446"
+    ]
+  }
+}

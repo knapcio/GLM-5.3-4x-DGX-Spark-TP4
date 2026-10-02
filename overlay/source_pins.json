@@ -1,0 +1,23 @@
+{
+  "vllm.v1.core.kv_cache_utils": "624ea7b0244972cb6c53044588912dfea54f3d6a91661cbc423af27e3b5c4b86",
+  "vllm.v1.core.kv_cache_coordinator": "f640b5c42f6bc718926329a8f8b48a0fd0c8c8f24368af4e4b9ec8d13f68432f",
+  "vllm.v1.core.kv_cache_manager": "9747090b01f758487ac7488fb0721c7cfe5507e8aeb55f4ea3795349bfff0968",
+  "vllm.v1.core.single_type_kv_cache_manager": "41043976d1d5e38e0465c8004fc04e01f35f66b39a40099c62d79b3756337d00",
+  "vllm.v1.core.block_pool": "ddee56dccb2208411b3a035918e917ce8f56a9858471e9ca12b420d5d79bc69c",
+  "vllm.v1.kv_cache_interface": "54a761dd60907945c8f3bfc450b1264033013b83b204320581961f887b03e5b0",
+  "vllm.v1.worker.gpu.spec_decode.dflash.speculator": "bd7f4c63d1196cb53bee0a81339aa5651e36938fc38b73c4ce89d978e0176a87",
+  "vllm.v1.worker.gpu.model_runner": "f84255d75435e84f44972d3fd25e53447f9d4d2edd8bff4f8c19dfb793448415",
+  "vllm.v1.worker.gpu.input_batch": "3929c92e42ae90e4410bb4537dcbdcd171a662e44afc1189a9a3e19037a84410",
+  "vllm.v1.core.sched.scheduler": "4c38a32c7405eb95eb9dd3b3d04cbfe5d0cb4ebc0b18efbaa4adc68c7a9bca5a",
+  "vllm.v1.request": "0287844f70eeaeb077d714e833a4b449a15e045a6516f8530182e357a5bec82f",
+  "vllm.v1.kv_cache_spec_registry": "16b3f6458538910f72cdac48554c20432c7ac0e5122e91c8a6219a1ec25f44fe",
+  "vllm.v1.worker.gpu.spec_decode.dflash.cudagraph": "556acfbce5ef2310a738d254d0029f2976846fa51f37332d1fb07a140b8ac017",
+  "vllm.model_executor.models.qwen3_dflash": "89c0d80c60d1fcde839a088e0a997a233e656d1e296c5505b5f2631478ddbfa5",
+  "vllm.model_executor.models.qwen3_dspark": "3857e0242ed5a14bdd9097e9483cc8afc9728dfa243a96f0dd70b1b68743309b",
+  "vllm.v1.worker.gpu_worker": "b2e580d74e7259ff2cbc82dabf38a43409ea5584d143880436583d9fc1ceedf1",
+  "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "4449ea25921dcae1ec7988581ff26a6ff5a9e5d6d4a0ac4a68a0017ea108f136",
+  "vllm.model_executor.model_loader.weight_utils": "b42ff2bd9301c4034592598f86a03df7d60a9fc7e13576054deb44bce9ceccf7",
+  "vllm.model_executor.model_loader.default_loader": "9c9d54b1b650bf5affc924ebb8b8c73711e187ae7486cadd9f737bb1279cc7b8",
+  "vllm.v1.worker.gpu_model_runner": "5be64e11d25f9802a1970089e9203ae4b18977b340471a6d0761f0274b54c4b6",
+  "vllm.model_executor.models.deepseek_mtp": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f"
+}

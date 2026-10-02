@@ -1,0 +1,60 @@
+{
+  "source": "Boot B rank0 deployed-source archive",
+  "archive_sha256": "36337ba53d76abc149a35942d2ffb4cfb723663e4044806e82497140a331cc6b",
+  "files": {
+    "bringup/glm_full_mla.py": {
+      "packaged_sha256": "7097f8d9c7052cd4d7d60c057bc3ed6dc417b0f5e5e5ed83393f41890b342a8b",
+      "deployed_sha256": "91f8e1fc4a53a2c7ac3609edf2ae8143235d810eb275ac8e13f82c7f04e8fb4b",
+      "bytes_identical": false
+    },
+    "bringup/glm_full_mla_split_kernel.py": {
+      "packaged_sha256": "16eebe816e7c77b387e091aa71c4090b7af9c22cb47d42b9985745c3bfb9f54c",
+      "deployed_sha256": "190d94c9a98c4b7c151f5a8937a3484c7bd9693141cf99296bd56e5246fa958b",
+      "bytes_identical": false
+    },
+    "bringup/sitecustomize.py": {
+      "packaged_sha256": "39be5d69885bf784cf0418256cb4e017ebb4e6ce96729a9ba38bebcf37708264",
+      "deployed_sha256": "0a3d8658d037d29dc4f37a9fa2b430339c9b23c287451f9cafd04546b9bafe15",
+      "bytes_identical": false
+    },
+    "bringup/glm_full_mla_kernel.py": {
+      "packaged_sha256": "90944465b5ab9d851d0ea4af466bc9959434ec42af9c478908de375c27197a3f",
+      "deployed_sha256": "c85447dd27c116a0ccbee290153bca0c0538c979ebc988be9adbb5059c2b43c6",
+      "bytes_identical": false
+    },
+    "bringup/glm_draft_lowmem.py": {
+      "packaged_sha256": "5a3c0a406982d9b08a24906a543ab433bf4a00bd40a3e58663b6ae70547f5644",
+      "deployed_sha256": "5a3c0a406982d9b08a24906a543ab433bf4a00bd40a3e58663b6ae70547f5644",
+      "bytes_identical": true
+    },
+    "bringup/glm_window_memory.py": {
+      "packaged_sha256": "fa380d60d3a0d0c674f48b5b9712ae81c5c109934f33bb1afef6de626607bd11",
+      "deployed_sha256": "20c0bca0dcd5b5e0462d250c1ba813ab13342ce0e3ad4884f8292194f9eb923f",
+      "bytes_identical": false
+    },
+    "overlay/glm_fast_load.py": {
+      "packaged_sha256": "1b4051fd4e671b4d9d04c4d621bd9b61d22160cd75e51cfd0edb845ff905f220",
+      "deployed_sha256": "c30f33fb19007efaf4563d1bfb2236762116b30d77c87ff79fb9491a92efcf26",
+      "bytes_identical": false
+    },
+    "overlay/sitecustomize.py": {
+      "packaged_sha256": "5c59a986e3bd633a0ae009f9157fcbd9ca921c375b2b114f35c142707f414dbb",
+      "deployed_sha256": "8a6cebe4db375b805858f1fc084abbd769e660e836200b5fc5b9c275f73ab673",
+      "bytes_identical": false
+    },
+    "swa-pool/sitecustomize.py": {
+      "packaged_sha256": "828f7232cb1fed1aabfa43cbcac0f6475a48f70856512d13ee06150de929d62d",
+      "deployed_sha256": "5734cdbd656bc88bed73dfcaccaad6c9e47b8c80c3d88ab86ac3f387d4db2a47",
+      "bytes_identical": false
+    },
+    "swa-pool/glm_dsa_swa_pool.py": {
+      "packaged_sha256": "b26ac95b1cfcecef1ab18ceef3f4c39421aa29436b08feafa73c4da41f8dc8a1",
+      "deployed_sha256": "b26ac95b1cfcecef1ab18ceef3f4c39421aa29436b08feafa73c4da41f8dc8a1",
+      "bytes_identical": true
+    }
+  },
+  "kernel_ast_sha256": {
+    "bringup/glm_full_mla_kernel.py": "3719d5a502c63a2daff2da265e430b70ca8f391b6045921dcb2152d089c35873",
+    "bringup/glm_full_mla_split_kernel.py": "c9161eaa1d0e45951dbb2a9255483a4f271ab677d48fbdc8b110c82486bef5a7"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
+  "scores": [
+    72,
+    72,
+    70
+  ],
+  "mean": 71.33333333333333,
+  "baseline_scores": [
+    71,
+    72,
+    72,
+    72,
+    72,
+    71,
+    72,
+    71,
+    71,
+    72,
+    72,
+    71
+  ],
+  "baseline_mean": 71.58333333333333,
+  "baseline_run_sd": 0.5149286505444373,
+  "threshold": 70.55347603224445,
+  "criterion": "candidate mean >= checker-matched baseline mean -2*baseline SD; no upper bound or per-run71 veto; new all-control-pass failures>=2/3 receive paired confirmation",
+  "new_failure_tasks": [],
+  "confirmed_new_failure_tasks": [],
+  "checker_sha256": "54719522d26996198c870264dfe5a93e2dd23f33436626c2477f1ac71206ffd2",
+  "qeval_source_sha256": "a83ccf00919153cae3acfaee49390be57d2f447b30e12ba4b4cbb9ac364a694e",
+  "truncated": [
+    0,
+    0,
+    0
+  ],
+  "limitations": "Operational historical noise allowance, not95% noninferiority or global intelligence-equivalence proof",
+  "selected_chunk": 2048
+}

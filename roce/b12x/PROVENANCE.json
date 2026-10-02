@@ -1,0 +1,43 @@
+{
+  "upstream": "https://github.com/local-inference-lab/b12x",
+  "commit": "b58f34eaf978277621efced6678e6713fd7122e4",
+  "commit_title": "Merge pull request #315 from local-inference-lab/roce/gather-geometry (2026-09-05)",
+  "license": "Apache-2.0 (LICENSE alongside)",
+  "authors": "Local Inference Lab: Luke Alonso (@lukealonso), Jason Cook (@original-el8); RoCEnante is b12x#295",
+  "why_this_commit": "API_VERSION 1 with plain prepare(), the surface local-inference-lab/vllm#597 targets; pins nvidia-cutlass-dsl==4.6.2, the version in the tonyd2wild sm121-v11-dflash2 base image; tonyd2wild ran this commit's comm/roce with the #597 shim on that image (speed-night-2026-09-18). Its comm/roce/_roce_proxy.c is byte-identical to the one serving DeepSeek on this fleet (ds41 runtime/b12x).",
+  "subset": "Unmodified comm/roce files, b12x package entry points and their compiler/runtime import spine. Unused dense GEMM and quantization helpers omitted.",
+  "sha256": {
+    "b12x/__init__.py": "ce25cf9217d82e56bf9221ebe2c29f959863025aa65ced837967def6c6bad980",
+    "b12x/comm/__init__.py": "0690adbbc3ca2e048f2a9c109964b82e273e7f44c40e0b1aba3da08f7523bcd8",
+    "b12x/comm/roce/__init__.py": "17070372720121037728d2a3fdd9f53739929c751f1e17f16a124ce8991c589e",
+    "b12x/comm/roce/_allgather_cute.py": "1453250675988ffbaf009b1cf8ff97b960e5667abc9791d42d92a7ede294428a",
+    "b12x/comm/roce/_cute_intrinsics.py": "11737796a80a0966c04ee347d5ef83a662bde16dc188022134d2cbaa1567410b",
+    "b12x/comm/roce/_oneshot_cute.py": "e796a354c363be8153b9112f5b46b6249c7762e0293c2e3d8541ba036bcf3802",
+    "b12x/comm/roce/_proxy.py": "db0aaca54df8589f65500ee3a07a39a1d005262d9821b3f9e01ebced7523ced0",
+    "b12x/comm/roce/_roce_proxy.c": "a35f54cf75d6abf2427c5d144300647685816060348883d2cbf51d153efc5c70",
+    "b12x/comm/roce/api.py": "aaa3dac7a1e06cd8ee54ac1d722dfa1a58d1c1a02118f12b54ed9b763d6fed68",
+    "b12x/comm/roce/roce_oneshot.py": "92a32ed7ad570f54228998da10dc8dd463a042458c2bbd6beec521d1668344d4",
+    "b12x/_lib/__init__.py": "bd6f8f4a0b0261c47788779104c21db1f6a1c7acf92297d7637dfe89370ce208",
+    "b12x/_lib/compiler.py": "420923f69637451067468ddf1a8589cd75267b0fbb4cd934d6b9424ac8bf0533",
+    "b12x/_lib/env.py": "5e7af97f1427917b8e840040b35b558e64882be9c0404e999d5bd0e1680c069d",
+    "b12x/_lib/intrinsics.py": "535a797b89585aa31554f995f5bbbec25b849687a22431b07e1da212efdaf706",
+    "b12x/_lib/meta.py": "85b5ee925cd2d9a055c386141ab88cb6e119481be46a46c831f9d3c5d2098e6b",
+    "b12x/_lib/runtime_control.py": "db9655ad961af80bc9a7b1c72dd1d22fe2a8d49c7e11f0e8abdb281a7b92617c",
+    "b12x/_lib/runtime_patches.py": "53ce88b19bbb049e4d328e18f3a181e96595dfffc23279b87819bab70f852a9a",
+    "b12x/_lib/scratch.py": "dbec8827bc4769d72a13e151ef076d86e1c7fa85a90994510d0491bf92545110",
+    "b12x/_lib/scratch_layout.py": "4ebd5338b947d2ed60270e5c46953b0207e4ca37ee3fb421b423464f808d0f24",
+    "b12x/_lib/smem.py": "a5ea3a8925187ca5a9100c472ec59698bf801a18ac36672d5d11d9558a5aff4e",
+    "b12x/_lib/utils.py": "cb5264549d86f17d5855e3b21d65f098171d41f2fc878f0bac27f4586d75d649"
+  },
+  "omitted_unused_helpers": [
+    "b12x/_lib/dense_gemm.py",
+    "b12x/_lib/dense_gemm_mxfp6.py",
+    "b12x/_lib/fp6.py",
+    "b12x/_lib/gating.py",
+    "b12x/_lib/quant/__init__.py",
+    "b12x/_lib/quant/mxfp8_rows.py",
+    "b12x/_lib/quant/sqg_e4m3.py",
+    "b12x/_lib/quant/sqg_fp16_d3l.py",
+    "b12x/_lib/quant/x4t_scales.py"
+  ]
+}

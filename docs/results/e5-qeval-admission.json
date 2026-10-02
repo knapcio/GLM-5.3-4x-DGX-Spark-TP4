@@ -1,0 +1,61 @@
+{
+  "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
+  "scores": [
+    71,
+    72,
+    72
+  ],
+  "mean": 71.66666666666667,
+  "threshold": 70.55347603224445,
+  "baseline_scores": [
+    71,
+    72,
+    72,
+    72,
+    72,
+    71,
+    72,
+    71,
+    71,
+    72,
+    72,
+    71
+  ],
+  "criterion": "candidate mean >= checker-matched baseline mean -2*baseline SD; no upper bound or per-run71 veto; new all-control-pass failures>=2/3 receive paired confirmation",
+  "checker_sha256": "54719522d26996198c870264dfe5a93e2dd23f33436626c2477f1ac71206ffd2",
+  "qeval_source_sha256": "a83ccf00919153cae3acfaee49390be57d2f447b30e12ba4b4cbb9ac364a694e",
+  "new_recurring_failure_tasks": [],
+  "truncated": [
+    0,
+    0,
+    0
+  ],
+  "pass_": true,
+  "scope": "Historical checker-matched mean-2baseline-SD operational screen; no per-run71 veto/upper bound. Recurring triggers need paired confirmation/bisection; not a global intelligence-equivalence proof.",
+  "configuration": "native-mtp-k2-async",
+  "window": "E5",
+  "time": "2026-10-01T07:40:36.430212+02:00",
+  "ctn": "glm53full-e4-20261001-072047",
+  "recipe_sha256": "0f8063f298365967b1cf23cc2b5368080e2f3e7a950a1cbabc06c2c5b58a827d",
+  "async_scheduling": true,
+  "KV_block_size": 64,
+  "GLM_MTP_FIX": 1,
+  "runs": [
+    {
+      "file": "qeval-async-q1.json",
+      "sha256": "b2c56c9c8e025a8167541b5bd3293885445efbd243daf1168f06ab4ee400d58f",
+      "tasks": 75
+    },
+    {
+      "file": "qeval-async-q2.json",
+      "sha256": "5ff5455a33cc082fec908d6d177bd442f8682dfa9b4147cd3e86f321552bbb71",
+      "tasks": 75
+    },
+    {
+      "file": "qeval-async-q3.json",
+      "sha256": "ac75b21216b8aa590901a1e97209046509f262234940ba66007673af3f76ee13",
+      "tasks": 75
+    }
+  ],
+  "raw_receipts": "Raw receipts not distributed; unchanged E3 runner with the E5 boot and exact async recipe hash"
+}

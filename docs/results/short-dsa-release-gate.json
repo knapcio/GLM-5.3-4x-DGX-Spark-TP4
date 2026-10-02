@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-01, Europe/Warsaw",
+  "recipe_commit": "37542df (release/short-dsa)",
+  "flow": "git clone of the branch, cp .env.example .env with a fresh OVERLAY_REMOTE, DRY=1 ./start.sh serve (4 ranks, GLM_INDEXER_SHORTCUT=1), ./start.sh serve (preflight with full SHA256 of all 290 target files on all four hosts, compaction, launch, foreground watchdog)",
+  "image": "glm53-roce:v11-b58f34ea (existing per-host builds; not rebuilt for this release)",
+  "image_ids": [
+    "sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e",
+    "sha256:b8a0e25158a582fcc43c95798b974788e07d26ab7cad1940d34e4bc2067089bf",
+    "sha256:da7bc277e1917668ae36f56edfbb781ab96bbb4335fb473419f68265bbe8b9c3",
+    "sha256:c28a0d6659bae424351b5f2bb559248727839d6083a3ba50bcb3c30009a5dc85"
+  ],
+  "boot": {
+    "health_after_launch_s": 517.8,
+    "cache": "empty runtime/JIT cache, native fast loader, no prepared snapshot"
+  },
+  "memory_gib": {
+    "pre_capture_rank0": 11.24,
+    "capture_transient_min_rank0_attempt_with_old_10GiB_floor": 9.52,
+    "post_boot": [
+      9.62,
+      10.93,
+      11.01,
+      10.59
+    ],
+    "post_warm_60s_min_all_ranks": 9.044,
+    "gate_min_per_rank": [
+      8.97,
+      10.3,
+      10.42,
+      9.94
+    ],
+    "samples": 202
+  },
+  "warm_up": [
+    {
+      "kind": "c1",
+      "s": 2.317512958077714,
+      "tok": 49
+    },
+    {
+      "kind": "c1",
+      "s": 1.952198666986078,
+      "tok": 56
+    },
+    {
+      "kind": "c4",
+      "s": 8.863824791042134,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.483671250054613,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.859110208926722,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 6.892200124915689,
+      "tok": 94
+    },
+    {
+      "kind": "long",
+      "s": 30.70067279203795,
+      "prompt_tokens": 21441,
+      "reply": "item87"
+    }
+  ],
+  "serving": {
+    "health": 200,
+    "models": [
+      "GLM-5.3"
+    ],
+    "ok_reply": "OK",
+    "ranks_running_oom_restarts": [
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ]
+    ]
+  },
+  "short_dsa_reachability": {
+    "armed_all_ranks": true,
+    "log_rank0": [
+      "glm-dsa-short: armed (native MTP K2, context <= 2048)",
+      "glm-dsa-short: ModelCudaGraphManager captured 5 FULL graphs, short [(3, 1), (12, 4)]",
+      "glm-dsa-short: SpeculatorCudaGraphManager captured 5 FULL graphs, short [(3, 1), (12, 4)]",
+      "glm-dsa-short: SpeculatorCudaGraphManager captured 3 FULL graphs, short [(1, 1)]",
+      "glm-dsa-short: first stock_dispatch ('NONE', 16, 4)",
+      "glm-dsa-short: first short_dispatch ('FULL', 12, 4)"
+    ]
+  },
+  "qeval": {
+    "scores": [
+      72,
+      72,
+      72
+    ],
+    "mean": 72,
+    "threshold": 70.55347603224445,
+    "truncated_items": [],
+    "status": "PASS_OPERATIONAL_QEVAL_SCREEN"
+  },
+  "rigmark_1_0_0_thinking_on_low": {
+    "code": 33.816,
+    "prose": 25.305,
+    "structured": 35.931,
+    "code_c4_aggregate": 66.081,
+    "prefill_8k_cold": 966.589,
+    "completion_gates": {
+      "code": 5,
+      "prose": 5,
+      "structured": 5
+    }
+  },
+  "sparkdash_thinking_off": [
+    {
+      "kind": "prose",
+      "concurrency": 1,
+      "n": 5,
+      "median_per_stream_decode_tps": 29.4,
+      "median_aggregate_decode_tps": 29.4
+    },
+    {
+      "kind": "code",
+      "concurrency": 1,
+      "n": 5,
+      "median_per_stream_decode_tps": 34.75,
+      "median_aggregate_decode_tps": 34.75
+    },
+    {
+      "kind": "prose",
+      "concurrency": 4,
+      "n": 3,
+      "median_per_stream_decode_tps": 15.75,
+      "median_aggregate_decode_tps": 59.64
+    }
+  ],
+  "launcher_fixes_found_by_this_gate": [
+    "per-host NCCL hashes (the fleet has two 2.30.7 builds)",
+    "fleet marker checked on the head only",
+    "RoCE readiness counters no longer match the worker-error pattern",
+    "8 GiB floor during graph capture (MTP K2 capture transient ~9.5 GiB)"
+  ],
+  "verdict": "PASS: qeval within band; RigMark code/prose/structured above the previous native MTP K2 async row"
+}

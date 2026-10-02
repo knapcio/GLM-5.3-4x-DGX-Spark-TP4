@@ -1,0 +1,159 @@
+{
+  "native-mtp-k2-async": {
+    "receipt_sha256": "e7ccbb2473c8bdc6fd7f4a291490c4332fd5b6cd742ffa9cd6d10b0d1aef6513",
+    "protocol": {
+      "prompts_sha256": "0c3ac4015813af6a1b967659bd2289990fde895a5e43ae065b894d1e1f909ecb",
+      "prompts_version": "1.0.0",
+      "repository_dirty": false,
+      "repository_revision": "d8353e93b274e8d880ab14a5df2a55c87d7bee16",
+      "repository_source": "git-worktree",
+      "version": "1.0.0"
+    },
+    "settings": {
+      "concurrency": [
+        1,
+        2,
+        4
+      ],
+      "concurrency_runs": 3,
+      "concurrency_tokens": 256,
+      "concurrency_workload": "code",
+      "decode_tokens": 4096,
+      "extra_body": {
+        "chat_template_kwargs": {
+          "reasoning_effort": "low"
+        }
+      },
+      "prefill_depths": [
+        8192
+      ],
+      "prefill_runs": 3,
+      "runs": 5,
+      "seed": 20260905,
+      "temperature": 0.0,
+      "top_p": 1.0
+    },
+    "decode": {
+      "code": {
+        "median_tok_s": 33.316,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      },
+      "prose": {
+        "median_tok_s": 24.815,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      },
+      "structured": {
+        "median_tok_s": 35.291,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      }
+    },
+    "c4_code_aggregate_end_to_end_tok_s": 70.607,
+    "prefill_8k": {
+      "cold": 959.091,
+      "warm_replay": 967.058
+    }
+  },
+  "dspark-k3": {
+    "receipt_sha256": "6302cc7fd2938b1155ad611fbf16e3f1db55509e8aeb41b2cfc4fa4f536f6c8e",
+    "protocol": {
+      "prompts_sha256": "0c3ac4015813af6a1b967659bd2289990fde895a5e43ae065b894d1e1f909ecb",
+      "prompts_version": "1.0.0",
+      "repository_dirty": false,
+      "repository_revision": "d8353e93b274e8d880ab14a5df2a55c87d7bee16",
+      "repository_source": "git-worktree",
+      "version": "1.0.0"
+    },
+    "settings": {
+      "concurrency": [
+        1,
+        2,
+        4
+      ],
+      "concurrency_runs": 3,
+      "concurrency_tokens": 256,
+      "concurrency_workload": "code",
+      "decode_tokens": 4096,
+      "extra_body": {
+        "chat_template_kwargs": {
+          "reasoning_effort": "low"
+        }
+      },
+      "prefill_depths": [
+        8192
+      ],
+      "prefill_runs": 3,
+      "runs": 5,
+      "seed": 20260905,
+      "temperature": 0.0,
+      "top_p": 1.0
+    },
+    "decode": {
+      "code": {
+        "median_tok_s": 35.708,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      },
+      "prose": {
+        "median_tok_s": 23.097,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      },
+      "structured": {
+        "median_tok_s": 42.123,
+        "completion_gate": {
+          "passed": 5,
+          "total": 5
+        }
+      }
+    },
+    "c4_code_aggregate_end_to_end_tok_s": 63.504,
+    "prefill_8k": {
+      "cold": 950.005,
+      "warm_replay": 950.308
+    }
+  },
+  "sparkDash": {
+    "native-mtp-k2-async": [
+      {
+        "kind": "prose",
+        "concurrency": 1,
+        "n": 5,
+        "median_per_stream_decode_tps": 29.11,
+        "median_aggregate_decode_tps": 29.11
+      },
+      {
+        "kind": "code",
+        "concurrency": 1,
+        "n": 5,
+        "median_per_stream_decode_tps": 32.78,
+        "median_aggregate_decode_tps": 32.78
+      },
+      {
+        "kind": "prose",
+        "concurrency": 4,
+        "n": 3,
+        "median_per_stream_decode_tps": 15.42,
+        "median_aggregate_decode_tps": 59.43
+      }
+    ],
+    "dspark-k3": {
+      "prose_c1": 31.63,
+      "code_c1": 39.66,
+      "prose_c4_aggregate": 62.22,
+      "source": "e1-three-boots.json; pooled 15/15/9 scored runs"
+    }
+  }
+}

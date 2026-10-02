@@ -1,0 +1,33 @@
+# JIT prep check (2026-10-02, Europe/Warsaw), Mac Colima, no GPU, --network none, --pull never
+# Rendered by DRY=1 ./start.sh serve; rank 0's prep command with only the image (pinned base digest, same
+# FlashInfer 0.6.18.dev20260819 as the RoCE build), the cache bind, the NCCL mount and LD_PRELOAD changed.
+# The four sampling command hashes equal the fleet's cold in-boot build (fd9a5c8b, 4c55195d, c34edb8f,
+# d6b02aae) and the four batch MLA hashes equal the fleet's (3fecbb1a, db1c1136, ba893112, f8e150a5);
+# those two are the only FlashInfer modules in a fleet boot's cache. A second run on the same cache
+# (the serving path's build()) is a ninja no-op.
+# rendered image glm53-roce:v11-b58f34ea
+# local command docker run --rm --pull never --platform linux/arm64 --cpus 8 --name glm53full-jitprep-check-jitprep-r0 --network none --memory 16g --memory-swap 16g -v <local-cache>:/cache -e B12X_ROCE_HCA=rocep1s0f0,roceP2p1s0f0 -e CUDA_CACHE_PATH=/cache/nv -e FLASHINFER_CUDA_ARCH_LIST=12.1a -e FLASHINFER_DISABLE_VERSION_CHE ...
+JIT PREP sampling /cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/sampling.so
+JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False.so
+
+# prep rc=0 wall=41.8s
+# sampling .ninja_log
+# ninja log v7
+1	6408	1790918046995298732	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o	fd9a5c8bb76166ca
+0	12889	1790918046995031811	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/csrc_renorm.cuda.o	4c55195d2505b768
+0	34461	1790918046994762182	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/csrc_sampling.cuda.o	c34edb8f8afb49d5
+34462	34606	1790918081454963793	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/sampling.so	d6b02aae8db78d07
+
+# batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False .ninja_log
+# ninja log v7
+0	2632	1790918081603516005	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False_batch_mla_plan.cuda.o	3fecbb1a07e00541
+1	3830	1790918081604069847	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False_batch_mla_binding.cuda.o	db1c1136d4800c3d
+1	5714	1790918081603811135	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False_batch_mla_run.cuda.o	ba89311256edc1b2
+5733	5780	1790918087336555665	/cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False.so	f8e150a52c361b67
+
+JIT PREP sampling /cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/sampling/sampling.so
+JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/fi/.cache/flashinfer/0.6.18.dev20260819/121a/cached_ops/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False/batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False.so
+
+# second run rc=0 wall=1.3s
+# .ninja_log unchanged by the second run: True
+JITPREP CHECK PASS

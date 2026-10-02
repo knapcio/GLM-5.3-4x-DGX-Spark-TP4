@@ -1,0 +1,58 @@
+{
+  "status": "NOT_SELECTED_TIMEBOX / HOLD_LOADED_CORRECTNESS",
+  "cells": {
+    "v1": {
+      "saved_ms": {
+        "n": 6,
+        "mean": 0.4337836718091476,
+        "ci95": [
+          -5.062621096896757,
+          5.930188440515053
+        ],
+        "halfwidth": 5.496404768705905
+      },
+      "committed_delta_proxy": {
+        "n": 6,
+        "mean": -0.003149867503154565,
+        "ci95": [
+          -0.236661425175297,
+          0.23036169016898786
+        ],
+        "halfwidth": 0.23351155767214243
+      }
+    },
+    "v3": {
+      "saved_ms": {
+        "n": 12,
+        "mean": 4.310353066209338,
+        "ci95": [
+          1.7377514474779283,
+          6.8829546849407475
+        ],
+        "halfwidth": 2.5726016187314094
+      },
+      "committed_delta_proxy": {
+        "n": 12,
+        "mean": 0.036031705431279835,
+        "ci95": [
+          -0.15194846913358476,
+          0.22401187999614444
+        ],
+        "halfwidth": 0.1879801745648646
+      }
+    }
+  },
+  "windows": 54,
+  "all_fixed_M16_M12": true,
+  "requested_AB_rounds": 20,
+  "completed_AB_rounds": 12,
+  "rpc_ms_median": 274.7869164450094,
+  "metric": "RPC-midpoint client wall / all4-agreed targetM16 replays while4 requests active; excludes admission/tails; cancellation afterward",
+  "limitations": [
+    "Counter-RPC midpoint timing is a proxy with150\u2013350ms-scale RPC scheduling uncertainty; A/A spread must be accounted for; worker-side timestamps or GPU boundary timing required for sub-ms qualification.",
+    "SSE token-id delta per replay is a window proxy, not a large fixed teacher-forced acceptance test.",
+    "Loaded all-layer/all-rank/three-snapshot numerical oracle missing; no bit-equality veto."
+  ],
+  "kernel_scope": "Inherited unchanged split16 kernel only12<=T<=36, bank3; defaultbank0 split32",
+  "selected": false
+}

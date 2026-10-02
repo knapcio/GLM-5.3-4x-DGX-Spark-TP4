@@ -1,0 +1,326 @@
+# Dirty-L2 release candidate: offline checks, 2026-10-02 (Europe/Warsaw)
+# git tree of the checked sources (before this receipt was refreshed): b1fa988f32ef8f6eb48615c58380558967c05c43
+# 1) GLM_IMAGE_SRC=<extracted image vllm source> tests/run_cpu_tests.sh on macOS
+SOURCE PINS PASS: 21 files
+test_all_python_parses (__main__.Recipe.test_all_python_parses) ... ok
+test_dry_has_no_fleet_or_state_access (__main__.Recipe.test_dry_has_no_fleet_or_state_access) ... ok
+test_four_dry_vectors (__main__.Recipe.test_four_dry_vectors) ... ok
+test_kernel_body_pins (__main__.Recipe.test_kernel_body_pins) ... ok
+test_mla_inert_and_bad_mode (__main__.Recipe.test_mla_inert_and_bad_mode) ... ok
+test_mla_pin_and_drift (__main__.Recipe.test_mla_pin_and_drift) ... ok
+test_model_revisions_and_complete_manifests (__main__.Recipe.test_model_revisions_and_complete_manifests) ... ok
+test_native_mtp_source_and_mapping_drift (__main__.Recipe.test_native_mtp_source_and_mapping_drift) ... ok
+test_native_mtp_starts_loader_without_swa_pool (__main__.Recipe.test_native_mtp_starts_loader_without_swa_pool) ... ok
+test_qeval_count_and_final_content (__main__.Recipe.test_qeval_count_and_final_content) ... ok
+test_split_dispatch_contract (__main__.Recipe.test_split_dispatch_contract) ... ok
+test_startup_order_and_inert_gates (__main__.Recipe.test_startup_order_and_inert_gates) ... ok
+test_startup_registration_error_aborts (__main__.Recipe.test_startup_registration_error_aborts) ... ok
+test_verify_detects_corruption (__main__.Recipe.test_verify_detects_corruption) ... ok
+test_verify_receipt_expires_after_seven_days (__main__.Recipe.test_verify_receipt_expires_after_seven_days) ... ok
+test_verify_receipt_skips_only_unchanged_files (__main__.Recipe.test_verify_receipt_skips_only_unchanged_files) ... ok
+test_verify_rejects_path_escape (__main__.Recipe.test_verify_rejects_path_escape) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.265s
+
+OK
+SHA256 PASS: example/model, 1 files
+test_boot_deadline_includes_admission (__main__.Launcher.test_boot_deadline_includes_admission) ... health 200 after 1.0 s
+ok
+test_capture_floor (__main__.Launcher.test_capture_floor) ... ok
+test_floor_stopped_rank_and_numeric_errors (__main__.Launcher.test_floor_stopped_rank_and_numeric_errors) ... ok
+test_lock_does_not_release_another_owner (__main__.Launcher.test_lock_does_not_release_another_owner) ... ok
+test_native_mtp_does_not_mount_external_draft (__main__.Launcher.test_native_mtp_does_not_mount_external_draft) ... ok
+test_nccl_hash_one_or_four_in_host_order (__main__.Launcher.test_nccl_hash_one_or_four_in_host_order) ... ok
+test_preexisting_swap_and_optional_warning (__main__.Launcher.test_preexisting_swap_and_optional_warning) ... ok
+test_prefill_busy_endpoint_never_mutates_control (__main__.Launcher.test_prefill_busy_endpoint_never_mutates_control) ... ok
+test_prefill_cap_selected_only_after_drain (__main__.Launcher.test_prefill_cap_selected_only_after_drain) ... Serving prefill cap 2048; constructor capacity4096
+ok
+test_prefill_control_requires_all_rank_readback (__main__.Launcher.test_prefill_control_requires_all_rank_readback) ... ok
+test_preflight_lock_check_is_head_only (__main__.Launcher.test_preflight_lock_check_is_head_only) ... ok
+test_progress_ignores_http_polls_and_static_metrics (__main__.Launcher.test_progress_ignores_http_polls_and_static_metrics) ... ok
+test_restart_and_preboot_swap_baseline_trip (__main__.Launcher.test_restart_and_preboot_swap_baseline_trip) ... ok
+test_roce_ready_counters_are_not_errors (__main__.Launcher.test_roce_ready_counters_are_not_errors) ... ok
+test_ssh_failure_retains_lock (__main__.Launcher.test_ssh_failure_retains_lock) ... ok
+test_stop_targets_only_owned_names (__main__.Launcher.test_stop_targets_only_owned_names) ... Four containers stopped and preserved; owned lock released
+ok
+test_swap_requires_three_samples_over_baseline (__main__.Launcher.test_swap_requires_three_samples_over_baseline) ... ok
+test_verify_command_binds_manifest_once_and_fits_one_argument (__main__.Launcher.test_verify_command_binds_manifest_once_and_fits_one_argument) ... ok
+test_verify_command_runs (__main__.Launcher.test_verify_command_runs) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.221s
+
+OK
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.211s
+
+OK
+glm-dsa-swa-pool: registered (487ecf187)
+W1002 06:06:24.246000 80153 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 06:06:24.246000 80153 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 06:06:24.247000 80153 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_spec_registry
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_interface
+glm-dsa-swa-pool: pinned vllm.v1.request
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_utils
+glm-dsa-swa-pool: pinned vllm.v1.core.block_pool
+glm-dsa-swa-pool: pinned vllm.v1.core.single_type_kv_cache_manager
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_coordinator
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_manager
+test_alloc_cancel_deferred_preemption (__main__.PoolTests.test_alloc_cancel_deferred_preemption) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_async_peak_and_admission_gate (__main__.PoolTests.test_async_peak_and_admission_gate) ... glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+ok
+test_full_attention_miss_reconciles_all_tables (__main__.PoolTests.test_full_attention_miss_reconciles_all_tables) ... glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_geometry_and_capacity (__main__.PoolTests.test_geometry_and_capacity) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+ok
+test_long_decode_plateau_and_multirequest_refs (__main__.PoolTests.test_long_decode_plateau_and_multirequest_refs) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_minimal_profile_config (__main__.PoolTests.test_minimal_profile_config) ... glm-dsa-swa-pool: pool blocks=(36, 36, 36), bytes=119337984, target physical tokens=2304, usable=2240
+ok
+test_no_cache_and_switch (__main__.PoolTests.test_no_cache_and_switch) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_pool_specific_exhaustion_atomic (__main__.PoolTests.test_pool_specific_exhaustion_atomic) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_prefix_hit_reconciles_and_missing_tail_replays (__main__.PoolTests.test_prefix_hit_reconciles_and_missing_tail_replays) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_prefix_shared_refs_and_payload (__main__.PoolTests.test_prefix_shared_refs_and_payload) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_rejection_page_boundary_and_committed_eviction (__main__.PoolTests.test_rejection_page_boundary_and_committed_eviction) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_source_pins_and_refusal (__main__.PoolTests.test_source_pins_and_refusal) ... ok
+test_worker_rejects_group_blind_zero_and_copy (__main__.PoolTests.test_worker_rejects_group_blind_zero_and_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.482s
+
+OK
+W1002 06:06:32.680000 80216 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 06:06:32.680000 80216 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 06:06:32.680000 80216 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+test_capture_doubles_eligible_widths_under_short_context (__main__.Dispatch.test_capture_doubles_eligible_widths_under_short_context) ... glm-dsa-short: ModelManager captured 7 FULL graphs, short [(1, 1), (3, 1), (12, 4)]
+ok
+test_dispatch_promotes_only_when_eligible (__main__.Dispatch.test_dispatch_promotes_only_when_eligible) ... glm-dsa-short: ModelManager captured 5 FULL graphs, short [(3, 1), (12, 4)]
+glm-dsa-short: first short_dispatch ('FULL', 3, 1)
+glm-dsa-short: first stock_dispatch ('FULL', 3, 1)
+ok
+test_real_module_transformed_and_wrapped (__main__.Dispatch.test_real_module_transformed_and_wrapped) ... ok
+test_draft (__main__.Eligibility.test_draft) ... ok
+test_target_verify (__main__.Eligibility.test_target_verify) ... ok
+test_off_by_default_and_bad_value (__main__.Inert.test_off_by_default_and_bad_value) ... ok
+test_profile_flags (__main__.Inert.test_profile_flags) ... ok
+test_pins_and_transforms (__main__.Sources.test_pins_and_transforms) ... ok
+test_refuses_late_registration (__main__.Sources.test_refuses_late_registration) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 6.532s
+
+OK
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... skipped 'needs Triton without the interpreter'
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.153s
+
+OK (skipped=4)
+test_boundary_rejection_null_and_padding (__main__.KernelTests.test_boundary_rejection_null_and_padding) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.022s
+
+OK
+glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.1 s (0.20 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-fast-load: load 1 (2 files, <tmp>): 207 eager + 9 mmap tensors, 0.0 GiB in 0.0 s (0.16 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, <tmp>): last slab released after 0.5 s
+OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
+OK: wiring
+GLM_ROCE: the image already routes through b12x_ar_comm (B12X_ROCENANTE); the shim stays off
+PASS test_boot_hook_patch_failure_is_loud
+PASS test_boot_hook_patches_on_import_once
+PASS test_boot_off_installs_nothing
+PASS test_existing_b12x_slot_keeps_shim_off
+PASS test_four_ranks_limits_differ_all_raise
+PASS test_four_ranks_one_rank_cannot_all_raise
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+PASS test_four_ranks_one_rank_cannot_lenient_all_nccl
+PASS test_four_ranks_route_decode_sizes
+PASS test_four_ranks_single_node_skips_without_error
+PASS test_graph_capture_wrapper_order_and_passthrough
+PASS test_graph_capture_wrapper_propagates_errors
+PASS test_is_tp_group
+PASS test_parse_byte_size
+PASS test_pth_file_contents
+PASS test_read_limits_defaults_and_validation
+PASS test_worker_guard_failure_and_no_comm
+PASS test_worker_guard_sync_none_async
+PASS test_worker_patch_wraps_both_entry_points
+ALL PASS
+
+# 2) tests/test_dirty_l2.py in the pinned base image (Colima linux/arm64, --pull never --network none, nice 10)
+# image ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
+# 2026-10-02T04:06:54Z tests/test_dirty_l2.py TRITON_INTERPRET=1
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... ok
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... ok
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... skipped 'needs Triton without the interpreter'
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 12.905s
+
+OK (skipped=1)
+# 2026-10-02T04:07:08Z tests/test_dirty_l2.py TRITON_INTERPRET=0
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... ok
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.414s
+
+OK (skipped=3)
+exit 0
+
+# 3) startup import chain in the pinned base image: every profiles/current.env key except LD_PRELOAD,
+#    overlay/ mounted at /overlay as the launcher deploys it
+# 2026-10-02T04:07:09Z import chain, current.env without LD_PRELOAD
+W1002 04:07:12.532000 1 usr/local/lib/python3.12/dist-packages/torch/utils/cpp_extension.py:178] No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda'
+WARNING 10-02 04:07:12 [interface.py:368] Failed to import from vllm._C: ModuleNotFoundError("No module named 'vllm._C'")
+WARNING 10-02 04:07:12 [interface.py:368] Failed to import from vllm._C: ModuleNotFoundError("No module named 'vllm._C'")
+WARNING 10-02 04:07:12 [interface.py:368] Failed to import from vllm._C: ModuleNotFoundError("No module named 'vllm._C'")
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+glm-dirty-l2: armed (discard, split 32)
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-window-memory: capture guard source pin PASS
+{
+ "finders": [
+  "glm_dirty_l2.Hooks",
+  "glm_dsa_short.Finder",
+  "glm_prefill_switch.Hook",
+  "glm_window_memory.Finder",
+  "glm_full_mla.Finder",
+  "glm_mtp_fix.Hook",
+  "glm_fast_load._Hook",
+  "_distutils_hack.DistutilsMetaFinder",
+  "builtins.type",
+  "builtins.type",
+  "builtins.type"
+ ],
+ "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "ok",
+ "glm_full_mla_split_kernel": "ok",
+ "vllm.v1.worker.gpu.model_runner": "ok",
+ "vllm.v1.worker.gpu.cudagraph_utils": "ok",
+ "vllm.model_executor.models.deepseek_v2": "ok",
+ "split_sparse_mla_wrapped": "discard",
+ "stock_is_released": true,
+ "full_mla_forward_armed": true,
+ "kernel_module": "/overlay/bringup/glm_dirty_l2_kernel.py",
+ "dsa_short_imported": true,
+ "PASS": true
+}

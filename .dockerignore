@@ -1,0 +1,7 @@
+.git
+.env
+state
+logs
+cache
+tests/.cpu-shim
+**/__pycache__

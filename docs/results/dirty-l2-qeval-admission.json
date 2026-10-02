@@ -1,0 +1,50 @@
+{
+  "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
+  "adjusted_status": "PASS_ADJUSTED_KNOWN_CAP_FLAKY",
+  "scores": [
+    73,
+    72,
+    73
+  ],
+  "mean": 72.667,
+  "threshold": 70.55347603224445,
+  "baseline_scores": [
+    71,
+    72,
+    72,
+    72,
+    72,
+    71,
+    72,
+    71,
+    71,
+    72,
+    72,
+    71
+  ],
+  "criterion": "candidate mean >= checker-matched baseline mean -2*baseline SD; no upper bound or per-run71 veto; new all-control-pass failures>=2/3 receive paired confirmation",
+  "checker_sha256": "54719522d26996198c870264dfe5a93e2dd23f33436626c2477f1ac71206ffd2",
+  "qeval_source_sha256": "a83ccf00919153cae3acfaee49390be57d2f447b30e12ba4b4cbb9ac364a694e",
+  "new_recurring_failure_tasks": [],
+  "truncated": [
+    0,
+    0,
+    0
+  ],
+  "failed_tasks": [
+    [
+      "code_camel_to_snake",
+      "json_count"
+    ],
+    [
+      "code_camel_to_snake",
+      "code_word_wrap",
+      "json_manifest"
+    ],
+    [
+      "code_camel_to_snake",
+      "json_manifest"
+    ]
+  ],
+  "scope": "Fresh-clone release gate 2026-10-02, native MTP K2 async + short-context DSA shortcut + dirty-L2 fix, three serial runs, unchanged 75-task checker and budgets. Operational screen, not an intelligence-equivalence proof."
+}

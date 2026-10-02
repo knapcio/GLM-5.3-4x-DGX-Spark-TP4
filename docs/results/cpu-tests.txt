@@ -1,0 +1,177 @@
+SOURCE PINS PASS: 20 files
+test_all_python_parses (__main__.Recipe.test_all_python_parses) ... ok
+test_dry_has_no_fleet_or_state_access (__main__.Recipe.test_dry_has_no_fleet_or_state_access) ... ok
+test_four_dry_vectors (__main__.Recipe.test_four_dry_vectors) ... ok
+test_kernel_body_pins (__main__.Recipe.test_kernel_body_pins) ... ok
+test_mla_inert_and_bad_mode (__main__.Recipe.test_mla_inert_and_bad_mode) ... ok
+test_mla_pin_and_drift (__main__.Recipe.test_mla_pin_and_drift) ... ok
+test_model_revisions_and_complete_manifests (__main__.Recipe.test_model_revisions_and_complete_manifests) ... ok
+test_qeval_count_and_final_content (__main__.Recipe.test_qeval_count_and_final_content) ... ok
+test_split_dispatch_contract (__main__.Recipe.test_split_dispatch_contract) ... ok
+test_startup_order_and_inert_gates (__main__.Recipe.test_startup_order_and_inert_gates) ... ok
+test_startup_registration_error_aborts (__main__.Recipe.test_startup_registration_error_aborts) ... ok
+test_verify_detects_corruption (__main__.Recipe.test_verify_detects_corruption) ... ok
+test_verify_rejects_path_escape (__main__.Recipe.test_verify_rejects_path_escape) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.210s
+
+OK
+SHA256 PASS: example/model, 1 files
+test_boot_deadline_includes_admission (__main__.Launcher.test_boot_deadline_includes_admission) ... health 200 after 1.0 s
+ok
+test_floor_stopped_rank_and_numeric_errors (__main__.Launcher.test_floor_stopped_rank_and_numeric_errors) ... ok
+test_lock_does_not_release_another_owner (__main__.Launcher.test_lock_does_not_release_another_owner) ... ok
+test_preexisting_swap_and_optional_warning (__main__.Launcher.test_preexisting_swap_and_optional_warning) ... ok
+test_ssh_failure_retains_lock (__main__.Launcher.test_ssh_failure_retains_lock) ... ok
+test_stop_targets_only_owned_names (__main__.Launcher.test_stop_targets_only_owned_names) ... ok
+test_swap_requires_three_samples_over_baseline (__main__.Launcher.test_swap_requires_three_samples_over_baseline) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.004s
+
+OK
+Four containers stopped and preserved; owned lock released
+glm-dsa-swa-pool: registered (487ecf187)
+W0930 09:05:50.349000 64077 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0930 09:05:50.350000 64077 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0930 09:05:50.350000 64077 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_spec_registry
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_interface
+glm-dsa-swa-pool: pinned vllm.v1.request
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_utils
+glm-dsa-swa-pool: pinned vllm.v1.core.block_pool
+glm-dsa-swa-pool: pinned vllm.v1.core.single_type_kv_cache_manager
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_coordinator
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_manager
+test_alloc_cancel_deferred_preemption (__main__.PoolTests.test_alloc_cancel_deferred_preemption) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_async_peak_and_admission_gate (__main__.PoolTests.test_async_peak_and_admission_gate) ... glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+ok
+test_full_attention_miss_reconciles_all_tables (__main__.PoolTests.test_full_attention_miss_reconciles_all_tables) ... glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_geometry_and_capacity (__main__.PoolTests.test_geometry_and_capacity) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+ok
+test_long_decode_plateau_and_multirequest_refs (__main__.PoolTests.test_long_decode_plateau_and_multirequest_refs) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_minimal_profile_config (__main__.PoolTests.test_minimal_profile_config) ... glm-dsa-swa-pool: pool blocks=(36, 36, 36), bytes=119337984, target physical tokens=2304, usable=2240
+ok
+test_no_cache_and_switch (__main__.PoolTests.test_no_cache_and_switch) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_pool_specific_exhaustion_atomic (__main__.PoolTests.test_pool_specific_exhaustion_atomic) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_prefix_hit_reconciles_and_missing_tail_replays (__main__.PoolTests.test_prefix_hit_reconciles_and_missing_tail_replays) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_prefix_shared_refs_and_payload (__main__.PoolTests.test_prefix_shared_refs_and_payload) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_rejection_page_boundary_and_committed_eviction (__main__.PoolTests.test_rejection_page_boundary_and_committed_eviction) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_source_pins_and_refusal (__main__.PoolTests.test_source_pins_and_refusal) ... ok
+test_worker_rejects_group_blind_zero_and_copy (__main__.PoolTests.test_worker_rejects_group_blind_zero_and_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.504s
+
+OK
+test_boundary_rejection_null_and_padding (__main__.KernelTests.test_boundary_rejection_null_and_padding) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.017s
+
+OK
+glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.0 s (0.26 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-fast-load: load 1 (2 files, <tmpdir>): 207 eager + 9 mmap tensors, 0.0 GiB in 0.0 s (0.21 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, <tmpdir>): last slab released after 0.5 s
+OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
+OK: wiring
+GLM_ROCE: the image already routes through b12x_ar_comm (B12X_ROCENANTE); the shim stays off
+PASS test_boot_hook_patch_failure_is_loud
+PASS test_boot_hook_patches_on_import_once
+PASS test_boot_off_installs_nothing
+PASS test_existing_b12x_slot_keeps_shim_off
+PASS test_four_ranks_limits_differ_all_raise
+PASS test_four_ranks_one_rank_cannot_all_raise
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+PASS test_four_ranks_one_rank_cannot_lenient_all_nccl
+PASS test_four_ranks_route_decode_sizes
+PASS test_four_ranks_single_node_skips_without_error
+PASS test_graph_capture_wrapper_order_and_passthrough
+PASS test_graph_capture_wrapper_propagates_errors
+PASS test_is_tp_group
+PASS test_parse_byte_size
+PASS test_pth_file_contents
+PASS test_read_limits_defaults_and_validation
+PASS test_worker_guard_failure_and_no_comm
+PASS test_worker_guard_sync_none_async
+PASS test_worker_patch_wraps_both_entry_points
+ALL PASS

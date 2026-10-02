@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-02, Europe/Warsaw",
+  "question": "does the dirty-L2 discard change RigMark c1 throughput, measured in one boot",
+  "boot": "fresh deployment of release/dirty-l2 8ccac85 with a measurement-only switchable reduce: arm A = discard off, arm B = discard on, split 32 in both; each arm is bit-equal to the released split32 reduce on one GB10 in eager and graph replay; the switch was changed only with the engine idle and read back on all four ranks",
+  "protocol": {
+    "benchmark": "RigMark 1.0.0 payload builder, nonce scheme, streaming client, decode tok/s and completion validators",
+    "bench_sha256": "087010be072656a1d6181b84b39d32b0914d5403aa0a021e5d41147690ca6c39",
+    "prompts_sha256": "0c3ac4015813af6a1b967659bd2289990fde895a5e43ae065b894d1e1f909ecb",
+    "comparison_id": "2026-09-05-glm-tp2-tp4-rigmark-v1",
+    "temperature": 0,
+    "seed": 20260905,
+    "max_tokens": 4096,
+    "extra_body": {
+      "chat_template_kwargs": {
+        "reasoning_effort": "low"
+      }
+    },
+    "sequence": "one discarded warm-up per arm, then triplets A1/B/A2; each block runs prose #1-3 and structured #1-2 with the same prompts in every block",
+    "statistic": "per-triplet difference B - mean(A1, A2) of block medians, t interval with n-1 degrees of freedom",
+    "code_workload": "not run in this window"
+  },
+  "results": {
+    "prose": {
+      "triplets": 4,
+      "runs_A": 24,
+      "runs_B": 12,
+      "median_A": 25.072,
+      "median_B": 25.235,
+      "mean_A": 25.122,
+      "mean_B": 25.215,
+      "triplet_diff": {
+        "n": 4,
+        "mean": 0.034,
+        "sd": 0.097,
+        "lo": -0.121,
+        "hi": 0.189,
+        "halfwidth": 0.155
+      },
+      "triplet_diff_pct": {
+        "n": 4,
+        "mean": 0.134,
+        "sd": 0.388,
+        "lo": -0.483,
+        "hi": 0.752,
+        "halfwidth": 0.618
+      },
+      "prompt_matched_run_diff": {
+        "n": 12,
+        "mean": 0.093,
+        "sd": 0.511,
+        "lo": -0.196,
+        "hi": 0.381,
+        "halfwidth": 0.289
+      },
+      "completion_gate": {
+        "valid": 36,
+        "total": 36
+      },
+      "cells": [
+        {
+          "triplet": 1,
+          "A1": 25.421,
+          "B": 25.371,
+          "A2": 25.355,
+          "diff": -0.017,
+          "diff_pct": -0.07
+        },
+        {
+          "triplet": 2,
+          "A1": 25.179,
+          "B": 25.207,
+          "A2": 25.007,
+          "diff": 0.114,
+          "diff_pct": 0.45
+        },
+        {
+          "triplet": 3,
+          "A1": 24.688,
+          "B": 24.765,
+          "A2": 24.998,
+          "diff": -0.078,
+          "diff_pct": -0.31
+        },
+        {
+          "triplet": 4,
+          "A1": 25.471,
+          "B": 25.262,
+          "A2": 24.82,
+          "diff": 0.117,
+          "diff_pct": 0.46
+        }
+      ]
+    },
+    "structured": {
+      "triplets": 4,
+      "runs_A": 16,
+      "runs_B": 8,
+      "median_A": 35.82,
+      "median_B": 36.203,
+      "mean_A": 35.691,
+      "mean_B": 36.199,
+      "triplet_diff": {
+        "n": 4,
+        "mean": 0.508,
+        "sd": 0.298,
+        "lo": 0.033,
+        "hi": 0.982,
+        "halfwidth": 0.474
+      },
+      "triplet_diff_pct": {
+        "n": 4,
+        "mean": 1.425,
+        "sd": 0.844,
+        "lo": 0.081,
+        "hi": 2.768,
+        "halfwidth": 1.343
+      },
+      "prompt_matched_run_diff": {
+        "n": 8,
+        "mean": 0.508,
+        "sd": 0.472,
+        "lo": 0.113,
+        "hi": 0.902,
+        "halfwidth": 0.394
+      },
+      "completion_gate": {
+        "valid": 24,
+        "total": 24
+      },
+      "cells": [
+        {
+          "triplet": 1,
+          "A1": 35.689,
+          "B": 36.326,
+          "A2": 35.922,
+          "diff": 0.521,
+          "diff_pct": 1.45
+        },
+        {
+          "triplet": 2,
+          "A1": 35.743,
+          "B": 35.925,
+          "A2": 35.748,
+          "diff": 0.18,
+          "diff_pct": 0.5
+        },
+        {
+          "triplet": 3,
+          "A1": 35.719,
+          "B": 36.242,
+          "A2": 35.903,
+          "diff": 0.431,
+          "diff_pct": 1.2
+        },
+        {
+          "triplet": 4,
+          "A1": 35.784,
+          "B": 36.301,
+          "A2": 35.021,
+          "diff": 0.898,
+          "diff_pct": 2.54
+        }
+      ]
+    }
+  },
+  "reading": "prose: no regression, 95 % CI -0.48 to +0.75 %; structured: +1.43 %, 95 % CI +0.08 to +2.77 %. Not a prose gain claim."
+}

@@ -1,0 +1,447 @@
+{
+  "date": "2026-10-02, Europe/Warsaw",
+  "recipe_commit": "31b5412 (main; release commit 8ccac85, main adds only documentation)",
+  "flow": "git clone of main, cp .env.example .env with a fresh OVERLAY_REMOTE, DRY=1 ./start.sh serve (identical to the 8ccac85 gate boot after container-name and runtime-path normalisation), ./start.sh serve",
+  "image": "glm53-roce:v11-b58f34ea (existing per-host builds; not rebuilt)",
+  "image_ids": [
+    "sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e",
+    "sha256:b8a0e25158a582fcc43c95798b974788e07d26ab7cad1940d34e4bc2067089bf",
+    "sha256:da7bc277e1917668ae36f56edfbb781ab96bbb4335fb473419f68265bbe8b9c3",
+    "sha256:c28a0d6659bae424351b5f2bb559248727839d6083a3ba50bcb3c30009a5dc85"
+  ],
+  "boot": {
+    "preflight": "SHA256 CACHED on all four nodes, PREFLIGHT PASS",
+    "jit_prep": "JIT PREP PASS on all four nodes",
+    "health_after_launch_s": 470.3,
+    "launcher_admission": "PASS (>= 8 GiB on all ranks for 60 s)",
+    "serving_prefill_cap": 2048,
+    "memory_gib": {
+      "pre_capture_rank0_436s": 13.58,
+      "capture_window_min_rank0": 9.67,
+      "capture_window_min_at_s": 492.7,
+      "boot_min_per_rank": [
+        9.67,
+        10.98,
+        10.85,
+        11.03
+      ]
+    }
+  },
+  "serving": {
+    "health": 200,
+    "models": [
+      "GLM-5.3"
+    ],
+    "max_model_len": [
+      32768
+    ],
+    "ok_reply": "OK",
+    "ranks": [
+      {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e"
+      },
+      {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "sha256:b8a0e25158a582fcc43c95798b974788e07d26ab7cad1940d34e4bc2067089bf"
+      },
+      {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "sha256:da7bc277e1917668ae36f56edfbb781ab96bbb4335fb473419f68265bbe8b9c3"
+      },
+      {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "sha256:c28a0d6659bae424351b5f2bb559248727839d6083a3ba50bcb3c30009a5dc85"
+      }
+    ],
+    "checks": {
+      "health": true,
+      "reply": true,
+      "ranks": true,
+      "same_arm_all_ranks": true,
+      "arm_as_requested": true,
+      "dsa_short_armed": true,
+      "dirty_l2_armed": true,
+      "dirty_l2_dispatch": true
+    },
+    "arms": [
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  "warm_up": [
+    {
+      "kind": "c1",
+      "s": 2.489228209014982,
+      "tok": 49
+    },
+    {
+      "kind": "c1",
+      "s": 1.8381173338275403,
+      "tok": 52
+    },
+    {
+      "kind": "c4",
+      "s": 8.759024792117998,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.196308666840196,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.87055699992925,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 7.179428833071142,
+      "tok": 101
+    },
+    {
+      "kind": "long",
+      "s": 32.995544290868565,
+      "prompt_tokens": 21441,
+      "reply": "item87"
+    }
+  ],
+  "admission": {
+    "min_all_gib": 9.006614685058594,
+    "min_rank0_gib": 9.006614685058594,
+    "passed": true
+  },
+  "memory_gib": {
+    "samples": 213,
+    "min_per_rank": [
+      8.65,
+      10.3,
+      9.96,
+      9.94
+    ],
+    "below_8_gib": []
+  },
+  "rigmark_1_0_0_thinking_on_low": {
+    "rates": {
+      "code": 33.42,
+      "prose": 24.908,
+      "structured": 35.363,
+      "code_c1_aggregate": 30.585,
+      "code_c1_per_stream_decode": 32.595,
+      "code_c2_aggregate": 46.542,
+      "code_c2_per_stream_decode": 25.547,
+      "code_c4_aggregate": 68.369,
+      "code_c4_per_stream_decode": 18.782,
+      "prefill_8k_cold": 950.899,
+      "prefill_8k_warm_replay": 842.803
+    },
+    "ranges": {
+      "code": [
+        32.893,
+        33.766
+      ],
+      "prose": [
+        24.108,
+        25.682
+      ],
+      "structured": [
+        34.576,
+        36.569
+      ]
+    },
+    "completion_gates": {
+      "code": true,
+      "prose": true,
+      "structured": true
+    }
+  },
+  "sparkdash_thinking_off": {
+    "mode": "full",
+    "tool_sha256": "041e7021d1e717236a3536c6c24fa6605c96f3d6e0ef8ac4daa57a793f3543a0",
+    "sweep": {
+      "decode": [
+        {
+          "kind": "prose",
+          "concurrency": 1,
+          "n": 5,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 30.02,
+          "median_aggregate_decode_tps": 30.02,
+          "aggregate_runs": [
+            30.02,
+            30.01,
+            30.76,
+            31.3,
+            29.89
+          ]
+        },
+        {
+          "kind": "prose",
+          "concurrency": 2,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 22.21,
+          "median_aggregate_decode_tps": 42.44,
+          "aggregate_runs": [
+            42.44,
+            45.69,
+            41.78
+          ]
+        },
+        {
+          "kind": "prose",
+          "concurrency": 4,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 15.9,
+          "median_aggregate_decode_tps": 61.11,
+          "aggregate_runs": [
+            57.95,
+            61.11,
+            61.55
+          ]
+        },
+        {
+          "kind": "prose",
+          "concurrency": 8,
+          "n": 2,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 15.440000000000001,
+          "median_aggregate_decode_tps": 58.900000000000006,
+          "aggregate_runs": [
+            57.71,
+            60.09
+          ]
+        },
+        {
+          "kind": "code",
+          "concurrency": 1,
+          "n": 5,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 34.11,
+          "median_aggregate_decode_tps": 34.11,
+          "aggregate_runs": [
+            32.69,
+            34.11,
+            32.78,
+            35.18,
+            35.18
+          ]
+        },
+        {
+          "kind": "code",
+          "concurrency": 2,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 24.66,
+          "median_aggregate_decode_tps": 49.32,
+          "aggregate_runs": [
+            48.47,
+            49.32,
+            50.3
+          ]
+        },
+        {
+          "kind": "code",
+          "concurrency": 4,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 16.7,
+          "median_aggregate_decode_tps": 65.03,
+          "aggregate_runs": [
+            63.58,
+            68.42,
+            65.03
+          ]
+        },
+        {
+          "kind": "code",
+          "concurrency": 8,
+          "n": 2,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 16.425,
+          "median_aggregate_decode_tps": 62.215,
+          "aggregate_runs": [
+            62.63,
+            61.8
+          ]
+        },
+        {
+          "kind": "structured",
+          "concurrency": 1,
+          "n": 5,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 36.65,
+          "median_aggregate_decode_tps": 36.65,
+          "aggregate_runs": [
+            36.66,
+            36.65,
+            33.9,
+            34.13,
+            36.71
+          ]
+        },
+        {
+          "kind": "structured",
+          "concurrency": 2,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 28.46,
+          "median_aggregate_decode_tps": 56.91,
+          "aggregate_runs": [
+            53.77,
+            58.83,
+            56.91
+          ]
+        },
+        {
+          "kind": "structured",
+          "concurrency": 4,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 23.19,
+          "median_aggregate_decode_tps": 91.76,
+          "aggregate_runs": [
+            88.03,
+            91.76,
+            91.92
+          ]
+        },
+        {
+          "kind": "structured",
+          "concurrency": 8,
+          "n": 2,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 23.085,
+          "median_aggregate_decode_tps": 89.28999999999999,
+          "aggregate_runs": [
+            90.27,
+            88.31
+          ]
+        },
+        {
+          "kind": "json",
+          "concurrency": 1,
+          "n": 5,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 35.51,
+          "median_aggregate_decode_tps": 35.51,
+          "aggregate_runs": [
+            35.79,
+            35.51,
+            35.02,
+            35.85,
+            31.1
+          ]
+        },
+        {
+          "kind": "json",
+          "concurrency": 2,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 25.56,
+          "median_aggregate_decode_tps": 48.66,
+          "aggregate_runs": [
+            48.66,
+            50.6,
+            47.9
+          ]
+        },
+        {
+          "kind": "json",
+          "concurrency": 4,
+          "n": 3,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 19.6,
+          "median_aggregate_decode_tps": 76.92,
+          "aggregate_runs": [
+            76.92,
+            66.48,
+            77.53
+          ]
+        },
+        {
+          "kind": "json",
+          "concurrency": 8,
+          "n": 2,
+          "runs_failed": 0,
+          "median_per_stream_decode_tps": 17.89,
+          "median_aggregate_decode_tps": 67.455,
+          "aggregate_runs": [
+            67.59,
+            67.32
+          ]
+        }
+      ],
+      "prefill": [
+        {
+          "cell": "4k",
+          "target_tokens": 4096,
+          "n": 3,
+          "median_prefill_tps": 999.86,
+          "runs": [
+            705.2,
+            1003.23,
+            999.86
+          ],
+          "median_ttft_ms": 4129.59
+        },
+        {
+          "cell": "8k",
+          "target_tokens": 8192,
+          "n": 3,
+          "median_prefill_tps": 942.3,
+          "runs": [
+            944.13,
+            940.73,
+            942.3
+          ],
+          "median_ttft_ms": 8722.29
+        },
+        {
+          "cell": "16k",
+          "target_tokens": 16384,
+          "n": 3,
+          "median_prefill_tps": 889.69,
+          "runs": [
+            949.71,
+            862.41,
+            889.69
+          ],
+          "median_ttft_ms": 18446.82
+        },
+        {
+          "cell": "32k",
+          "target_tokens": 32256,
+          "n": 3,
+          "median_prefill_tps": 839.06,
+          "runs": [
+            815.83,
+            839.06,
+            913.33
+          ],
+          "median_ttft_ms": 38481.1
+        }
+      ],
+      "max_model_len": 32768,
+      "prefill_32k_tokens": 32256
+    },
+    "caveat": "c>1 rows send the identical prompt to every stream; c8 queues four streams behind four slots; secondary only",
+    "tool": "bench/sparkdash.py full 32768 (same code; the run used a copy whose docstring differs, so tool_sha256 is that copy's hash)"
+  },
+  "qeval": "not re-run on this boot; the release qeval (73/72/73) is from the 8ccac85 gate boot (dirty-l2-qeval-admission.json), same launch vector",
+  "boot_ok": true,
+  "start": "2026-10-02T10:44:49+02:00",
+  "end": "2026-10-02T11:22:03+02:00"
+}

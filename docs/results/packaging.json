@@ -1,0 +1,35 @@
+{
+  "verified_at": "2026-09-30T09:07:55.866377+02:00",
+  "scope": "Offline macOS packaging; read-only SSH files; no fleet container/GPU action",
+  "cpu": {
+    "command": "GLM_IMAGE_SRC=<extracted image source> tests/run_cpu_tests.sh",
+    "image_source": "<extracted image source>",
+    "whole_file_source_pins": 20,
+    "unittest_checks": 34,
+    "roce_cpu_checks": 18,
+    "loader_checks": 2,
+    "loader_tensors": 324,
+    "total_checks": 54,
+    "status": "PASS"
+  },
+  "dry": {
+    "command": "python3 scripts/compare_dry.py",
+    "ranks": 4,
+    "status": "PASS",
+    "diff": "docs/dry-vs-best.md"
+  },
+  "immutable_download_metadata": {
+    "files": 11,
+    "status": "PASS"
+  },
+  "fresh_clone_fleet_gate": {
+    "status": "NOT_RUN",
+    "scope": "Image build, source/weight/NCCL hashes, cold boot, real TP4/RoCE/graphs/KV, functional/quality/long-context/concurrency/memory/stop gates, matched performance"
+  },
+  "b12x_source_hashes": {
+    "files": 21,
+    "status": "PASS",
+    "proxy_import": "PASS (no build or GPU)"
+  },
+  "tracked_files": 95
+}

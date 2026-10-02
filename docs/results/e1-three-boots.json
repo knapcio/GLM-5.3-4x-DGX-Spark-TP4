@@ -1,0 +1,177 @@
+{
+  "date": "2026-09-30",
+  "timezone": "Europe/Warsaw",
+  "protocol": "sparkDash256 thinking-off temperature0, 5/5/3 scored per boot, one discarded warmup per cell",
+  "config": "native full GLM K3, runtime2048/constructor4096, split32, 2GiB KV/rank, 32K context, four slots, GPU2200 cap unchanged",
+  "boots": [
+    {
+      "label": "W4 README boot",
+      "receipt_sha256": "50d82b38633c146d83b960fd4d2f32829ed7aef9c95765907a9f0cd58adb92a3",
+      "cells": {
+        "prose/c1": {
+          "per_stream": [
+            31.02,
+            33.94,
+            29.99,
+            29.96,
+            34.08
+          ],
+          "aggregate": [
+            31.02,
+            33.94,
+            29.99,
+            29.96,
+            34.08
+          ]
+        },
+        "code/c1": {
+          "per_stream": [
+            40.33,
+            36.34,
+            41.3,
+            35.85,
+            37.37
+          ],
+          "aggregate": [
+            40.33,
+            36.34,
+            41.3,
+            35.85,
+            37.37
+          ]
+        },
+        "prose/c4": {
+          "per_stream": [
+            16.33,
+            16.31,
+            16.09
+          ],
+          "aggregate": [
+            63.64,
+            62.26,
+            59.71
+          ]
+        }
+      }
+    },
+    {
+      "label": "W5 stock boot",
+      "receipt_sha256": "d38490472b8f12478f23343f666bdae6ad17e1a85b6416d95fded1a117be8a8f",
+      "cells": {
+        "prose/c1": {
+          "per_stream": [
+            31.63,
+            29.14,
+            31.74,
+            32.95,
+            29.4
+          ],
+          "aggregate": [
+            31.63,
+            29.14,
+            31.74,
+            32.95,
+            29.4
+          ]
+        },
+        "code/c1": {
+          "per_stream": [
+            40.67,
+            40.45,
+            39.91,
+            39.35,
+            38.83
+          ],
+          "aggregate": [
+            40.67,
+            40.45,
+            39.91,
+            39.35,
+            38.83
+          ]
+        },
+        "prose/c4": {
+          "per_stream": [
+            15.43,
+            16.08,
+            16.66
+          ],
+          "aggregate": [
+            60.44,
+            61.69,
+            64.78
+          ]
+        }
+      }
+    },
+    {
+      "label": "E1 baseline arm",
+      "receipt_sha256": "aa169eaebe1210c753228466c2840328b36dcdc5584ef720e96f0fca64a31eb2",
+      "cells": {
+        "prose/c1": {
+          "per_stream": [
+            35.93,
+            32.11,
+            31.85,
+            30.06,
+            28.75
+          ],
+          "aggregate": [
+            35.93,
+            32.11,
+            31.85,
+            30.06,
+            28.75
+          ]
+        },
+        "code/c1": {
+          "per_stream": [
+            40.87,
+            40.28,
+            36.11,
+            39.66,
+            35.32
+          ],
+          "aggregate": [
+            40.87,
+            40.28,
+            36.11,
+            39.66,
+            35.32
+          ]
+        },
+        "prose/c4": {
+          "per_stream": [
+            15.9,
+            16.12,
+            15.69
+          ],
+          "aggregate": [
+            62.22,
+            62.85,
+            60.36
+          ]
+        }
+      }
+    }
+  ],
+  "combined": {
+    "prose/c1": {
+      "n": 15,
+      "median_per_stream": 31.63,
+      "median_aggregate": 31.63
+    },
+    "code/c1": {
+      "n": 15,
+      "median_per_stream": 39.66,
+      "median_aggregate": 39.66
+    },
+    "prose/c4": {
+      "n": 9,
+      "median_per_stream": 16.09,
+      "median_aggregate": 62.22
+    }
+  },
+  "stack_adopted": false,
+  "scope": "pooled medians over all valid scored served-configuration runs from three boots; E1 baseline A with candidate banks resident, joined timers inactive"
+}

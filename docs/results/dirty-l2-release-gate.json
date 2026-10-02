@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-02, Europe/Warsaw",
+  "recipe_commit": "8ccac85 (release/dirty-l2)",
+  "flow": "git clone of the branch, cp .env.example .env with a fresh OVERLAY_REMOTE, DRY=1 ./start.sh serve (4 JIT prep + 4 model lines, GLM_INDEXER_SHORTCUT=1, GLM_DIRTY_L2=discard), ./start.sh serve (preflight with per-host weight-hash records, JIT prep, compaction, launch, foreground watchdog)",
+  "image": "glm53-roce:v11-b58f34ea (existing per-host builds; not rebuilt for this release)",
+  "image_ids": [
+    "sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e",
+    "sha256:b8a0e25158a582fcc43c95798b974788e07d26ab7cad1940d34e4bc2067089bf",
+    "sha256:da7bc277e1917668ae36f56edfbb781ab96bbb4335fb473419f68265bbe8b9c3",
+    "sha256:c28a0d6659bae424351b5f2bb559248727839d6083a3ba50bcb3c30009a5dc85"
+  ],
+  "boot": {
+    "health_after_launch_s": 467.2,
+    "cache": "fresh per-deployment cache; FlashInfer sampling and batch MLA modules built by the launcher's JIT prep before the model containers started; native fast loader, no prepared snapshot"
+  },
+  "memory_gib": {
+    "pre_capture_rank0": 12.14,
+    "capture_window_min_rank0": 9.23,
+    "post_boot": [
+      9.62,
+      10.92,
+      10.96,
+      10.67
+    ],
+    "post_warm_60s_min_all_ranks": 9.029,
+    "gate_min_per_rank": [
+      8.95,
+      9.91,
+      9.97,
+      9.96
+    ],
+    "samples": 197
+  },
+  "warm_up": [
+    {
+      "kind": "c1",
+      "s": 2.1871275829616934,
+      "tok": 49
+    },
+    {
+      "kind": "c1",
+      "s": 2.2671224588993937,
+      "tok": 64
+    },
+    {
+      "kind": "c4",
+      "s": 8.649107750039548,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.64889800013043,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 8.867351333843544,
+      "tok": 128
+    },
+    {
+      "kind": "c4",
+      "s": 7.09627866698429,
+      "tok": 94
+    },
+    {
+      "kind": "long",
+      "s": 31.154604209121317,
+      "prompt_tokens": 21441,
+      "reply": "item87"
+    }
+  ],
+  "serving": {
+    "health": 200,
+    "models": [
+      "GLM-5.3"
+    ],
+    "ok_reply": "OK",
+    "ranks_running_oom_restarts": [
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ],
+      [
+        "true",
+        "false",
+        "0"
+      ]
+    ]
+  },
+  "reachability": {
+    "short_dsa_armed_all_ranks": true,
+    "dirty_l2_armed_all_ranks": true,
+    "dirty_l2_dispatch_all_ranks": true,
+    "log_rank0": [
+      "glm-dsa-short: armed (native MTP K2, context <= 2048)",
+      "glm-dirty-l2: armed (discard, split 32)",
+      "glm-dirty-l2: first discard dispatch rows=12",
+      "glm-dsa-short: ModelCudaGraphManager captured 5 FULL graphs, short [(3, 1), (12, 4)]",
+      "glm-dsa-short: SpeculatorCudaGraphManager captured 5 FULL graphs, short [(3, 1), (12, 4)]",
+      "glm-dsa-short: SpeculatorCudaGraphManager captured 3 FULL graphs, short [(1, 1)]",
+      "glm-dsa-short: first stock_dispatch ('NONE', 16, 4)",
+      "glm-dsa-short: first short_dispatch ('FULL', 12, 4)"
+    ]
+  },
+  "qeval": {
+    "scores": [
+      73,
+      72,
+      73
+    ],
+    "mean": 72.667,
+    "threshold": 70.55347603224445,
+    "truncated_items": [],
+    "status": "PASS_OPERATIONAL_QEVAL_SCREEN"
+  },
+  "rigmark_1_0_0_thinking_on_low": {
+    "code": 34.412,
+    "prose": 24.933,
+    "structured": 36.182,
+    "code_c4_aggregate": 66.449,
+    "prefill_8k_cold": 954.353,
+    "completion_gates": {
+      "code": 5,
+      "prose": 5,
+      "structured": 5
+    }
+  },
+  "sparkdash_thinking_off": [
+    {
+      "kind": "prose",
+      "concurrency": 1,
+      "n": 5,
+      "median_per_stream_decode_tps": 30.71,
+      "median_aggregate_decode_tps": 30.71
+    },
+    {
+      "kind": "code",
+      "concurrency": 1,
+      "n": 5,
+      "median_per_stream_decode_tps": 34.03,
+      "median_aggregate_decode_tps": 34.03
+    },
+    {
+      "kind": "prose",
+      "concurrency": 4,
+      "n": 3,
+      "median_per_stream_decode_tps": 16.48,
+      "median_aggregate_decode_tps": 63.4
+    }
+  ],
+  "same_boot_rigmark_ab": "docs/results/dirty-l2-rigmark-ab.json",
+  "verdict": "PASS under the same-boot release rule (docs/validation.md): serving, admission, memory and the qeval band pass; the same-boot RigMark A/B shows no prose regression (+0.13 %, 95 % CI -0.48 to +0.75 %) and structured +1.43 % (95 % CI +0.08 to +2.77 %). Under the earlier rule (each RigMark cell not below the previous README row from another boot) this gate read FAIL on prose only: 24.93 vs 25.3."
+}

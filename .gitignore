@@ -1,0 +1,13 @@
+.env
+state/
+logs/
+cache/
+__pycache__/
+*.pyc
+.cpu-shim/
+*.part
+.venv/
+tests/results/
+qeval-*.json
+tests/memory-results.json
+image-source/

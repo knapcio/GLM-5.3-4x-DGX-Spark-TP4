@@ -1,0 +1,21 @@
+{
+  "status": "PASS_LONG_CONTEXT",
+  "controls": [
+    12,
+    12,
+    12,
+    12,
+    12,
+    12
+  ],
+  "candidates": [
+    12,
+    12,
+    12
+  ],
+  "threshold": 12.0,
+  "new_failure_tasks": [],
+  "selected_chunk": 2048,
+  "short_qeval_review": "W3 70/72/73 mean71.667 >= checker-matched historical70.553 operational threshold",
+  "wall_s": 1304.3286488056183
+}

@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-30",
+  "immutable_resolve_checks": [
+    {
+      "kind": "target",
+      "file": "LICENSE",
+      "size": 4263,
+      "sha256": "96e1622099fc9d6b70c9760f007d99e66d7497eec636b63c60fe208401e9170c",
+      "status": "PASS"
+    },
+    {
+      "kind": "target",
+      "file": "README.md",
+      "size": 7761,
+      "sha256": "fe49a7393ab98d6a581f7963ec7322c2a25b8c08f070339c52768cf46cb78731",
+      "status": "PASS"
+    },
+    {
+      "kind": "target",
+      "file": "chat_template.jinja",
+      "size": 10576,
+      "sha256": "9687489b1c7eddac80c78c7d57a11e791601013c46dfd7202241fed85e340a74",
+      "status": "PASS"
+    },
+    {
+      "kind": "target",
+      "file": "config.json",
+      "size": 6515,
+      "sha256": "238781b1049848b65be244adda218845c1a63a4aa49c4941eb59a05dec681f3b",
+      "status": "PASS"
+    },
+    {
+      "kind": "target",
+      "file": "generation_config.json",
+      "size": 194,
+      "sha256": "ac76b43d8683d3b930126870fc8be73d8679308fe752fa1f381096d8354f6a55",
+      "status": "PASS"
+    },
+    {
+      "kind": "target",
+      "file": "tokenizer_config.json",
+      "size": 761,
+      "sha256": "98b1271574f41abf89427ae2dda030d94dc9478f0edc5a8bd240db213c6fd5fc",
+      "status": "PASS"
+    },
+    {
+      "kind": "drafter",
+      "file": "README.md",
+      "size": 5952,
+      "sha256": "909d4dae47b1018b8e43560d8cf1ebf9443206d97369249b00b10a51d198a424",
+      "status": "PASS"
+    },
+    {
+      "kind": "drafter",
+      "file": "config.json",
+      "size": 1932,
+      "sha256": "8b9e5e3b0889a3e788c5b9025210593bc5a549ac4e6a8dcd0e960c86022745e5",
+      "status": "PASS"
+    },
+    {
+      "kind": "drafter",
+      "file": "config.py",
+      "size": 2342,
+      "sha256": "2f4381ff2eb9de506c6ba09bc17f83d0aee871f75651f6303b2e4b581e9b4ca1",
+      "status": "PASS"
+    },
+    {
+      "kind": "drafter",
+      "file": "train_command.txt",
+      "size": 864,
+      "sha256": "fb63901d12b54a56a822bb973c9355dc945dac7950671319061b3aac5c6d652a",
+      "status": "PASS"
+    },
+    {
+      "kind": "drafter",
+      "file": "training_state.json",
+      "size": 51,
+      "sha256": "b616f8958f4ac7e6195254f997c2aa640fd57b993c59a16d9244b828ad205a6b",
+      "status": "PASS"
+    }
+  ]
+}

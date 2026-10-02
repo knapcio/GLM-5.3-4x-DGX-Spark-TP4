@@ -1,0 +1,11 @@
+{
+  "median_candidate_tps": 936.0494093294234,
+  "median_control_tps": 734.5580504914219,
+  "round_gains": [
+    0.27367617749123774,
+    0.278731448747509,
+    0.27249877555731317
+  ],
+  "median_gain": 0.27367617749123774,
+  "metric": "cold16K complete1-output-token wall throughput; includes1 decode token; not streamed TTFT"
+}

@@ -1,0 +1,37 @@
+{
+  "repo": "RedHatAI/GLM-5.3-speculator.dspark",
+  "sha": "b374b95663447ea0e935151be4f3d6666e36e6d7",
+  "files": [
+    {
+      "f": "README.md",
+      "size": 5952,
+      "sha256": "909d4dae47b1018b8e43560d8cf1ebf9443206d97369249b00b10a51d198a424"
+    },
+    {
+      "f": "config.json",
+      "size": 1932,
+      "sha256": "8b9e5e3b0889a3e788c5b9025210593bc5a549ac4e6a8dcd0e960c86022745e5"
+    },
+    {
+      "f": "config.py",
+      "size": 2342,
+      "sha256": "2f4381ff2eb9de506c6ba09bc17f83d0aee871f75651f6303b2e4b581e9b4ca1"
+    },
+    {
+      "f": "model.safetensors",
+      "size": 2499134874,
+      "sha256": "d255a70191470d60a23c794852a29a64590f974fc759168d263068ebe5bfc36a"
+    },
+    {
+      "f": "train_command.txt",
+      "size": 864,
+      "sha256": "fb63901d12b54a56a822bb973c9355dc945dac7950671319061b3aac5c6d652a"
+    },
+    {
+      "f": "training_state.json",
+      "size": 51,
+      "sha256": "b616f8958f4ac7e6195254f997c2aa640fd57b993c59a16d9244b828ad205a6b"
+    }
+  ],
+  "schema": 1
+}

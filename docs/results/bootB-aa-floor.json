@@ -1,0 +1,377 @@
+{
+  "status": "VALID_SAME_BOOT_AA",
+  "items_each": [
+    24,
+    24
+  ],
+  "same_instances": true,
+  "floor": {
+    "c1": {
+      "divergence": {
+        "mean": 0.6666666666666666,
+        "upper95": 0.9166666666666666
+      },
+      "teacher_lp_drift": {
+        "mean": 0.17572316657191844,
+        "upper95": 0.19578645515327933
+      },
+      "teacher_lp_p99": {
+        "mean": 0.9688097238540649,
+        "upper95": 1.1454755862553914
+      },
+      "kl": {
+        "mean": 0.014631959101259827,
+        "upper95": 0.016582831399547717
+      },
+      "kl_p99": {
+        "mean": 0.10770483327345533,
+        "upper95": 0.14737135570229695
+      },
+      "support_loss": {
+        "mean": 0.3035810450998546,
+        "upper95": 0.316564741765375
+      }
+    },
+    "c4": {
+      "divergence": {
+        "mean": 0.6666666666666666,
+        "upper95": 0.9166666666666666
+      },
+      "teacher_lp_drift": {
+        "mean": 0.19069010448761778,
+        "upper95": 0.21516886899847945
+      },
+      "teacher_lp_p99": {
+        "mean": 1.2831287185351055,
+        "upper95": 1.682890256245931
+      },
+      "kl": {
+        "mean": 0.019979474388772792,
+        "upper95": 0.026524920458942353
+      },
+      "kl_p99": {
+        "mean": 0.11119743664015834,
+        "upper95": 0.14672901144378522
+      },
+      "support_loss": {
+        "mean": 0.3071648399549142,
+        "upper95": 0.31949111721811563
+      }
+    }
+  },
+  "pairs": [
+    {
+      "id": "c1-p00",
+      "stratum": "c1",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.0343267286361727,
+      "teacher_lp_drift": 0.14242964014410972,
+      "teacher_lp_p99": 0.8266167640686035,
+      "kl": 0.013963704092186835,
+      "kl_p99": 0.08300746863699554,
+      "support_loss": 0.28641130785879787
+    },
+    {
+      "id": "c1-p01",
+      "stratum": "c1",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.004312004529942071,
+      "teacher_lp_drift": 0.14231666787104172,
+      "teacher_lp_p99": 0.8483638763427734,
+      "kl": 0.009983101282381432,
+      "kl_p99": 0.06769604394575965,
+      "support_loss": 0.35002576370859295
+    },
+    {
+      "id": "c1-p02",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 7,
+      "generated_common_prefix_tokens": 7,
+      "generated_lp_drift": 0.014117410671782895,
+      "teacher_lp_drift": 0.1259408286526142,
+      "teacher_lp_p99": 0.43230724334716797,
+      "kl": 0.00842575910500388,
+      "kl_p99": 0.042670429728156836,
+      "support_loss": 0.3280085664746747
+    },
+    {
+      "id": "c1-p03",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 32,
+      "generated_common_prefix_tokens": 32,
+      "generated_lp_drift": 0.014148164495951576,
+      "teacher_lp_drift": 0.2565955070157846,
+      "teacher_lp_p99": 1.7640495300292969,
+      "kl": 0.017296953268165792,
+      "kl_p99": 0.08308787133246234,
+      "support_loss": 0.296248325191073
+    },
+    {
+      "id": "c1-p04",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 0,
+      "generated_common_prefix_tokens": 0,
+      "generated_lp_drift": null,
+      "teacher_lp_drift": 0.13278604998253285,
+      "teacher_lp_p99": 0.8781247138977051,
+      "kl": 0.010547597303128285,
+      "kl_p99": 0.10069960919606517,
+      "support_loss": 0.30225435477097096
+    },
+    {
+      "id": "c1-p05",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 21,
+      "generated_common_prefix_tokens": 21,
+      "generated_lp_drift": 0.03188051737620732,
+      "teacher_lp_drift": 0.1653072037401476,
+      "teacher_lp_p99": 1.0059638023376465,
+      "kl": 0.015036508516032564,
+      "kl_p99": 0.07862562228313276,
+      "support_loss": 0.24509670703803643
+    },
+    {
+      "id": "c1-p06",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 28,
+      "generated_common_prefix_tokens": 28,
+      "generated_lp_drift": 0.0070894805884074786,
+      "teacher_lp_drift": 0.21527241997767327,
+      "teacher_lp_p99": 1.2954716682434082,
+      "kl": 0.017209599321373475,
+      "kl_p99": 0.10460150987784264,
+      "support_loss": 0.2998718194823424
+    },
+    {
+      "id": "c1-p07",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 7,
+      "generated_common_prefix_tokens": 7,
+      "generated_lp_drift": 0.011291604036468275,
+      "teacher_lp_drift": 0.17164509583796775,
+      "teacher_lp_p99": 1.051009178161621,
+      "kl": 0.011715408072424247,
+      "kl_p99": 0.0818751057281891,
+      "support_loss": 0.3127515389574683
+    },
+    {
+      "id": "c1-p08",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 17,
+      "generated_common_prefix_tokens": 17,
+      "generated_lp_drift": 0.029240361851139717,
+      "teacher_lp_drift": 0.21444499285684693,
+      "teacher_lp_p99": 0.9091496467590332,
+      "kl": 0.02108030218831192,
+      "kl_p99": 0.12220952769998211,
+      "support_loss": 0.26094107527425525
+    },
+    {
+      "id": "c1-p09",
+      "stratum": "c1",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.0015867821585100472,
+      "teacher_lp_drift": 0.15527185030281543,
+      "teacher_lp_p99": 0.69781494140625,
+      "kl": 0.012012469257836018,
+      "kl_p99": 0.0353245090027784,
+      "support_loss": 0.3003420460787626
+    },
+    {
+      "id": "c1-p10",
+      "stratum": "c1",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.005531937008545151,
+      "teacher_lp_drift": 0.1614646349588166,
+      "teacher_lp_p99": 0.5662636756896973,
+      "kl": 0.02099970442769138,
+      "kl_p99": 0.3384185695853387,
+      "support_loss": 0.3278313742361503
+    },
+    {
+      "id": "c1-p11",
+      "stratum": "c1",
+      "divergence": 1,
+      "first_divergence": 49,
+      "generated_common_prefix_tokens": 49,
+      "generated_lp_drift": 0.02651015821782712,
+      "teacher_lp_drift": 0.22520310752267061,
+      "teacher_lp_p99": 1.3505816459655762,
+      "kl": 0.017312402380582105,
+      "kl_p99": 0.15424173226476082,
+      "support_loss": 0.3331896621271305
+    },
+    {
+      "id": "c4-p00",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 51,
+      "generated_common_prefix_tokens": 51,
+      "generated_lp_drift": 0.023703523929687043,
+      "teacher_lp_drift": 0.21759412826763258,
+      "teacher_lp_p99": 0.8899579048156738,
+      "kl": 0.02748079786761626,
+      "kl_p99": 0.20270572309304377,
+      "support_loss": 0.28934305137877603
+    },
+    {
+      "id": "c4-p01",
+      "stratum": "c4",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.00950958590623141,
+      "teacher_lp_drift": 0.1704861648719419,
+      "teacher_lp_p99": 0.7720608711242676,
+      "kl": 0.01715953341385493,
+      "kl_p99": 0.1101829186836003,
+      "support_loss": 0.3553971407306684
+    },
+    {
+      "id": "c4-p02",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 0,
+      "generated_common_prefix_tokens": 0,
+      "generated_lp_drift": null,
+      "teacher_lp_drift": 0.21307539317172533,
+      "teacher_lp_p99": 3.3452529907226562,
+      "kl": 0.014753401516635758,
+      "kl_p99": 0.09058141353161656,
+      "support_loss": 0.3323235731632934
+    },
+    {
+      "id": "c4-p03",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 26,
+      "generated_common_prefix_tokens": 26,
+      "generated_lp_drift": 0.006908255313018521,
+      "teacher_lp_drift": 0.32225521090957854,
+      "teacher_lp_p99": 2.5943212509155273,
+      "kl": 0.05638661690357596,
+      "kl_p99": 0.29151396365960847,
+      "support_loss": 0.30955428746231495
+    },
+    {
+      "id": "c4-p04",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 0,
+      "generated_common_prefix_tokens": 0,
+      "generated_lp_drift": null,
+      "teacher_lp_drift": 0.15706792815588413,
+      "teacher_lp_p99": 0.6342782974243164,
+      "kl": 0.016142574848850136,
+      "kl_p99": 0.0713404633355053,
+      "support_loss": 0.3110480051532192
+    },
+    {
+      "id": "c4-p05",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 22,
+      "generated_common_prefix_tokens": 22,
+      "generated_lp_drift": 0.036395947527115495,
+      "teacher_lp_drift": 0.18180104858973728,
+      "teacher_lp_p99": 1.436366081237793,
+      "kl": 0.01625410870915728,
+      "kl_p99": 0.1232163488492328,
+      "support_loss": 0.2541265737644255
+    },
+    {
+      "id": "c4-p06",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 44,
+      "generated_common_prefix_tokens": 44,
+      "generated_lp_drift": 0.014706658261166633,
+      "teacher_lp_drift": 0.17762871801333371,
+      "teacher_lp_p99": 0.9476656913757324,
+      "kl": 0.02026606022862392,
+      "kl_p99": 0.07960979371845424,
+      "support_loss": 0.3051094330840626
+    },
+    {
+      "id": "c4-p07",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 7,
+      "generated_common_prefix_tokens": 7,
+      "generated_lp_drift": 0.006117506671054278,
+      "teacher_lp_drift": 0.16448892679597651,
+      "teacher_lp_p99": 1.0387277603149414,
+      "kl": 0.014907867455225345,
+      "kl_p99": 0.08185846756217,
+      "support_loss": 0.32680566207193884
+    },
+    {
+      "id": "c4-p08",
+      "stratum": "c4",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.03272779132717296,
+      "teacher_lp_drift": 0.21442173396547634,
+      "teacher_lp_p99": 1.3067941665649414,
+      "kl": 0.020373089344428056,
+      "kl_p99": 0.08834416310354316,
+      "support_loss": 0.2683604815424012
+    },
+    {
+      "id": "c4-p09",
+      "stratum": "c4",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.0008883900783011045,
+      "teacher_lp_drift": 0.1471144113689661,
+      "teacher_lp_p99": 0.7930088043212891,
+      "kl": 0.011169998608348927,
+      "kl_p99": 0.04026620665303148,
+      "support_loss": 0.2972206640336327
+    },
+    {
+      "id": "c4-p10",
+      "stratum": "c4",
+      "divergence": 1,
+      "first_divergence": 63,
+      "generated_common_prefix_tokens": 63,
+      "generated_lp_drift": 0.009294093368369756,
+      "teacher_lp_drift": 0.1353654247587142,
+      "teacher_lp_p99": 0.6959092617034912,
+      "kl": 0.01534751683309772,
+      "kl_p99": 0.11753557752287427,
+      "support_loss": 0.31926810751768786
+    },
+    {
+      "id": "c4-p11",
+      "stratum": "c4",
+      "divergence": 0,
+      "first_divergence": 64,
+      "generated_common_prefix_tokens": 64,
+      "generated_lp_drift": 0.03688254357950704,
+      "teacher_lp_drift": 0.1869821649824464,
+      "teacher_lp_p99": 0.9432015419006348,
+      "kl": 0.009512126935859202,
+      "kl_p99": 0.03721419996921966,
+      "support_loss": 0.31742109955654985
+    }
+  ],
+  "scope": "Measured24-completion panels; qeval controls pending; no intelligence equivalence proof"
+}

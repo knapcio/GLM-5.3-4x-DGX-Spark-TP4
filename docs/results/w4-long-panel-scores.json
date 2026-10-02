@@ -1,0 +1,65 @@
+[
+  {
+    "triplet": 0,
+    "arm": "Apre",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 0,
+    "arm": "B",
+    "chunk": 2048,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 0,
+    "arm": "Apost",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 1,
+    "arm": "Apre",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 1,
+    "arm": "B",
+    "chunk": 2048,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 1,
+    "arm": "Apost",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 2,
+    "arm": "Apre",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 2,
+    "arm": "B",
+    "chunk": 2048,
+    "passed": 12,
+    "total": 12
+  },
+  {
+    "triplet": 2,
+    "arm": "Apost",
+    "chunk": 512,
+    "passed": 12,
+    "total": 12
+  }
+]

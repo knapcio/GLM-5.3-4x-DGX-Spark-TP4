@@ -1,0 +1,26 @@
+{
+  "panel_executions": 9,
+  "triplets": 3,
+  "arms": [
+    512,
+    2048,
+    512
+  ],
+  "tasks": 12,
+  "requests_per_execution": 4,
+  "task_fields": [
+    "code",
+    "total",
+    "order"
+  ],
+  "panel_sha256": "f83ebaa863b0c9c5942a30288f5837a5ceb02cc81bbe731cb7eefafb0594a9a1",
+  "max_tokens": 256,
+  "thinking": false,
+  "temperature": 0,
+  "seed": 0,
+  "concurrency": 1,
+  "allocation": 4096,
+  "gate": "candidate mean >= control mean - 2*control run SD; all-control-pass task failing >=2/3 candidate triggers paired confirmation",
+  "strict_final": true,
+  "pilot": "Separate12-request pilot excluded from all scores; compound panel frozen before first candidate"
+}
