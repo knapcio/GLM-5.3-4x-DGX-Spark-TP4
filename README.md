@@ -12,6 +12,17 @@ the same admitted primary v2 boot. An additional independent boot is supplementa
 and does not select or replace these trials. Earlier R results remain archived
 in [`w4-R-summary.json`](docs/results/w4-R-summary.json).
 
+The frozen independent boot measured prose c1 **32.97 tok/s** (five runs);
+the median of all ten trials across both identical boots is **32.71 tok/s**.
+Combined code c1 is **37.85 tok/s** (ten runs) and prose c3 is
+**53.355 aggregate [17.86 per stream] tok/s** (six runs). These supplemental
+results retain every scored trial and do not replace the primary tables.
+The additional c3 qeval screen scored **71/75**, but **failed** its no-truncation
+condition: `code_parse_query` used all 420 tokens on reasoning without final code.
+The cause of this c3 difference is unresolved. The primary serial gate remains
+71/72/72 with no truncations. Full trial values and failures:
+[`w4-v2-confirmation.json`](docs/results/w4-v2-confirmation.json).
+
 ## sparkDash — thinking off
 
 Decode, aggregate tok/s **[per-stream tok/s]**. c8 is eight submitted requests;
