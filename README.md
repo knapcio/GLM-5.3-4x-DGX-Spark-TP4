@@ -1,4 +1,4 @@
-# Full GLM-5.3 on 4x NVIDIA DGX Spark — stack-1003
+# Full GLM-5.3 on 4× NVIDIA DGX Spark
 
 Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3), TP4 on four DGX Sparks,
 with native MTP confidence stopping, short-context DSA, automatic prefix caching,
