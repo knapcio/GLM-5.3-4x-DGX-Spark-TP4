@@ -94,6 +94,10 @@ verification only while file records match; `VERIFY_WEIGHTS=full` forces rehashi
 The foreground watchdog owns only its deployment and monitors rank exits, OOM,
 progress, available memory, swap and numeric/runtime errors. Source admission
 floors and dwell periods remain unchanged. Failed stops retain ownership locks.
+The 180-second busy-without-progress timer resets while the GPUs are idle, so
+a new request after a long quiet period receives a fresh stall allowance.
+Continuous GPU activity without token/load progress still aborts after the
+threshold.
 
 `GLM_SPEC_SAMPLE=0`: experimental probabilistic drafts stay off. Its source
 supports the composed K-stop path, but CPU checks do not qualify serving

@@ -841,9 +841,10 @@ def monitor(deployment, boot=False):
                 fingerprint = progress_fingerprint(samples, metrics)
             else:
                 fingerprint = progress_fingerprint(samples)
-            if progress.get('value') != fingerprint:
-                progress = dict(value=fingerprint, time=now)
             busy = any(float(v.strip()) > 20 for sample in samples for v in sample['gpu'].splitlines())
+            # Idle time must not consume the next request's stall allowance.
+            if progress.get('value') != fingerprint or not busy:
+                progress = dict(value=fingerprint, time=now)
             if busy and now-progress.get('time', now) > 180:
                 raise RuntimeError('GPU busy without progress for 180 seconds')
             if saver is not None:

@@ -2,6 +2,11 @@
 
 ## 2026-10-03 — stack-1003
 
+- Fix the host watchdog counting earlier idle time against a new request. Two
+  clock-driven regression cases reproduce the old false abort and retain the
+  genuine busy-stall abort; launcher suite57/57 PASS. Inference code and reported
+  measurements are unchanged.
+
 Primary release gate: PASS. Measurements come from W4 v2 primary, inference
 source `0f24383`, pad hygiene on and spec-sample off. Prose/code c1 and prose c3
 now report all scored trials across two frozen identical boots (prose c1 32.71

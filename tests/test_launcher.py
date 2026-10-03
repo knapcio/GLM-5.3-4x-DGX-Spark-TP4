@@ -260,6 +260,35 @@ class Launcher(unittest.TestCase):
                 C.monitor(dict(ctn='glm53full-test',token='owned'),boot=True)
             stopped.assert_called_once()
 
+    def _steady_stall_clock(self, busy_at, exit_at):
+        clock = [0.0]
+        s = samples()
+        def fake(rank, cmd, timeout=45):
+            if cmd.startswith('curl'):
+                return 'vllm:generation_tokens_total 0\n'
+            row = copy.deepcopy(s[rank]);row['gpu'] = '96' if clock[0] >= busy_at else '0'
+            if clock[0] >= exit_at:row['state']['Running'] = False
+            return json.dumps(row)
+        def sleep(seconds):clock[0] += seconds
+        with tempfile.TemporaryDirectory() as directory, patch.object(C, 'ROOT', Path(directory)), \
+             patch.object(C, 'remote', fake), patch.object(C.time, 'monotonic', lambda: clock[0]), \
+             patch.object(C.time, 'sleep', sleep), patch.object(C, 'stop') as stopped:
+            with self.assertRaises(RuntimeError) as caught:
+                C.monitor(dict(ctn='glm53full-test', token='owned'), boot=False)
+            stopped.assert_called_once()
+        return str(caught.exception), clock[0]
+
+    def test_new_request_after_long_idle_has_fresh_stall_allowance(self):
+        error, elapsed = self._steady_stall_clock(busy_at=300, exit_at=350)
+        self.assertIn('exited', error)
+        self.assertEqual(elapsed, 350)
+
+    def test_continuous_busy_without_token_progress_still_aborts(self):
+        error, elapsed = self._steady_stall_clock(busy_at=0, exit_at=1000)
+        self.assertIn('GPU busy without progress', error)
+        self.assertGreater(elapsed, 180)
+        self.assertLessEqual(elapsed, 180 + C.SAMPLE_STEADY_S)
+
     def test_progress_ignores_http_polls_and_static_metrics(self):
         a=samples();b=copy.deepcopy(a)
         a[0]['logs']='loaded shard 1\nINFO: "GET /health HTTP/1.1" 200'
