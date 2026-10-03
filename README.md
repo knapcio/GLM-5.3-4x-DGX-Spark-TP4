@@ -8,8 +8,9 @@ display-carveout KV and switched RoCE. Primary release gate: **PASS**; measured
 
 Measurements, trial values and the configuration are recorded in
 [`w4-v2-summary.json`](docs/results/w4-v2-summary.json). Every table below uses
-the same admitted primary v2 boot. An additional independent boot is supplemental
-and does not select or replace these trials. Earlier R results remain archived
+the admitted primary v2 boot, except prose/code c1 and the separate prose c3
+sweep: those use every scored trial across the frozen pair of identical boots.
+The original primary trials remain available in the receipt above. Earlier R results remain archived
 in [`w4-R-summary.json`](docs/results/w4-R-summary.json).
 
 The frozen independent boot measured prose c1 **32.97 tok/s** (five runs);
@@ -25,19 +26,23 @@ The cause of this c3 difference is unresolved. The primary serial gate remains
 
 ## sparkDash — thinking off
 
-Decode, aggregate tok/s **[per-stream tok/s]**. c8 is eight submitted requests;
-four serving slots mean requests can queue. Preserve the collector's aggregate
-and per-stream timing definitions. Workloads always appear prose first.
+Decode, aggregate tok/s **[per-stream tok/s]**. c8 submits eight requests to
+four serving slots: excess requests queue, so this tests throughput under load
+rather than eight simultaneously decoding streams. Similar c4/c8 aggregate rates
+indicate saturation. Aggregate timing includes the complete batch; per-stream
+decode timing excludes waiting before the first token. Workloads appear prose first.
 
 | Prompt type | c1 | c2 | c4 | c8 |
 |---|---:|---:|---:|---:|
-| prose | 32.3 [32.3] | 44.9 [22.9] | 62.4 [16.2] | 62.0 [16.2] |
+| prose | 32.7 [32.7] | 44.9 [22.9] | 62.4 [16.2] | 62.0 [16.2] |
 | code | 37.9 [37.9] | 47.3 [24.0] | 67.8 [17.1] | 61.8 [16.4] |
 | structured | 42.1 [42.1] | 50.4 [26.0] | 80.7 [21.2] | 82.4 [21.9] |
 | json | 38.6 [38.6] | 49.9 [25.6] | 77.2 [19.9] | 74.4 [19.5] |
 
-The separate prose c3 sweep measured **52.4 aggregate [17.8 per stream] tok/s**,
-median of three runs, with descriptor-scoped pad hygiene v2 on.
+The separate prose c3 sweep measured **53.4 aggregate [17.9 per stream] tok/s**,
+median of all six runs across two boots, with descriptor-scoped pad hygiene v2 on.
+Prose/code c1 are medians of all ten runs each across those same two boots;
+other sparkDash cells, prefill and context sweeps use the primary boot.
 
 ### Prefill
 

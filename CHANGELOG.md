@@ -3,7 +3,11 @@
 ## 2026-10-03 — stack-1003
 
 Primary release gate: PASS. Measurements come from W4 v2 primary, inference
-source `0f24383`, pad hygiene on and spec-sample off. An independent confirmation boot is supplemental.
+source `0f24383`, pad hygiene on and spec-sample off. Prose/code c1 and prose c3
+now report all scored trials across two frozen identical boots (prose c1 32.71
+tok/s); other cells retain primary-boot provenance. Supplemental c3 qeval 71/75
+failed the no-truncation condition on one 420-token reasoning response; the
+primary serial quality gate remains 71/72/72 with no truncations.
 
 - Full GLM-5.3 native MTP with confidence-stop K1–3 at c1 and uniform K2 batches.
 - Composed short-context DSA and K-stop integration; APC on.

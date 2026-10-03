@@ -6,7 +6,7 @@
     "alternative_profile": "dspark-k3",
     "qualified": true,
     "quality_receipt": "w4-v2-summary.json",
-    "performance_receipt": "w4-v2-summary.json",
+    "performance_receipt": "w4-v2-summary.json + w4-v2-confirmation.json",
     "quality": {
       "scores": [
         71,
@@ -40,7 +40,17 @@
         ]
       ]
     },
-    "runtime_commit": "0f243832dbaa45b6d659a1a076ec85bac13e1a8a"
+    "runtime_commit": "0f243832dbaa45b6d659a1a076ec85bac13e1a8a",
+    "performance_scope": "Two-boot medians for prose/code c1 and prose c3; remaining cells primary boot",
+    "supplemental_c3_quality": {
+      "status": "FAIL",
+      "score": 71,
+      "total": 75,
+      "truncations": [
+        "code_parse_query"
+      ],
+      "receipt": "w4-v2-confirmation.json"
+    }
   },
   "clock_cap_MHz": 2200,
   "historical_boot_a": {
