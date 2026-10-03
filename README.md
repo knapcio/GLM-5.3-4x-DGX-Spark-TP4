@@ -33,12 +33,14 @@ rather than eight simultaneously decoding streams. Similar c4/c8 aggregate rates
 indicate saturation. Aggregate timing includes the complete batch; per-stream
 decode timing excludes waiting before the first token. Workloads appear prose first.
 
-| Prompt type | c1 | c2 | c4 | c8 |
+| Prompt type | c1 | c2 | c4 | c8\* |
 |---|---:|---:|---:|---:|
 | prose | 32.7 [32.7] | 44.9 [22.9] | 62.4 [16.2] | 62.0 [16.2] |
 | code | 37.9 [37.9] | 47.3 [24.0] | 67.8 [17.1] | 61.8 [16.4] |
 | structured | 42.1 [42.1] | 50.4 [26.0] | 80.7 [21.2] | 82.4 [21.9] |
 | json | 38.6 [38.6] | 49.9 [25.6] | 77.2 [19.9] | 74.4 [19.5] |
+
+\* **c8: eight submitted requests, at most four decoding simultaneously; the rest queue.** Per-stream decode rates exclude queueing time.
 
 The separate prose c3 sweep measured **53.4 aggregate [17.9 per stream] tok/s**,
 median of all six runs across two boots, with descriptor-scoped pad hygiene v2 on.
@@ -98,11 +100,13 @@ labelled supplemental. c8 submits eight requests to four serving slots.
 Fixed-length concurrency probes measure throughput, not output-quality passes.
 [Trial values and source hashes](docs/results/w4-v2-rigmark-concurrency.json).
 
-| Workload | c1 | c2 | c4 | c8 |
+| Workload | c1 | c2 | c4 | c8\* |
 |---|---:|---:|---:|---:|
 | prose | 23.9 [26.3] | 35.3 [19.4] | 50.3 [13.7] | 49.5 [13.5] |
 | code | 32.8 [35.6] | 45.7 [24.8] | 75.8 [20.3] | 65.2 [17.6] |
 | structured | 35.1 [41.2] | 53.4 [30.5] | 81.6 [23.0] | 93.2 [26.5] |
+
+\* **c8: eight submitted requests, at most four decoding simultaneously; the rest queue.** Per-stream decode rates exclude queueing time.
 
 | Prefill state | 8K tok/s |
 |---|---:|
