@@ -10,6 +10,7 @@ Measurements, trial values and the configuration are recorded in
 [`w4-v2-summary.json`](docs/results/w4-v2-summary.json). Every table below uses
 the admitted primary v2 boot, except prose/code c1 and the separate prose c3
 sweep: those use every scored trial across the frozen pair of identical boots.
+The RigMark concurrency table labels its additional measurements separately.
 The original primary trials remain available in the receipt above. Earlier R results remain archived
 in [`w4-R-summary.json`](docs/results/w4-R-summary.json).
 
@@ -76,7 +77,8 @@ Reported cached-token fields were absent.
 ## RigMark — thinking on, effort low
 
 Record version and source pin in the gate receipts. Keep this protocol separate
-from sparkDash. Decode medians and ranges are tok/s.
+from sparkDash. Standalone decode uses a 4096-token budget and five runs;
+concurrency uses a 256-token budget. Decode medians and ranges are tok/s.
 
 | Workload | c1 median | c1 range |
 |---|---:|---|
@@ -87,11 +89,20 @@ from sparkDash. Decode medians and ranges are tok/s.
 Concurrency, aggregate end-to-end tok/s **[per-stream decode tok/s]**; preserve
 the distinction between request-wall aggregate and steady decode timing.
 
+Code c1/c2/c4 come from the primary boot. Other concurrency cells were measured
+on the independent boot with the same v2 configuration, three rounds each,
+a 256-token budget and one discarded warmup per workload. RigMark 1.0.0
+source is pinned at `d8353e93`; its stream, prompt and concurrency functions are
+unchanged. Structured concurrency extends its CLI workload selection and is
+labelled supplemental. c8 submits eight requests to four serving slots.
+Fixed-length concurrency probes measure throughput, not output-quality passes.
+[Trial values and source hashes](docs/results/w4-v2-rigmark-concurrency.json).
+
 | Workload | c1 | c2 | c4 | c8 |
 |---|---:|---:|---:|---:|
-| prose | not measured [not measured] | not measured [not measured] | not measured [not measured] | not measured [not measured] |
-| code | 32.8 [35.6] | 45.7 [24.8] | 75.8 [20.3] | not measured [not measured] |
-| structured | not measured [not measured] | not measured [not measured] | not measured [not measured] | not measured [not measured] |
+| prose | 23.9 [26.3] | 35.3 [19.4] | 50.3 [13.7] | 49.5 [13.5] |
+| code | 32.8 [35.6] | 45.7 [24.8] | 75.8 [20.3] | 65.2 [17.6] |
+| structured | 35.1 [41.2] | 53.4 [30.5] | 81.6 [23.0] | 93.2 [26.5] |
 
 | Prefill state | 8K tok/s |
 |---|---:|

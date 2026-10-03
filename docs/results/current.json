@@ -6,7 +6,7 @@
     "alternative_profile": "dspark-k3",
     "qualified": true,
     "quality_receipt": "w4-v2-summary.json",
-    "performance_receipt": "w4-v2-summary.json + w4-v2-confirmation.json",
+    "performance_receipt": "w4-v2-summary.json",
     "quality": {
       "scores": [
         71,
@@ -41,7 +41,7 @@
       ]
     },
     "runtime_commit": "0f243832dbaa45b6d659a1a076ec85bac13e1a8a",
-    "performance_scope": "Two-boot medians for prose/code c1 and prose c3; remaining cells primary boot",
+    "performance_scope": "sparkDash two-boot medians for prose/code c1 and prose c3; other sparkDash/decode/prefill cells primary. RigMark concurrency supplement fills missing cells on identical v2.",
     "supplemental_c3_quality": {
       "status": "FAIL",
       "score": 71,
@@ -50,7 +50,9 @@
         "code_parse_query"
       ],
       "receipt": "w4-v2-confirmation.json"
-    }
+    },
+    "performance_supplement_receipt": "w4-v2-confirmation.json",
+    "rigmark_concurrency_supplement_receipt": "w4-v2-rigmark-concurrency.json"
   },
   "clock_cap_MHz": 2200,
   "historical_boot_a": {

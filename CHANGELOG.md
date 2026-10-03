@@ -20,6 +20,9 @@ primary serial quality gate remains 71/72/72 with no truncations.
   the remap from exact c1 graphs; experimental spec-sample off.
 - sparkDash-first release tables, separate cold/warm prefill, aggregate concurrency
   with per-stream brackets and decode at 0/16K/30K/60K preceding context.
+- Complete the RigMark concurrency table from three-round supplemental probes,
+  including prose and structured c1/c2/c4/c8 and code c8; source functions pinned
+  and unchanged, structured workload extension labelled separately.
 - qeval receipt fields and the long64k-v2 probe with its paired-repeat PASS rule.
 - Attribution and licence boundaries refreshed without dropping existing credits.
 
