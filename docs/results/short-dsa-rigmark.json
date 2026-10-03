@@ -1015,7 +1015,7 @@
         "64",
         "--async-scheduling"
       ],
-      "serving_engine": "vLLM pinned image; sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e; overlay sha256 bf61d6ed040e2bca8c7a2d86b7337251a893872eafde8fdeaa0186fc2d22b321",
+      "serving_engine": "vLLM pinned campaign image; sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e; overlay sha256 bf61d6ed040e2bca8c7a2d86b7337251a893872eafde8fdeaa0186fc2d22b321",
       "serving_image": "glm53-roce:v11-b58f34ea sha256:40e3168611cd5193e822792d387b53b12219521e3e213fa7d959a31a889c100e",
       "topology": "TP4 across four DGX Sparks, MikroTik CRS812, one physical ConnectX-7 QSFP port per node"
     },

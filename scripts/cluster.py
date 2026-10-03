@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Workstation launcher for four TP ranks; dry rendering has no fleet access."""
 import concurrent.futures
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -8,6 +9,7 @@ import re
 import shlex
 import subprocess
 import sys
+import threading
 import time
 import uuid
 
@@ -18,8 +20,200 @@ IPS = ENV['RECIPE_IPS'].split()
 IMAGES = ENV.get('RECIPE_IMAGES', '').split() or [ENV['IMAGE']] * 4
 STATE = ROOT / 'state/deployment.json'
 SERVE_ARGS = Path(ENV.get('RECIPE_SERVE_ARGS', ROOT / 'profiles/serve-args.json'))
-PROFILE_KEYS = re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
+# RECIPE_* lines in current.env are launch-shape switches read here; they never enter a container.
+PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
+                if not k.startswith('RECIPE_')]
 GiB = 1 << 30
+HEALTH_POLL_S = 1          # loopback /health while booting
+SAMPLE_BOOT_S = 5          # rank samples (memory floors, admission window) while booting
+SAMPLE_STEADY_S = 10       # rank samples once admitted
+
+# Launch-shape switches and their released defaults (profiles/current.env). Every other value is refused.
+LAUNCH_DEFAULTS = {'RECIPE_C4_PASS2_GRAPH': '0', 'RECIPE_MAX_MODEL_LEN': '32768', 'RECIPE_KV_PIN_L1': '0',
+                   'RECIPE_NCCL_NO_LL128': '0'}
+# Context lengths with a recorded reason: the released 32,768, the full 2 GiB pool (693 blocks, one null) for
+# native K2, and 44,224 for the K-stop full-pool layout (one max-length request + K3 lookahead + null = 693 blocks).
+MAX_MODEL_LENS = ('32768', '44224', '44288', '66112')
+# Pinned target KV per rank: the released 2 GiB (693 blocks) or the mem-ledger L1 pin of 821 blocks (2.369 GiB).
+KV_PIN_BYTES = {'0': 2147483648, '1': 2543549952}
+# FP8 MLA KV of this checkpoint: 79 MLA layers x 576 B + 22 indexer layers x 132 B per token, 64-token blocks.
+KV_BLOCK_BYTES, KV_BLOCK_TOKENS = 3098112, 64
+# GLM_MTP_KSTOP=1 launches only these layouts, keyed by RECIPE_MAX_MODEL_LEN (docs/results/kstop-memory-admission.json).
+# Both capture FULL_DECODE_ONLY graphs at [1, 4, 16] with four slots: every c1 shape (M2/M3/M4, later M1) and c4 q4
+# (M16, later M4) replay a graph; 14 descriptors instead of the 28 of widths 1..16. The 1..16 / 693-block layout
+# (predicted rank-0 7.82 GiB, under the 8.0 floor) cannot be launched.
+KSTOP_CAPTURE_SIZES = [1, 4, 16]
+# Size 4 rounds to M6 q3: reuse selects it at c2, m12 pads c2 to M12.
+# c3 pads to M12; c4 q3 replays M12 exactly. Retain c1 and warmup K3 graphs.
+KSTOP_K2_CAPTURE_SIZES = [1, 4, 12, 16]
+KSTOP_LAYOUTS = {
+    # Default: sim-admitted at 8.78 [8.68, 8.85] GiB rank 0 with LL128 on; never booted.
+    '32768': dict(kv_bytes=544 * KV_BLOCK_BYTES, blocks=544, requires_no_ll128=False,
+                  status='sim-admitted, not booted'),
+    # Optional full pool: 8.70 [8.60, 8.77] GiB only if NCCL without LL128 frees the ledger's 0.44 GiB (unmeasured).
+    '44224': dict(kv_bytes=KV_PIN_BYTES['0'], blocks=693, requires_no_ll128=True,
+                  status='UNMEASURED: needs the NCCL-without-LL128 memory receipt before a boot'),
+}
+KSTOP_LOOKAHEAD = 3
+# With RECIPE_DISPRAM=require, K-stop launches only this layout: a 1 GiB ordinary KV head per rank plus the
+# 2,046 MiB display carveout behind it (2,145,386,496 B; one VMM range, glm_dispram_kv) = 1,039 blocks, which
+# holds one 66,112-token request (64K prompt + 512 output + 64) + K3 lookahead + the null block (1,035 blocks).
+# Rank 0 after warm predicted 9.04 [8.93] GiB, pre-capture about 10.9 GiB (release-stack/stack-1002b
+# admission, with only the short graphs K-stop can dispatch); never booted.
+DISPRAM_CARVE_BYTES = 2145386496
+KSTOP_DISPRAM_LAYOUT = dict(kv_bytes=1073741824, blocks=(1073741824 + DISPRAM_CARVE_BYTES) // KV_BLOCK_BYTES,
+                            requires_no_ll128=False, max_model_len='66112',
+                            status='dispram require: 1 GiB head + 2046 MiB carveout, sim-admitted, not booted')
+DISPRAM_GUARD = '/overlay/guard/libdispram_copy_guard.so'
+
+# Display-carveout KV hook (dispram by kindlingai), default off: RECIPE_DISPRAM 0 | 1/auto | require.
+# The integration (scripts/dispram_recipe.py with scripts/dispram.sh, overlay/bringup/glm_dispram_kv.py and
+# service/) is not on this branch; until it is added, any value other than 0 is refused before anything starts.
+# Its calls below are the only places it touches the launch: extra container mounts/env, the lender check before
+# compaction, the lease postcheck after stop, and the dispram-setup command. With K-stop the only admitted mode
+# is require (KSTOP_DISPRAM_LAYOUT: the ordinary head alone cannot hold the context, so there is no fallback).
+DISPRAM_MODES = {'0': '0', '1': 'auto', 'auto': 'auto', 'require': 'require'}
+DISPRAM_HEAD_KV_BYTES = KSTOP_DISPRAM_LAYOUT['kv_bytes']
+
+
+def dispram_guard_present():
+    # Built locally from the included source with overlay/guard/build_guard.sh.
+    return (ROOT / DISPRAM_GUARD.replace('/overlay/', 'overlay/', 1)).is_file()
+
+
+def dispram():
+    """The dispram integration module when RECIPE_DISPRAM is on, else None."""
+    mode = DISPRAM_MODES.get(ENV.get('RECIPE_DISPRAM', '0').strip() or '0')
+    if mode is None:
+        raise ValueError('RECIPE_DISPRAM must be 0, 1/auto or require')
+    if mode == '0':
+        return None
+    try:
+        import dispram_recipe
+    except ImportError:
+        raise ValueError('RECIPE_DISPRAM=%s needs the dispram integration (scripts/dispram_recipe.py), '
+                         'which this release does not include; set RECIPE_DISPRAM=0' % mode) from None
+    if not dispram_guard_present():
+        raise ValueError('RECIPE_DISPRAM needs the copy guard at overlay/guard/libdispram_copy_guard.so '
+                         '(run bash overlay/guard/build_guard.sh; verify its SHA256SUMS)')
+    return dispram_recipe
+
+
+def launch_switches():
+    values = {key: ENV.get(key, default).strip() for key, default in LAUNCH_DEFAULTS.items()}
+    for key in ('RECIPE_C4_PASS2_GRAPH', 'RECIPE_KV_PIN_L1', 'RECIPE_NCCL_NO_LL128'):
+        if values[key] not in ('0', '1'):
+            raise ValueError(key + ' must be 0 or 1')
+    if values['RECIPE_MAX_MODEL_LEN'] not in MAX_MODEL_LENS:
+        raise ValueError('RECIPE_MAX_MODEL_LEN must be one of ' + ', '.join(MAX_MODEL_LENS))
+    values['GLM_MTP_KSTOP'] = ENV.get('GLM_MTP_KSTOP', '0').strip()
+    if values['GLM_MTP_KSTOP'] not in ('0', '1'):
+        raise ValueError('GLM_MTP_KSTOP must be 0 or 1')
+    pad = ENV.get('GLM_PAD_HYGIENE', '0').strip()
+    if pad not in ('0', '1'):
+        raise ValueError('GLM_PAD_HYGIENE must be 0 or 1')
+    if pad == '1' and values['GLM_MTP_KSTOP'] != '1':
+        raise ValueError('GLM_PAD_HYGIENE=1 requires GLM_MTP_KSTOP=1')
+    capture_layout = ENV.get('GLM_MTP_KSTOP_CAPTURE_LAYOUT', 'm12').strip()
+    if values['GLM_MTP_KSTOP'] == '1' and capture_layout not in ('m12', 'reuse'):
+        raise ValueError('GLM_MTP_KSTOP_CAPTURE_LAYOUT must be m12 or reuse')
+    uniform = ENV.get('GLM_MTP_KSTOP_UNIFORM_BATCH', '0').strip()
+    if uniform not in ('0', '1', 'k2'):
+        raise ValueError('GLM_MTP_KSTOP_UNIFORM_BATCH must be 0, 1 or k2')
+    if uniform != '0' and values['GLM_MTP_KSTOP'] != '1':
+        raise ValueError('GLM_MTP_KSTOP_UNIFORM_BATCH='+uniform+' requires GLM_MTP_KSTOP=1')
+    if values['GLM_MTP_KSTOP'] == '1':
+        layout = kstop_layout(values)
+        kv_blocks, lookahead = layout['blocks'], KSTOP_LOOKAHEAD
+    else:
+        if values['RECIPE_MAX_MODEL_LEN'] in ('44224', '66112'):
+            raise ValueError('RECIPE_MAX_MODEL_LEN=%s is a K-stop layout; it requires GLM_MTP_KSTOP=1' % values['RECIPE_MAX_MODEL_LEN'])
+        if dispram() is not None:
+            raise ValueError('RECIPE_DISPRAM is admitted with the K-stop layout only (GLM_MTP_KSTOP=1)')
+        kv_blocks, lookahead = KV_PIN_BYTES[values['RECIPE_KV_PIN_L1']] // KV_BLOCK_BYTES, 0
+    # vLLM keeps one block of the pool as its null block; one max-length request must fit in the rest
+    # (K-stop layouts also count the K3 lookahead, the campaign's pre-boot rule).
+    if -(-(int(values['RECIPE_MAX_MODEL_LEN']) + lookahead) // KV_BLOCK_TOKENS) > kv_blocks - 1:
+        raise ValueError('RECIPE_MAX_MODEL_LEN does not fit in the pinned KV pool')
+    changed = [key for key, value in values.items() if key in LAUNCH_DEFAULTS and value != LAUNCH_DEFAULTS[key]]
+    if values['GLM_MTP_KSTOP'] == '1':
+        changed.append('GLM_MTP_KSTOP')
+    if changed and ENV.get('RECIPE_PROFILE', 'native-mtp-k2') != 'native-mtp-k2':
+        raise ValueError('launch switches apply to the native-mtp-k2 profile only: ' + ', '.join(changed))
+    dispram()
+    optional_env()
+    return values
+
+
+def kstop_layout(values):
+    """The admitted K-stop layout for these switches; every other K-stop combination is refused."""
+    if values['RECIPE_KV_PIN_L1'] != '0':
+        raise ValueError('GLM_MTP_KSTOP=1 pins its own KV pool; RECIPE_KV_PIN_L1 must be 0')
+    mode = DISPRAM_MODES.get(ENV.get('RECIPE_DISPRAM', '0').strip() or '0')
+    if mode not in ('0', 'require'):
+        raise ValueError('GLM_MTP_KSTOP=1 with dispram requires RECIPE_DISPRAM=require (no plain-pool fallback)')
+    if mode == 'require':
+        if values['RECIPE_MAX_MODEL_LEN'] != KSTOP_DISPRAM_LAYOUT['max_model_len']:
+            raise ValueError('GLM_MTP_KSTOP=1 with RECIPE_DISPRAM=require launches RECIPE_MAX_MODEL_LEN=66112 only')
+        return KSTOP_DISPRAM_LAYOUT
+    layout = KSTOP_LAYOUTS.get(values['RECIPE_MAX_MODEL_LEN'])
+    if layout is None:
+        raise ValueError('GLM_MTP_KSTOP=1 requires RECIPE_MAX_MODEL_LEN 32768 (544-block pool) or 44224 '
+                         '(693-block pool, RECIPE_NCCL_NO_LL128=1)')
+    if layout['requires_no_ll128'] and values['RECIPE_NCCL_NO_LL128'] != '1':
+        raise ValueError('the K-stop full-pool layout (693 blocks, 44224) requires RECIPE_NCCL_NO_LL128=1')
+    return layout
+
+
+def kstop_capture_sizes():
+    return KSTOP_K2_CAPTURE_SIZES if ENV.get('GLM_MTP_KSTOP_UNIFORM_BATCH', '0').strip() == 'k2' else KSTOP_CAPTURE_SIZES
+
+
+def launch_shape(args):
+    """Apply the launch-shape switches to a copy of the saved native K2 vector."""
+    switches = launch_switches()
+    args = list(args)
+    if ENV.get('RECIPE_PROFILE', 'native-mtp-k2') != 'native-mtp-k2':
+        return args                     # other profiles keep their saved vector (switches are at defaults)
+    if switches['RECIPE_C4_PASS2_GRAPH'] == '1':
+        # Width 4 gives the later MTP pass (one token per request) a FULL graph at c4; the target and
+        # first MTP pass keep their graphs. Same JSON spelling as the saved vector.
+        i = args.index('--compilation-config') + 1
+        config = json.loads(args[i])
+        config['cudagraph_capture_sizes'] = sorted(set(config['cudagraph_capture_sizes']) | {4})
+        args[i] = json.dumps(config)
+    kv_bytes = KV_PIN_BYTES[switches['RECIPE_KV_PIN_L1']]
+    if switches['GLM_MTP_KSTOP'] == '1':
+        # K-stop drafts up to three tokens; target verify widths are 2-4 rows per request (M2-M4 at c1,
+        # M16 at c4 when every request drafted three) and the later MTP passes stay M1-M4. [1, 4, 16]
+        # keeps every c1 shape and c4 q4 on a graph; c2/c3 q4 pad to M16 and later passes to M4.
+        i = args.index('--speculative-config') + 1
+        spec = json.loads(args[i])
+        spec['num_speculative_tokens'] = 3
+        args[i] = json.dumps(spec)
+        i = args.index('--compilation-config') + 1
+        config = json.loads(args[i])
+        if config.get('cudagraph_mode') != 'FULL_DECODE_ONLY' or args[args.index('--max-num-seqs') + 1] != '4':
+            raise ValueError('K-stop layouts are admitted for FULL_DECODE_ONLY graphs and four slots only')
+        config['cudagraph_capture_sizes'] = list(kstop_capture_sizes())
+        config['max_cudagraph_capture_size'] = max(kstop_capture_sizes())
+        args[i] = json.dumps(config)
+        kv_bytes = kstop_layout(switches)['kv_bytes']
+    args[args.index('--max-model-len') + 1] = switches['RECIPE_MAX_MODEL_LEN']
+    args[args.index('--kv-cache-memory-bytes') + 1] = str(kv_bytes)
+    return args
+
+
+def kstop_note():
+    """One line naming the K-stop layout (None with the switch off)."""
+    switches = launch_switches()
+    if switches['GLM_MTP_KSTOP'] != '1':
+        return None
+    layout = kstop_layout(switches)
+    return ('K-stop layout: K3, capture sizes %s, %d KV blocks, max_model_len %s, NCCL LL128 %s, uniform batch K %s, capture layout %s; %s'
+            % (kstop_capture_sizes(), layout['blocks'], switches['RECIPE_MAX_MODEL_LEN'],
+               'off' if switches['RECIPE_NCCL_NO_LL128'] == '1' else 'on',
+               {'1': 'on', 'k2': 'k2'}.get(ENV.get('GLM_MTP_KSTOP_UNIFORM_BATCH', '0').strip(), 'off'), ENV.get('GLM_MTP_KSTOP_CAPTURE_LAYOUT', 'm12'), layout['status']))
 
 
 def validate():
@@ -36,6 +230,14 @@ def validate():
     if len({ENV[k] for k in ('MODEL_DIR', 'DRAFT_DIR', 'NCCL_HOST_DIR', 'OVERLAY_REMOTE')}) != 4:
         raise ValueError('Model, draft, NCCL and runtime paths must be distinct')
     nccl_hashes()
+    if persistent_cache_enabled():
+        path = ENV.get('PERSISTENT_CACHE_DIR', '')
+        if not re.fullmatch(r'/[A-Za-z0-9_./-]+', path) or '..' in path.split('/'):
+            raise ValueError('PERSISTENT_CACHE_DIR requires an absolute path without shell syntax')
+        for key in ('MODEL_DIR', 'DRAFT_DIR', 'NCCL_HOST_DIR', 'OVERLAY_REMOTE'):
+            a, b = path.rstrip('/') + '/', ENV[key].rstrip('/') + '/'
+            if a.startswith(b) or b.startswith(a):
+                raise ValueError('PERSISTENT_CACHE_DIR must lie outside ' + key)
 
 
 def nccl_hashes():
@@ -52,21 +254,60 @@ def remote(rank, command, timeout=45):
                                     HOSTS[rank], command], text=True, timeout=timeout).strip()
 
 
+# Opt-in keys that reach the containers only when set to a value other than 0, so the default vector carries
+# none of them: the MLA plan skip (1 = static, ab = in-boot A/B through worker RPCs) and vLLM's dev API, which
+# the A/B mode needs on the private loopback port.
+OPTIONAL_KEYS = ('GLM_SKIP_MLA_PLAN', 'GLM_SKIP_MLA_PLAN_AB_INIT', 'VLLM_SERVER_DEV_MODE')
+
+
+def optional_env():
+    env = {k: ENV[k].strip() for k in OPTIONAL_KEYS if ENV.get(k, '').strip() not in ('', '0')}
+    mode = env.get('GLM_SKIP_MLA_PLAN', '0')
+    if mode not in ('0', '1', 'ab'):
+        raise ValueError('GLM_SKIP_MLA_PLAN must be 0, 1 or ab')
+    if env.get('VLLM_SERVER_DEV_MODE', '1') != '1' or env.get('GLM_SKIP_MLA_PLAN_AB_INIT', '1') != '1':
+        raise ValueError('VLLM_SERVER_DEV_MODE and GLM_SKIP_MLA_PLAN_AB_INIT must be 0 or 1')
+    if mode != '0' and ENV.get('GLM_FULL_MLA') != 'triton':
+        raise ValueError('GLM_SKIP_MLA_PLAN needs GLM_FULL_MLA=triton')
+    if (mode == 'ab') != ('VLLM_SERVER_DEV_MODE' in env):
+        raise ValueError('VLLM_SERVER_DEV_MODE=1 is set only with GLM_SKIP_MLA_PLAN=ab (in-boot A/B windows)')
+    if 'GLM_SKIP_MLA_PLAN_AB_INIT' in env and mode != 'ab':
+        raise ValueError('GLM_SKIP_MLA_PLAN_AB_INIT applies to GLM_SKIP_MLA_PLAN=ab only')
+    return env
+
+
 def rank_env(rank):
     env = {k: ENV[k] for k in PROFILE_KEYS}
+    env.update(optional_env())
+    if 'NCCL_PROTO' in env:
+        raise ValueError('set NCCL_PROTO through RECIPE_NCCL_NO_LL128 only')
+    if launch_switches()['RECIPE_NCCL_NO_LL128'] == '1':
+        # No LL128 protocol: NCCL then allocates no LL128 buffers (about 4.7 MiB per connection).
+        env['NCCL_PROTO'] = '^LL128'
     env.update(VLLM_HOST_IP=IPS[rank], NCCL_SOCKET_IFNAME='=' + ENV['FABRIC_IFACE'],
                GLOO_SOCKET_IFNAME=ENV['FABRIC_IFACE'], NCCL_IB_HCA='=' + ENV['IB_HCA'],
                B12X_ROCE_HCA=ENV['IB_HCA'])
     return env
 
 
+PREFIX_FLAGS = ('--enable-prefix-caching', '--no-enable-prefix-caching')
+
+
+def prefix_flag(args):
+    """The one prefix-caching flag of a saved vector (on in the native profile, off in DSpark K3)."""
+    found = [flag for flag in PREFIX_FLAGS for item in args if item == flag]
+    if len(found) != 1:
+        raise ValueError('the saved vector must carry exactly one prefix-caching flag')
+    return found[0]
+
+
 def rank_args(rank):
-    args = json.loads(SERVE_ARGS.read_text())
+    args = launch_shape(json.loads(SERVE_ARGS.read_text()))
     args[args.index('--node-rank') + 1] = str(rank)
     args[args.index('--master-addr') + 1] = IPS[0]
     if rank:
-        # Preserve the saved worker vector's order.
-        args.insert(args.index('--no-enable-prefix-caching'), '--headless')
+        # Preserve the saved worker vector's order: --headless goes right before the prefix-caching flag.
+        args.insert(args.index(prefix_flag(args)), '--headless')
     return args
 
 
@@ -91,7 +332,7 @@ def select_serving_prefill():
     cap = int(ENV.get('GLM_W2_PREFILL_CHUNK', '512'))
     deadline = time.monotonic() + 30
     while time.monotonic() < deadline:
-        metrics = remote(0, 'curl -fsS -m5 http://127.0.0.1:8095/metrics')
+        metrics = remote(0, 'curl -fsS -m5 http://localhost:8095/metrics')
         counts = []
         for key in ('vllm:num_requests_running', 'vllm:num_requests_waiting'):
             vals = [float(line.split()[-1]) for line in metrics.splitlines() if line.startswith(key+'{') or line.startswith(key+' ')]
@@ -125,7 +366,16 @@ def docker_command(rank, ctn):
         mounts.append((ENV['DRAFT_DIR'], '/draft', True))
     for source, dest, ro in mounts:
         cmd += ['-v', source + ':' + dest + (':ro' if ro else '')]
-    for key, value in sorted(rank_env(rank).items()):
+    env = rank_env(rank)
+    hook = dispram()
+    if hook is not None:
+        extra_mounts, extra_env = hook.container_args(ENV)
+        cmd += extra_mounts
+        env.update(extra_env)
+        # The copy guard (as qualified in the dispram TP4 window) belongs in the engine containers only.
+        env['LD_PRELOAD'] = env['LD_PRELOAD'] + ':' + DISPRAM_GUARD
+        env['DISPRAM_GUARD_REQUIRED'] = '1'
+    for key, value in sorted(env.items()):
         cmd += ['-e', key + '=' + value]
     return cmd + [IMAGES[rank]] + rank_args(rank)
 
@@ -185,6 +435,189 @@ def jit_prep(ctn):
     if errors:
         raise RuntimeError('JIT prep failed: ' + repr(errors))
     print('JIT PREP PASS', flush=True)
+
+
+# Persistent compile cache (RECIPE_PERSISTENT_CACHE=1, opt-in). A fresh deployment starts from
+# an empty $OVERLAY_REMOTE/cache. With the flag, each node keeps one generation per key under
+# PERSISTENT_CACHE_DIR, outside every release tree, so a fresh clone reuses the FlashInfer JIT,
+# Triton, b12x and CUDA caches. Key = image ID + FlashInfer version + CUDA arch lists + overlay
+# tree hash + cache layout. A different key is a different directory: a miss builds fresh and
+# nothing is reused across keys. The cache files are root-owned, so they are copied only inside a
+# container of the keyed image (as root, cp -a, overlay/tools/glm_persistent_cache.py), never by
+# the SSH user on the host. A generation is published by one atomic rename after admission and is
+# never overwritten.
+PERSIST_CACHE_ENV = ('CUDA_CACHE_PATH', 'FLASHINFER_WORKSPACE_BASE', 'HF_HOME', 'TORCHINDUCTOR_CACHE_DIR',
+                     'TRITON_CACHE_DIR', 'VLLM_CACHE_ROOT', 'XDG_CACHE_HOME')
+PERSIST_EXCLUDE = ('d2w2-prefill-control.json', 'd2w2-prefill-control.json.new')   # deployment state
+PERSIST_MAX_BYTES = 16 * GiB
+PERSIST_TIMEOUT_S = 600     # in-container limit of one seed or save helper
+PERSIST_SAVE_DEADLINE_S = PERSIST_TIMEOUT_S + 30   # the watchdog stops save helpers still running after this
+
+
+def persistent_cache_enabled():
+    value = ENV.get('RECIPE_PERSISTENT_CACHE', '0')
+    if value not in ('0', '1'):
+        raise ValueError('RECIPE_PERSISTENT_CACHE must be 0 or 1')
+    return value == '1'
+
+
+def overlay_hash():
+    # The tree rsync copies to $OVERLAY_REMOTE (everything but __pycache__).
+    digest = hashlib.sha256()
+    for path in sorted(p for p in (ROOT / 'overlay').rglob('*') if p.is_file() and '__pycache__' not in p.parts):
+        digest.update(path.relative_to(ROOT / 'overlay').as_posix().encode() + b'\0' +
+                      hashlib.sha256(path.read_bytes()).hexdigest().encode() + b'\n')
+    return digest.hexdigest()
+
+
+def persist_parts(image_id):
+    env = rank_env(0)
+    return dict(schema=1, image=image_id, overlay=overlay_hash(),
+                arch={k: env.get(k, '') for k in ('FLASHINFER_CUDA_ARCH_LIST', 'TORCH_CUDA_ARCH_LIST')},
+                cache_env={k: env.get(k, '') for k in PERSIST_CACHE_ENV})
+
+
+def persist_command(rank, ctn, image_id, phase, key=''):
+    # The model container's /cache mount (read-only when saving), the rsynced overlay for the
+    # helper, and the keyed image by ID; no GPU, no network, no overlay hooks (PYTHONPATH empty).
+    if phase not in ('seed', 'save'):
+        raise ValueError('phase must be seed or save')
+    cache = ENV['OVERLAY_REMOTE'] + '/cache:/cache' + (':ro' if phase == 'save' else '')
+    name = persist_save_name(ctn, rank) if phase == 'save' else f'{ctn}-pcache-seed-r{rank}'
+    cmd = ['docker', 'run', '--rm', '--name', name, '--network', 'none',
+           '--memory', '4g', '--memory-swap', '4g', '-v', ENV['OVERLAY_REMOTE'] + ':/overlay:ro', '-v', cache,
+           '-v', ENV['PERSISTENT_CACHE_DIR'] + ':/persist',
+           '-e', 'PYTHONPATH=', '-e', 'PCACHE_PARTS=' + json.dumps(persist_parts(image_id), sort_keys=True)]
+    if phase == 'save':
+        cmd += ['-e', 'PCACHE_KEY=' + key, '-e', 'PCACHE_MAX=%d' % PERSIST_MAX_BYTES,
+                '-e', 'PCACHE_EXCLUDE=' + json.dumps(PERSIST_EXCLUDE)]
+    return cmd + ['--entrypoint', 'timeout', image_id, '-k', '10', str(PERSIST_TIMEOUT_S),
+                  'python3', '/overlay/tools/glm_persistent_cache.py', phase]
+
+
+def persist_result(out, phase):
+    words = {'seed': ('HIT', 'MISS', 'MISMATCH'), 'save': ('SAVED', 'KEEP', 'SKIP')}[phase]
+    lines = [line.split() for line in out.splitlines() if line.startswith('PERSISTENT CACHE ')]
+    if len(lines) != 1 or lines[0][2] not in words or not re.fullmatch(r'[0-9a-f]{32}', lines[0][3]):
+        raise RuntimeError('persistent cache %s: unexpected output %r' % (phase, out[-400:]))
+    return lines[0][2], lines[0][3]
+
+
+def persistent_cache_seed(ctn):
+    # Before JIT prep: on a hit JIT prep and the boot's compiles find their outputs up to date.
+    def seed_rank(rank):
+        image_id = remote(rank, 'docker image inspect -f {{.Id}} ' + shlex.quote(IMAGES[rank]))
+        if not re.fullmatch(r'sha256:[0-9a-f]{64}', image_id):
+            raise RuntimeError('image ID unresolved on ' + HOSTS[rank])
+        remote(rank, 'mkdir -p ' + shlex.quote(ENV['PERSISTENT_CACHE_DIR']))
+        try:
+            out = remote(rank, shlex.join(persist_command(rank, ctn, image_id, 'seed')), timeout=PERSIST_TIMEOUT_S + 60)
+        except subprocess.CalledProcessError as exc:
+            # Exit 3 = CORRUPT: the generation for this key failed verification; nothing was seeded.
+            raise RuntimeError('seed helper exit %s: %s' % (exc.returncode, (exc.output or '')[-400:]))
+        status, key = persist_result(out, 'seed')
+        return dict(image=image_id, key=key, seed=status)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        futures = [pool.submit(seed_rank, rank) for rank in range(4)]
+        result, errors = {}, []
+        for rank, future in enumerate(futures):
+            try:
+                result[str(rank)] = future.result()
+                print(HOSTS[rank], 'PERSISTENT CACHE', result[str(rank)]['seed'], result[str(rank)]['key'], flush=True)
+            except Exception as exc:
+                errors.append((rank, str(exc)[-400:]))
+    if errors:
+        raise RuntimeError('Persistent cache seed failed: ' + repr(errors))
+    return result
+
+
+def persist_save_name(ctn, rank):
+    return f'{ctn}-pcache-save-r{rank}'
+
+
+class PersistentCacheSave:
+    """Save helpers started after admission; they run beside the watchdog, never inside it.
+
+    One daemon thread per rank runs the save container over SSH. ``poll`` (called from the
+    watchdog loop, which keeps sampling memory, swap, errors and progress meanwhile) prints the
+    results and stops helpers still running after ``PERSIST_SAVE_DEADLINE_S``. ``cancel`` stops
+    them on any abort; a helper killed mid-copy leaves no published generation. A save failure
+    never stops serving.
+    """
+
+    def __init__(self, deployment, now):
+        self.deployment, self.started, self.cancelled = deployment, now, False
+        self.results, self.reported = {}, set()
+        self.lock = threading.Lock()
+        self.threads = []
+        for rank in range(4):
+            t = threading.Thread(target=self._run, args=(rank,), name=f'pcache-save-r{rank}', daemon=True)
+            t.start()
+            self.threads.append(t)
+
+    def _run(self, rank):
+        try:
+            result = self._save(rank)
+        except Exception as exc:
+            result = 'SAVE FAILED (serving continues): ' + str(exc)[-300:]
+        with self.lock:
+            self.results[rank] = result
+
+    def _save(self, rank):
+        info = self.deployment['persistent_cache'][str(rank)]
+        ctn = self.deployment['ctn']
+        running = remote(rank, 'docker inspect -f {{.Image}} ' + shlex.quote(ctn + f'-r{rank}'))
+        if running != info['image']:
+            return 'SKIP image changed since seed'
+        if self.cancelled:
+            return 'SKIP cancelled'
+        out = remote(rank, shlex.join(persist_command(rank, ctn, info['image'], 'save', info['key'])),
+                     timeout=PERSIST_SAVE_DEADLINE_S)
+        return ' '.join(persist_result(out, 'save'))
+
+    def done(self):
+        return all(not t.is_alive() for t in self.threads)
+
+    def poll(self, now):
+        with self.lock:
+            fresh = [(r, v) for r, v in sorted(self.results.items()) if r not in self.reported]
+            self.reported.update(r for r, _ in fresh)
+        for rank, result in fresh:
+            print(HOSTS[rank], 'PERSISTENT CACHE', result, flush=True)
+        if not self.done() and not self.cancelled and now - self.started > PERSIST_SAVE_DEADLINE_S:
+            print('PERSISTENT CACHE SAVE deadline %d s passed; stopping the helpers (serving continues)'
+                  % PERSIST_SAVE_DEADLINE_S, flush=True)
+            self.cancel()
+
+    def cancel(self):
+        # docker stop sends TERM: the helper removes its temporary and publishes nothing.
+        if self.done() or self.cancelled:
+            self.cancelled = True
+            return
+        self.cancelled = True
+        ctn = self.deployment['ctn']
+
+        def stop_rank(rank):
+            remote(rank, 'docker stop -t 10 ' + shlex.quote(persist_save_name(ctn, rank)) + ' >/dev/null 2>&1 || true',
+                   timeout=40)
+        # A helper may start just after a stop (the container did not exist yet): repeat the stop
+        # for ranks whose thread is still alive, a bounded number of times.
+        for _ in range(3):
+            alive = [rank for rank, t in enumerate(self.threads) if t.is_alive()]
+            if not alive:
+                return
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                futures = {rank: pool.submit(stop_rank, rank) for rank in alive}
+                for rank, future in futures.items():
+                    try:
+                        future.result()
+                    except Exception as exc:
+                        print(HOSTS[rank], 'PERSISTENT CACHE helper stop failed:', str(exc)[-200:], flush=True)
+            for rank in alive:
+                self.threads[rank].join(15)
+        alive = [HOSTS[rank] for rank, t in enumerate(self.threads) if t.is_alive()]
+        if alive:
+            print('PERSISTENT CACHE helpers still running on', alive, '(in-container limit %d s)' % PERSIST_TIMEOUT_S, flush=True)
 
 
 ARG_MAX_STRLEN = 131072   # Linux MAX_ARG_STRLEN: one argv string, here the remote shell's -c program
@@ -289,6 +722,9 @@ def stop(deployment):
                 failed.append((rank, str(exc)))
     if failed:
         raise RuntimeError('Stop incomplete; lock retained: ' + repr(failed))
+    hook = dispram()
+    if hook is not None:
+        hook.postcheck(HOSTS, ENV)      # raises (lock retained) if a carveout lease outlived its engine
     unlock(deployment['token'])
     print('Four containers stopped and preserved; owned lock released', flush=True)
 
@@ -305,7 +741,7 @@ print(json.dumps(dict(mem=m,vm=v,state=d['State'],restarts=d['RestartCount'],log
 
 
 def health():
-    return remote(0, "curl -s -m 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:8095/health || true") == '200'
+    return remote(0, "curl -s -m 3 -o /dev/null -w '%{http_code}' http://localhost:8095/health || true") == '200'
 
 
 def fatal_line(line):
@@ -363,11 +799,23 @@ def monitor(deployment, boot=False):
     growing = {}
     progress = {}
     ready = False
+    saver = None
+    next_sample = next_health = started
     directory = ROOT / 'logs' / deployment['ctn']
     directory.mkdir(parents=True, exist_ok=True)
     try:
         while True:
             now = time.monotonic()
+            if boot and not ready and now >= next_health:
+                next_health = now + HEALTH_POLL_S
+                ready = health()
+                if ready:
+                    print('health 200 after %.1f s' % (now-started), flush=True)
+                    next_sample = now      # the admission window starts at the first ready sample
+            if now < next_sample:
+                time.sleep((min(next_sample, next_health) if boot and not ready else next_sample) - now)
+                continue
+            next_sample = now + (SAMPLE_BOOT_S if boot else SAMPLE_STEADY_S)
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
                 futures = [pool.submit(remote, rank, 'python3 -c ' + shlex.quote(
                     'NAME=' + repr(deployment['ctn'] + f'-r{rank}') + '\n' + SAMPLE_CODE)) for rank in range(4)]
@@ -379,18 +827,17 @@ def monitor(deployment, boot=False):
                 capture_headroom(samples, avail)
             if boot and now-started > 900:
                 raise RuntimeError('boot exceeded 900 seconds')
-            if boot and not ready:
-                ready = health()
-                if ready:
-                    print('health 200 after %.1f s' % (now-started), flush=True)
             if ready and boot:
                 steady = (steady or now) if min(avail) >= 8 * 1048576 else None
                 if steady is not None and now-steady >= 60:
-                    print('Admission PASS: >=8 GiB on all ranks for 60 s', flush=True)
+                    print('Admission PASS: >=8 GiB on all ranks for 60 s (%.1f s after start)' % (now-started), flush=True)
                     select_serving_prefill()
+                    if deployment.get('persistent_cache'):
+                        saver = PersistentCacheSave(deployment, now)
                     boot = False
+                    next_sample = now + SAMPLE_STEADY_S
             if not boot:
-                metrics = remote(0, 'curl -fsS -m 5 http://127.0.0.1:8095/metrics')
+                metrics = remote(0, 'curl -fsS -m 5 http://localhost:8095/metrics')
                 fingerprint = progress_fingerprint(samples, metrics)
             else:
                 fingerprint = progress_fingerprint(samples)
@@ -399,9 +846,12 @@ def monitor(deployment, boot=False):
             busy = any(float(v.strip()) > 20 for sample in samples for v in sample['gpu'].splitlines())
             if busy and now-progress.get('time', now) > 180:
                 raise RuntimeError('GPU busy without progress for 180 seconds')
-            time.sleep(10)
+            if saver is not None:
+                saver.poll(now)
     except BaseException:
         # SSH loss is fatal; no automatic restart or power operation.
+        if saver is not None:
+            saver.cancel()
         stop(deployment)
         raise
 
@@ -423,8 +873,17 @@ def serve(ctn):
             subprocess.run(['rsync', '-a', '--exclude=__pycache__', str(ROOT / 'overlay') + '/',
                             HOSTS[rank] + ':' + ENV['OVERLAY_REMOTE'] + '/'], check=True)
             remote(rank, 'mkdir ' + shlex.quote(ENV['OVERLAY_REMOTE'] + '/cache'))
+        if persistent_cache_enabled():
+            deployment['persistent_cache'] = persistent_cache_seed(ctn)
+            STATE.write_text(json.dumps(deployment, indent=2) + '\n')
         # Before compaction, so the compilers' memory is gone before the preboot floor check.
         jit_prep(ctn)
+        hook = dispram()
+        if hook is not None:
+            for rank in range(4):
+                subprocess.run(['rsync', '-a', str(ROOT / 'scripts/dispram.sh'),
+                                HOSTS[rank] + ':' + hook.home(ENV) + '/dispram.sh'], check=True)
+            hook.ensure(HOSTS, ENV)     # require: raises before any engine starts
         for rank in range(4):
             remote(rank, 'sudo -n /usr/local/sbin/spark-compact-mem.sh', timeout=180)
             # Compaction must succeed and must preserve the 110 GiB preboot floor.
@@ -453,6 +912,7 @@ def serve(ctn):
 
 def main():
     validate()
+    launch_switches()
     command = sys.argv[1] if len(sys.argv) > 1 else 'status'
     ctn = ENV.get('CTN', 'glm53full-' + time.strftime('%Y%m%d-%H%M%S') + '-' + uuid.uuid4().hex[:8])
     if not re.fullmatch(r'glm53full-[A-Za-z0-9_-]+', ctn):
@@ -460,17 +920,35 @@ def main():
     if ENV.get('DRY') == '1':
         if command != 'serve':
             raise ValueError('DRY=1 supports serve only')
+        if persistent_cache_enabled():
+            for rank in range(4):
+                print(f'# persistent-cache-seed rank={rank} host={HOSTS[rank]} (image ID resolved at serve)')
+                print(shlex.join(persist_command(rank, ctn, 'sha256:' + '0' * 64, 'seed')))
+        if kstop_note():
+            print('# ' + kstop_note())
         for rank in range(4):
             print(f'# jit-prep rank={rank} host={HOSTS[rank]}')
             print(shlex.join(jit_prep_command(rank, ctn)))
         for rank in (3, 2, 1, 0):
             print(f'# rank={rank} host={HOSTS[rank]}')
             print(shlex.join(docker_command(rank, ctn)))
+        if persistent_cache_enabled():
+            for rank in range(4):
+                print(f'# persistent-cache-save rank={rank} host={HOSTS[rank]} (after admission)')
+                print(shlex.join(persist_command(rank, ctn, 'sha256:' + '0' * 64, 'save', '0' * 32)))
+        return
+    if command == 'dispram-setup':
+        hook = dispram()
+        if hook is None:
+            raise ValueError('dispram-setup needs RECIPE_DISPRAM=1/auto or require')
+        hook.setup(HOSTS, ENV, ROOT)
         return
     if command == 'preflight':
         preflight(ctn)
         return
     if command == 'serve':
+        if kstop_note():
+            print(kstop_note(), flush=True)
         serve(ctn)
         return
     deployment = json.loads(STATE.read_text())
@@ -491,7 +969,7 @@ def main():
             raise ValueError('rank must be 0..3')
         print(remote(rank, 'docker logs --tail 100 ' + shlex.quote(deployment['ctn'] + f'-r{rank}') + ' 2>&1'))
     else:
-        raise ValueError('usage: start.sh preflight|serve|status|logs [rank]|watch|stop')
+        raise ValueError('usage: start.sh preflight|serve|status|logs [rank]|watch|stop|dispram-setup')
 
 
 if __name__ == '__main__':

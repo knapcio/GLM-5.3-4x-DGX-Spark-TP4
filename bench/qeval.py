@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """75 public auto-scored quality tasks. Run serially and retain original budgets.
 
-python3 bench/qeval.py run k3-q1 --url http://127.0.0.1:8095/v1/chat/completions
+python3 bench/qeval.py run k3-q1 --url http://localhost:8095/v1/chat/completions
 Scores use final content only; empty content is not replaced by reasoning.
 Code checks execute returned Python in a subprocess; run benchmarks on an isolated
 workstation account without secrets. This suite is a bounded screen.
@@ -94,7 +94,7 @@ def mcnemar_p(b, c):
     return min(1.0, 2 * tail)
 
 
-PRIMARY   = ("code", "reason", "math")      # what "quality" means in this recipe
+PRIMARY   = ("code", "reason", "math")      # what "quality" means here, per the owner
 SECONDARY = ("json", "format")             # instruction following: reported, not decisive
 GUARD     = ("prose",)                     # objective degeneration only, never a quality score
 
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     s = ap.add_subparsers(dest="cmd", required=True)
     r = s.add_parser("run"); r.add_argument("label")
-    r.add_argument("--url", default="http://127.0.0.1:8093/v1/chat/completions")
+    r.add_argument("--url", default="http://localhost:8093/v1/chat/completions")
     r.add_argument("--timeout", type=float, default=900)
     r.add_argument("--concurrency", type=int, default=1)
     r.add_argument("--only", default="", help="comma-separated categories")

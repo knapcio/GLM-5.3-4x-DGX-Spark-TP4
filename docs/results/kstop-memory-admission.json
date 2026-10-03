@@ -1,0 +1,295 @@
+{
+  "scope": "Rank-0 warmed MemAvailable (GiB) after a full 32K warm-up, predicted with the campaign's sim (v4 per-bank costs, measured 9.55 GiB baseline of native K2 async without the short-context shortcut); the K-stop layouts have never booted.",
+  "rules": {
+    "pre_boot": "campaign rule for a new layout: interval lower bound >= 8.5 GiB on every rank",
+    "live": "launcher: all ranks >= 8 GiB for 60 s after health, 8 GiB during capture"
+  },
+  "rows": [
+    {
+      "layout": "native K2 (control)",
+      "slots": 1,
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 9.547,
+      "rank0_interval": [
+        9.443,
+        9.62
+      ],
+      "sim_8_5": "admitted",
+      "basis": "measured 9.55 GiB warmed baseline"
+    },
+    {
+      "layout": "K-stop c1 screen",
+      "slots": 1,
+      "kv_blocks": 544,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 8.781,
+      "rank0_interval": [
+        8.677,
+        8.853
+      ],
+      "sim_8_5": "admitted",
+      "basis": "campaign sim, two added bank-equivalents"
+    },
+    {
+      "layout": "K-stop c1",
+      "slots": 1,
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 8.351,
+      "rank0_interval": [
+        8.247,
+        8.423
+      ],
+      "sim_8_5": "refused (above the 8.0 launcher floor)",
+      "basis": "campaign sim"
+    },
+    {
+      "layout": "K-stop c1",
+      "slots": 1,
+      "kv_blocks": 693,
+      "context": 44288,
+      "ll128": "on",
+      "rank0_point": 8.26,
+      "rank0_interval": [
+        8.16,
+        8.33
+      ],
+      "sim_8_5": "refused",
+      "basis": "campaign sim minus 0.09 GiB long-prefill estimate"
+    },
+    {
+      "layout": "K-stop c1",
+      "slots": 1,
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "off",
+      "rank0_point": 8.79,
+      "rank0_interval": [
+        8.69,
+        8.86
+      ],
+      "sim_8_5": "clears",
+      "basis": "campaign sim plus 0.44 GiB ledger estimate (unmeasured)"
+    },
+    {
+      "layout": "K-stop c1",
+      "slots": 1,
+      "kv_blocks": 693,
+      "context": 44288,
+      "ll128": "off",
+      "rank0_point": 8.7,
+      "rank0_interval": [
+        8.6,
+        8.77
+      ],
+      "sim_8_5": "clears on memory; see the KV rule note",
+      "basis": "campaign sim, both estimates"
+    },
+    {
+      "layout": "K-stop c1",
+      "slots": 1,
+      "kv_blocks": 821,
+      "context": 44288,
+      "ll128": "off",
+      "rank0_point": 8.33,
+      "rank0_interval": [
+        8.23,
+        8.4
+      ],
+      "sim_8_5": "refused",
+      "basis": "campaign sim, both estimates, L1 pin"
+    },
+    {
+      "layout": "K-stop four-slot R4a",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "kv_blocks": 544,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 8.781,
+      "rank0_interval": [
+        8.677,
+        8.853
+      ],
+      "sim_8_5": "admitted",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank); family rule binds (14 descriptors, 75 rows)",
+      "launcher": "GLM_MTP_KSTOP=1 default"
+    },
+    {
+      "layout": "K-stop four-slot R4a",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "kv_blocks": 544,
+      "context": 32768,
+      "ll128": "off",
+      "rank0_point": 9.221,
+      "rank0_interval": [
+        9.117,
+        9.293
+      ],
+      "sim_8_5": "admitted",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank) plus 0.44 GiB LL128 ledger estimate (unmeasured)",
+      "launcher": "GLM_MTP_KSTOP=1 with RECIPE_NCCL_NO_LL128=1"
+    },
+    {
+      "layout": "K-stop four-slot R4a",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 8.351,
+      "rank0_interval": [
+        8.247,
+        8.423
+      ],
+      "sim_8_5": "refused",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank)",
+      "launcher": "refused"
+    },
+    {
+      "layout": "K-stop four-slot R4a",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "off",
+      "rank0_point": 8.791,
+      "rank0_interval": [
+        8.687,
+        8.863
+      ],
+      "sim_8_5": "clears on memory (LL128 estimate)",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank) plus 0.44 GiB LL128 ledger estimate (unmeasured)",
+      "launcher": "not offered"
+    },
+    {
+      "layout": "K-stop four-slot R4a",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "kv_blocks": 693,
+      "context": 44224,
+      "ll128": "off",
+      "rank0_point": 8.701,
+      "rank0_interval": [
+        8.597,
+        8.773
+      ],
+      "sim_8_5": "clears on memory (LL128 and long-prefill estimates, unmeasured)",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank) plus 0.44 GiB LL128 estimate minus 0.09 GiB long-prefill estimate",
+      "launcher": "GLM_MTP_KSTOP=1 with RECIPE_MAX_MODEL_LEN=44224 and RECIPE_NCCL_NO_LL128=1 (UNMEASURED)"
+    },
+    {
+      "layout": "K-stop four-slot F4 (earlier switch: widths 1..16)",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "kv_blocks": 693,
+      "context": 32768,
+      "ll128": "on",
+      "rank0_point": 7.824,
+      "rank0_interval": [
+        7.72,
+        7.897
+      ],
+      "sim_8_5": "refused (under the 8.0 launcher floor)",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank); descriptor rule binds (28 descriptors, 190 rows = 2.88 bank-equivalents)",
+      "launcher": "impossible: no switch combination produces it"
+    },
+    {
+      "layout": "K-stop four-slot F4 (earlier switch: widths 1..16)",
+      "slots": 4,
+      "capture_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "kv_blocks": 693,
+      "context": 44224,
+      "ll128": "off",
+      "rank0_point": 8.174,
+      "rank0_interval": [
+        8.07,
+        8.247
+      ],
+      "sim_8_5": "refused",
+      "basis": "campaign sim; graph cost = the higher of the family rule (2 bank-equivalents) and the descriptor rule (added descriptors or graph rows over the served K2 layout, scaled by the E8 bank); descriptor rule binds",
+      "launcher": "impossible"
+    }
+  ],
+  "kv_context": {
+    "vllm_rule": "startup needs cdiv(max_model_len, 64) blocks; the scheduler caps lookahead slots at max_model_len; one block is the null block",
+    "pool_544_blocks": "34,816 tokens; context at most 34,752 (543 usable blocks), so the K-stop screen pool cannot serve 44,288",
+    "pool_693_blocks": "44,352 tokens; context at most 44,288 for K2; K-stop uses 44,224 (one request + K3 lookahead + null block = 693 blocks)",
+    "campaign_sim_rule": "the campaign's pre-boot check also counts the K lookahead and the null block (cdiv(L+K, 64) + 1 blocks): 44,288 needs 694 of 693 blocks for K2 and K3 alike; 44,224 (one block less) satisfies both rules"
+  },
+  "conflict": [
+    "Resolved in the launcher: GLM_MTP_KSTOP=1 launches four slots with capture sizes [1, 4, 16] and a 544-block pool at 32,768 context (8.78 GiB predicted, the same as the admitted one-slot screen), or the full 693-block pool at 44,224 context only with RECIPE_NCCL_NO_LL128=1 (8.70 GiB predicted, unmeasured).",
+    "With LL128 on, no K-stop layout passes the 8.5 GiB rule at 693 blocks; the largest pool that passes is 605 blocks.",
+    "The first boot of any K-stop layout is a prepared-weight snapshot BUILD, which has run 0.25-0.54 GiB below a cache HIT on this stack; 544 blocks leaves the most room for it."
+  ],
+  "options": [
+    "Screen K-stop at the default layout (544 blocks, 32,768 context); the same boot gives the four-slot memory receipt.",
+    "Measure NCCL without LL128 on its own two-boot gate before booting the 44,224 full-pool layout.",
+    "Time c2-c4 with four distinct prompts: native K2, K-stop with eager mixed rectangles, K-stop with GLM_MTP_KSTOP_UNIFORM_BATCH=1."
+  ],
+  "graph_rules": {
+    "family": "K-stop adds the q2 and q4 families: 2 x 612.7 MiB (E8 3->5 bank slope)",
+    "descriptor": "max(added descriptors / 9, added graph rows / 50) E8 bank-equivalents at 612.7 MiB, counted over the served K2 layout (8 descriptors, 46 rows); removed graphs get no credit",
+    "used": "the higher of the two",
+    "calibration": "no receipt prices an added K3 graph; the native K2 c1 receipt suggests the E8 rate overstates graph cost about 2x in the removal direction"
+  }
+}

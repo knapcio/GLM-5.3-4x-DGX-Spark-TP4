@@ -4,12 +4,12 @@
   "ctn": "glm53full-e4-20261001-072047",
   "model": "GLM-5.3",
   "drafter": "native MTP K2 async",
-  "endpoint": "Spark_01 loopback:8095",
+  "endpoint": "NODE_1 loopback:8095",
   "health": 200,
   "ranks": [
     {
       "rank": 0,
-      "host": "Spark_01",
+      "host": "NODE_1",
       "running": true,
       "OOMKilled": false,
       "restarts": 0,
@@ -17,7 +17,7 @@
     },
     {
       "rank": 1,
-      "host": "Spark_02",
+      "host": "NODE_2",
       "running": true,
       "OOMKilled": false,
       "restarts": 0,
@@ -25,7 +25,7 @@
     },
     {
       "rank": 2,
-      "host": "Spark_03",
+      "host": "NODE_3",
       "running": true,
       "OOMKilled": false,
       "restarts": 0,
@@ -33,7 +33,7 @@
     },
     {
       "rank": 3,
-      "host": "Spark_04",
+      "host": "NODE_4",
       "running": true,
       "OOMKilled": false,
       "restarts": 0,

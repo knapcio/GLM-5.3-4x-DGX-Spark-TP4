@@ -1,0 +1,363 @@
+SOURCE PINS PASS: 23 files
+test_all_python_parses (__main__.Recipe.test_all_python_parses) ... ok
+test_dry_has_no_fleet_or_state_access (__main__.Recipe.test_dry_has_no_fleet_or_state_access) ... ok
+test_four_dry_vectors (__main__.Recipe.test_four_dry_vectors) ... ok
+test_kernel_body_pins (__main__.Recipe.test_kernel_body_pins) ... ok
+test_mla_inert_and_bad_mode (__main__.Recipe.test_mla_inert_and_bad_mode) ... ok
+test_mla_pin_and_drift (__main__.Recipe.test_mla_pin_and_drift) ... ok
+test_model_revisions_and_complete_manifests (__main__.Recipe.test_model_revisions_and_complete_manifests) ... ok
+test_native_mtp_source_and_mapping_drift (__main__.Recipe.test_native_mtp_source_and_mapping_drift) ... ok
+test_native_mtp_starts_loader_without_swa_pool (__main__.Recipe.test_native_mtp_starts_loader_without_swa_pool) ... ok
+test_qeval_count_and_final_content (__main__.Recipe.test_qeval_count_and_final_content) ... ok
+test_split_dispatch_contract (__main__.Recipe.test_split_dispatch_contract) ... ok
+test_startup_order_and_inert_gates (__main__.Recipe.test_startup_order_and_inert_gates) ... ok
+test_startup_registration_error_aborts (__main__.Recipe.test_startup_registration_error_aborts) ... ok
+test_verify_detects_corruption (__main__.Recipe.test_verify_detects_corruption) ... ok
+test_verify_receipt_expires_after_seven_days (__main__.Recipe.test_verify_receipt_expires_after_seven_days) ... ok
+test_verify_receipt_skips_only_unchanged_files (__main__.Recipe.test_verify_receipt_skips_only_unchanged_files) ... ok
+test_verify_rejects_path_escape (__main__.Recipe.test_verify_rejects_path_escape) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.430s
+
+OK
+SHA256 PASS: example/model, 1 files
+test_boot_deadline_includes_admission (__main__.Launcher.test_boot_deadline_includes_admission) ... health 200 after 1.0 s
+ok
+test_capture_floor (__main__.Launcher.test_capture_floor) ... ok
+test_floor_stopped_rank_and_numeric_errors (__main__.Launcher.test_floor_stopped_rank_and_numeric_errors) ... ok
+test_health_every_second_and_admission_samples_every_five (__main__.Launcher.test_health_every_second_and_admission_samples_every_five) ... ok
+test_jit_prep_failure_is_fail_closed (__main__.Launcher.test_jit_prep_failure_is_fail_closed) ... s1 JIT PREP sampling /cache/x.so
+s1 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s2 JIT PREP sampling /cache/x.so
+s2 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s4 JIT PREP sampling /cache/x.so
+s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+ok
+test_jit_prep_matches_model_container (__main__.Launcher.test_jit_prep_matches_model_container) ... ok
+test_lock_does_not_release_another_owner (__main__.Launcher.test_lock_does_not_release_another_owner) ... ok
+test_native_mtp_does_not_mount_external_draft (__main__.Launcher.test_native_mtp_does_not_mount_external_draft) ... ok
+test_nccl_hash_one_or_four_in_host_order (__main__.Launcher.test_nccl_hash_one_or_four_in_host_order) ... ok
+test_overlay_hash_tracks_the_rsynced_tree (__main__.Launcher.test_overlay_hash_tracks_the_rsynced_tree) ... ok
+test_persist_commands_are_isolated_one_line_and_keyed (__main__.Launcher.test_persist_commands_are_isolated_one_line_and_keyed) ... ok
+test_persist_result_parsing (__main__.Launcher.test_persist_result_parsing) ... ok
+test_persistent_cache_flag_and_path_validation (__main__.Launcher.test_persistent_cache_flag_and_path_validation) ... ok
+test_preexisting_swap_and_optional_warning (__main__.Launcher.test_preexisting_swap_and_optional_warning) ... ok
+test_prefill_busy_endpoint_never_mutates_control (__main__.Launcher.test_prefill_busy_endpoint_never_mutates_control) ... ok
+test_prefill_cap_selected_only_after_drain (__main__.Launcher.test_prefill_cap_selected_only_after_drain) ... Serving prefill cap 2048; constructor capacity4096
+ok
+test_prefill_control_requires_all_rank_readback (__main__.Launcher.test_prefill_control_requires_all_rank_readback) ... ok
+test_preflight_lock_check_is_head_only (__main__.Launcher.test_preflight_lock_check_is_head_only) ... ok
+test_progress_ignores_http_polls_and_static_metrics (__main__.Launcher.test_progress_ignores_http_polls_and_static_metrics) ... ok
+test_restart_and_preboot_swap_baseline_trip (__main__.Launcher.test_restart_and_preboot_swap_baseline_trip) ... ok
+test_roce_ready_counters_are_not_errors (__main__.Launcher.test_roce_ready_counters_are_not_errors) ... ok
+test_save_deadline_stops_helpers_and_serving_continues (__main__.Launcher.test_save_deadline_stops_helpers_and_serving_continues) ... ok
+test_save_results_and_failures_are_reported_not_raised (__main__.Launcher.test_save_results_and_failures_are_reported_not_raised) ... ok
+test_save_runs_beside_monitoring_and_is_cancelled_on_abort (__main__.Launcher.test_save_runs_beside_monitoring_and_is_cancelled_on_abort) ... ok
+test_serve_runs_jit_prep_before_compaction (__main__.Launcher.test_serve_runs_jit_prep_before_compaction) ... s1 JIT PREP sampling /cache/x.so
+s1 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s2 JIT PREP sampling /cache/x.so
+s2 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s3 JIT PREP sampling /cache/x.so
+s3 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s4 JIT PREP sampling /cache/x.so
+s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+JIT PREP PASS
+s4 
+s3 
+s2 
+s1 
+Watchdog active in foreground; use another terminal for status and benchmarks. Ctrl-C stops the deployment.
+ok
+test_serve_seeds_before_jit_prep_and_fails_closed (__main__.Launcher.test_serve_seeds_before_jit_prep_and_fails_closed) ... s1 PERSISTENT CACHE MISS cccccccccccccccccccccccccccccccc
+s2 PERSISTENT CACHE HIT cccccccccccccccccccccccccccccccc
+s3 PERSISTENT CACHE HIT cccccccccccccccccccccccccccccccc
+s4 PERSISTENT CACHE HIT cccccccccccccccccccccccccccccccc
+s1 JIT PREP sampling /cache/x.so
+s1 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s2 JIT PREP sampling /cache/x.so
+s2 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s3 JIT PREP sampling /cache/x.so
+s3 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s4 JIT PREP sampling /cache/x.so
+s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+JIT PREP PASS
+s4 
+s3 
+s2 
+s1 
+Watchdog active in foreground; use another terminal for status and benchmarks. Ctrl-C stops the deployment.
+s1 PERSISTENT CACHE MISS cccccccccccccccccccccccccccccccc
+s3 PERSISTENT CACHE MISS cccccccccccccccccccccccccccccccc
+s4 PERSISTENT CACHE MISS cccccccccccccccccccccccccccccccc
+ok
+test_ssh_failure_retains_lock (__main__.Launcher.test_ssh_failure_retains_lock) ... ok
+test_stop_targets_only_owned_names (__main__.Launcher.test_stop_targets_only_owned_names) ... Four containers stopped and preserved; owned lock released
+ok
+test_swap_requires_three_samples_over_baseline (__main__.Launcher.test_swap_requires_three_samples_over_baseline) ... ok
+test_verify_command_binds_manifest_once_and_fits_one_argument (__main__.Launcher.test_verify_command_binds_manifest_once_and_fits_one_argument) ... ok
+test_verify_command_runs (__main__.Launcher.test_verify_command_runs) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.418s
+
+OK
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.276s
+
+OK
+test_copy_is_verified_and_removed_on_mismatch (__main__.PersistentCache.test_copy_is_verified_and_removed_on_mismatch) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpi92znokt/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+ok
+test_corrupt_payload_fails_closed_before_copy (__main__.PersistentCache.test_corrupt_payload_fails_closed_before_copy) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/injected.so']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['fi/cached_ops/sampling/sampling.so']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: [('triton/abc/link', '/etc/passwd')]" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "manifest.json does not match READY" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "READY does not name this key" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: Expecting value: line 1 column 1 (char 0)" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: [Errno 2] No such file or directory: '/var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7/manifest.json'" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unsupported file type: triton/abc/pipe" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE HIT b2349ff1147f3e7ee43893bcfc2b34f7 2
+ok
+test_existing_generation_is_never_overwritten (__main__.PersistentCache.test_existing_generation_is_never_overwritten) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE KEEP b2349ff1147f3e7ee43893bcfc2b34f7
+ok
+test_hit_requires_an_empty_deployment_cache (__main__.PersistentCache.test_hit_requires_an_empty_deployment_cache) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+ok
+test_key_drift_and_size_limit (__main__.PersistentCache.test_key_drift_and_size_limit) ... PERSISTENT CACHE SKIP b2349ff1147f3e7ee43893bcfc2b34f7 124
+ok
+test_main_exit_codes (__main__.PersistentCache.test_main_exit_codes) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+ok
+test_miss_save_then_hit_on_a_fresh_cache (__main__.PersistentCache.test_miss_save_then_hit_on_a_fresh_cache) ... PERSISTENT CACHE MISS b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE HIT b2349ff1147f3e7ee43893bcfc2b34f7 2
+ok
+test_other_key_is_a_miss_and_builds_fresh (__main__.PersistentCache.test_other_key_is_a_miss_and_builds_fresh) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE MISS 9715cb46dd97e819abb21a6919005799
+PERSISTENT CACHE MISS 3f79d3a7fa6ef4e31acaf87403eb1174
+PERSISTENT CACHE MISS 2187af47c8814111a15febe418056c4d
+PERSISTENT CACHE MISS 8ff40e2a31c426b960c9a241e2c4b907
+ok
+test_other_key_metadata_is_a_mismatch (__main__.PersistentCache.test_other_key_metadata_is_a_mismatch) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
+PERSISTENT CACHE MISMATCH b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE MISMATCH b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE MISS b2349ff1147f3e7ee43893bcfc2b34f7
+ok
+test_output_is_one_parseable_line (__main__.PersistentCache.test_output_is_one_parseable_line) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.769s
+
+OK
+glm-dsa-swa-pool: registered (487ecf187)
+W1002 12:54:21.045000 97091 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 12:54:21.046000 97091 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 12:54:21.046000 97091 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_spec_registry
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_interface
+glm-dsa-swa-pool: pinned vllm.v1.request
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_utils
+glm-dsa-swa-pool: pinned vllm.v1.core.block_pool
+glm-dsa-swa-pool: pinned vllm.v1.core.single_type_kv_cache_manager
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_coordinator
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_manager
+test_alloc_cancel_deferred_preemption (__main__.PoolTests.test_alloc_cancel_deferred_preemption) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_async_peak_and_admission_gate (__main__.PoolTests.test_async_peak_and_admission_gate) ... glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+ok
+test_full_attention_miss_reconciles_all_tables (__main__.PoolTests.test_full_attention_miss_reconciles_all_tables) ... glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_geometry_and_capacity (__main__.PoolTests.test_geometry_and_capacity) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+ok
+test_long_decode_plateau_and_multirequest_refs (__main__.PoolTests.test_long_decode_plateau_and_multirequest_refs) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_minimal_profile_config (__main__.PoolTests.test_minimal_profile_config) ... glm-dsa-swa-pool: pool blocks=(36, 36, 36), bytes=119337984, target physical tokens=2304, usable=2240
+ok
+test_no_cache_and_switch (__main__.PoolTests.test_no_cache_and_switch) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_pool_specific_exhaustion_atomic (__main__.PoolTests.test_pool_specific_exhaustion_atomic) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_prefix_hit_reconciles_and_missing_tail_replays (__main__.PoolTests.test_prefix_hit_reconciles_and_missing_tail_replays) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_prefix_shared_refs_and_payload (__main__.PoolTests.test_prefix_shared_refs_and_payload) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_rejection_page_boundary_and_committed_eviction (__main__.PoolTests.test_rejection_page_boundary_and_committed_eviction) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_source_pins_and_refusal (__main__.PoolTests.test_source_pins_and_refusal) ... ok
+test_worker_rejects_group_blind_zero_and_copy (__main__.PoolTests.test_worker_rejects_group_blind_zero_and_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.735s
+
+OK
+W1002 12:54:28.322000 97141 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 12:54:28.322000 97141 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 12:54:28.323000 97141 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+test_capture_doubles_eligible_widths_under_short_context (__main__.Dispatch.test_capture_doubles_eligible_widths_under_short_context) ... glm-dsa-short: ModelManager captured 7 FULL graphs, short [(1, 1), (3, 1), (12, 4)]
+ok
+test_dispatch_promotes_only_when_eligible (__main__.Dispatch.test_dispatch_promotes_only_when_eligible) ... glm-dsa-short: ModelManager captured 5 FULL graphs, short [(3, 1), (12, 4)]
+glm-dsa-short: first short_dispatch ('FULL', 3, 1)
+glm-dsa-short: first stock_dispatch ('FULL', 3, 1)
+ok
+test_real_module_transformed_and_wrapped (__main__.Dispatch.test_real_module_transformed_and_wrapped) ... ok
+test_draft (__main__.Eligibility.test_draft) ... ok
+test_target_verify (__main__.Eligibility.test_target_verify) ... ok
+test_off_by_default_and_bad_value (__main__.Inert.test_off_by_default_and_bad_value) ... ok
+test_profile_flags (__main__.Inert.test_profile_flags) ... ok
+test_pins_and_transforms (__main__.Sources.test_pins_and_transforms) ... ok
+test_refuses_late_registration (__main__.Sources.test_refuses_late_registration) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 4.523s
+
+OK
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... skipped 'needs Triton without the interpreter'
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.189s
+
+OK (skipped=4)
+test_boundary_rejection_null_and_padding (__main__.KernelTests.test_boundary_rejection_null_and_padding) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.029s
+
+OK
+glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.1 s (0.16 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp1xe4nmz7): 207 eager + 9 mmap tensors, 0.0 GiB in 0.1 s (0.13 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp1xe4nmz7): last slab released after 0.5 s
+OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
+OK: wiring
+W1002 12:54:37.182000 97243 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 12:54:37.183000 97243 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 12:54:37.183000 97243 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+ERROR 10-02 12:54:40 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton'
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-fast-load: MTP shard selection armed (GLM_MTP_ONLY_LOAD=1 GLM_TARGET_SKIP_MTP=1)
+test_real_mtp_shards_byte_identical (__main__.RealShards.test_real_mtp_shards_byte_identical) ... skipped 'set GLM_MTP_LAB to the real-shard folder'
+test_draft_consumer_drops_non_mtp_names_first (__main__.SourceProof.test_draft_consumer_drops_non_mtp_names_first) ... ok
+test_proposer_replaces_embedding_and_head (__main__.SourceProof.test_proposer_replaces_embedding_and_head) ... ok
+test_target_consumer_drops_mtp_names_first (__main__.SourceProof.test_target_consumer_drops_mtp_names_first) ... ok
+test_draft_reads_only_mtp_shards (__main__.Synthetic.test_draft_reads_only_mtp_shards) ... ok
+test_draft_same_calls_and_loaded_set (__main__.Synthetic.test_draft_same_calls_and_loaded_set) ... ok
+test_index_disagreement_raises (__main__.Synthetic.test_index_disagreement_raises) ... glm-fast-load: load 2 (4 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpb65imki9): last slab released after 0.5 s
+ok
+test_inert_and_bad_flags (__main__.Synthetic.test_inert_and_bad_flags) ... ok
+test_missing_index_raises (__main__.Synthetic.test_missing_index_raises) ... ok
+test_source_drift_raises (__main__.Synthetic.test_source_drift_raises) ... glm-fast-load: load 4 (4 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpb65imki9): last slab released after 0.5 s
+ok
+test_stream_mismatch_raises (__main__.Synthetic.test_stream_mismatch_raises) ... ok
+test_target_skips_mtp_layer_only (__main__.Synthetic.test_target_skips_mtp_layer_only) ... ok
+test_unloaded_mtp_parameter_raises (__main__.Synthetic.test_unloaded_mtp_parameter_raises) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.536s
+
+OK (skipped=1)
+GLM_ROCE: the image already routes through b12x_ar_comm (B12X_ROCENANTE); the shim stays off
+PASS test_boot_hook_patch_failure_is_loud
+PASS test_boot_hook_patches_on_import_once
+PASS test_boot_off_installs_nothing
+PASS test_existing_b12x_slot_keeps_shim_off
+PASS test_four_ranks_limits_differ_all_raise
+PASS test_four_ranks_one_rank_cannot_all_raise
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+PASS test_four_ranks_one_rank_cannot_lenient_all_nccl
+PASS test_four_ranks_route_decode_sizes
+PASS test_four_ranks_single_node_skips_without_error
+PASS test_graph_capture_wrapper_order_and_passthrough
+PASS test_graph_capture_wrapper_propagates_errors
+PASS test_is_tp_group
+PASS test_parse_byte_size
+PASS test_pth_file_contents
+PASS test_read_limits_defaults_and_validation
+PASS test_worker_guard_failure_and_no_comm
+PASS test_worker_guard_sync_none_async
+PASS test_worker_patch_wraps_both_entry_points
+ALL PASS

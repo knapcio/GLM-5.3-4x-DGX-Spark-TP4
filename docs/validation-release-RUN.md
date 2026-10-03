@@ -1,73 +1,48 @@
-# Running the fresh-clone release gate
+# stack-1003 gate receipt runbook
 
-The gate needs an idle fleet. It never stops someone else's serving containers: while another
-deployment holds the launcher's fleet marker on the head, launching it returns a refusal. Keep a
-management SSH or local-console recovery path.
+Run only in the operator's scheduled serving window. W4 R measurements are
+recorded in the accompanying results; publication and production promotion remain
+held. The commands below reproduce the protocols with operator-selected paths.
 
-With all images and weights already installed, setup takes less than 15 minutes. The automated
-measurement window is capped at 90 minutes. Image builds and weight downloads are preparation and are
-not part of that window. Without `--execute` the program prints a local plan and makes no SSH or Docker calls.
-
-```bash
-python3 scripts/release_gate.py
-# CPU checks; no fleet access. The extracted image source is required for the entire suite.
-GLM_IMAGE_SRC=/path/to/extracted/image-source tests/run_cpu_tests.sh
-```
-
-Prepare two config files **outside** the repository, using `.env.example`. Set the same four hosts,
-fabric addresses, model/draft paths, HCA and NCCL binary hash. Set `IMAGES=(sha256:... sha256:...
-sha256:... sha256:...)` to the complete locally verified ARM64 image IDs. Tags alone are refused.
-Use different config files if the independently staged reference image differs. Never include credentials.
-Build the pinned `Dockerfile.roce` beforehand on an idle build host, keeping the source-pin
-and image-ID records. Use the `--RUN_TESTS` defaults; do not override the pinned base. A full image
-rebuild plus 1.5 TB of checkpoint reads does not fit within the measurement window.
-
-Choose a previously qualified full-GLM reference checkout and commit. Both arms must use identical
-checkpoint manifests. An unchanged `HEAD` reference is a **cold-boot reproducibility control**, not an
-independent full-precision reference or proof of no quantization loss. No Flash baseline is used.
-Keep the workstation awake. In another terminal open a management tunnel to the same head configured in
-both config files (replace `Spark_01` if needed):
-
-```bash
-ssh -N -o ExitOnForwardFailure=yes -L 18095:127.0.0.1:8095 Spark_01
-```
-
-Make sure sparkDash is available at the given URL and has no active benchmark. Then, from the committed
-candidate repository, run:
+1. Freeze the release revision, image IDs, private deployment config and qeval
+   threshold. Select the [release layout](runtime.md), reviewed copy guard and
+   pinned dispramd. Keep spec-sample off; retain the pad-hygiene gate decision.
+2. Complete the existing health, exact reply, every-rank arming, OOM/restart and
+   watchdog memory-admission checks. Preserve boot-through-health/admission times.
+3. Run the sparkDash sweep first with thinking off. Record prose/code/structured/json
+   at c1/c2/c4/c8, aggregate and per-stream rates; keep complete raw jobs and warmups.
+4. Measure cold prefill and warm replay separately. Use fresh prefixes for cold
+   cells; record actual input tokens and APC state. The standard collector covers
+   4K/8K/16K/32K; run a separately labelled near-64K prefill cell in the admitted
+   context. Do not infer it from long-probe TTFT or silently label a shorter request 64K.
+5. Run c1 prose decode at added context 0/16K/30K/60K, thinking off,
+   with matched output budgets and actual prompt lengths in every receipt.
+6. Run the pinned RigMark thinking-on low-effort protocol. Preserve completion
+   gates, median/range and concurrency timing definitions; do not mix its rates
+   with sparkDash rates.
+7. Run qeval three times serially with distinct labels and unchanged budgets.
+   Preserve checker scores, mean, frozen threshold, truncation and recurring failures.
+8. Run long64k-v2 against the same endpoint and tokenizer; keep all four responses
+   and apply its exact [PASS rule](validation.md#long64k-v2).
+9. Verify APC repeated-prefix reuse and correct completion. Verify shutdown/lease
+   return and recovery through the existing lender contract when stopping the gate.
+10. Fill every `{{...}}` field from a named completed receipt. Missing data stays
+    visibly pending; a failure remains FAIL/ERROR/HOLD. Preserve raw receipts privately
+    and scrub deployment details before exporting any derived public summary.
 
 ```bash
-nice -n 10 env OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 \
-  VECLIB_MAXIMUM_THREADS=2 NUMEXPR_NUM_THREADS=2 \
-  python3 scripts/release_gate.py --execute \
-  --config /absolute/path/candidate.env --reference-config /absolute/path/reference.env \
-  --reference-repo /absolute/path/qualified-full-glm --reference-rev FULL_COMMIT \
-  --candidate-rev HEAD --out /absolute/path/new-release-receipts \
-  --base http://127.0.0.1:18095 \
-  --dash http://127.0.0.1:5555/api/sparks/spark-01/llm \
-  --window-minutes 90 --aa-max 0.01 --kl-max 0.01 --min-prose-tps 50
+# Set SPARKDASH_SPARK_ID to the configured dashboard node identifier.
+SPARKDASH_API="$DASH_API" python3 bench/sparkdash.py full 66112 > "$SPARKDASH_RECEIPT"
+python3 bench/decode_context.py --endpoint "$SERVING_URL" \
+  --tokenizer-json "$TOKENIZER_DIR/tokenizer.json" --out "$CONTEXT_RECEIPT"
+python3 bench/qeval.py run stack-1003-q1 --url "$CHAT_COMPLETIONS_URL"
+python3 bench/qeval.py run stack-1003-q2 --url "$CHAT_COMPLETIONS_URL"
+python3 bench/qeval.py run stack-1003-q3 --url "$CHAT_COMPLETIONS_URL"
+python3 bench/long_retrieval_v2.py --execute --endpoint "$SERVING_URL" \
+  --tokenizer-dir "$TOKENIZER_DIR" --out "$LONG_PROBE_RECEIPTS"
 ```
 
-Freeze those thresholds before the run. They are deliberately conservative screening limits,
-not established full-GLM quality tolerances. Do not raise them after observing a failure. If an A/A
-panel is unstable, record HOLD and diagnose repeatability before comparing an optimization.
-The first 65 minutes allow measurements; the final 25 minutes are reserved for the gate's own stops and a
-fresh reference re-admission. Individual HTTP requests, benchmark jobs, qeval subprocesses and admissions
-are bounded. A deadline yields partial receipts and HOLD; it never counts omitted cells as passes.
-An SSH failure can require manual recovery and is outside any wall-clock guarantee. Safety cleanup
-completes even if the window expires. No power operation is automatic.
-
-Read `gate.json`, all phase files and `SERVING.md`. Exit 0 means the bounded requested gate passed;
-exit 2 means HOLD or an implementation timeout. With the current 32k
-release profile, the complete 4k–128k scope **must** return HOLD even if every supported request passes.
-The 32k prefill cell measures 32,767 input tokens plus one output token, and records both lengths.
-The 64k/128k cells are explicit unsupported records; the program does not silently increase the KV pool
-or context limit.
-
-The reference stop is verified before the candidate boots: the exact four container names are stopped and
-preserved, there are no compute PIDs, no OOM, and the gate's fleet marker is gone. Only the gate's exact
-launcher PID is interrupted. A failed stop keeps the fleet marker; do not retry a boot or remove the
-marker without investigating. A qualified candidate stays up under the watchdog. On HOLD, the previously
-checked reference is freshly booted with a different empty runtime/cache; if recovery cannot be safely
-admitted, the fleet is left stopped and the error is recorded. A surviving foreground watchdog keeps the
-fleet marker until it is handed over explicitly. To stop serving, use the fresh checkout path recorded in
-`SERVING.md`; do not delete remote containers or caches.
+The historical `scripts/release_gate.py` packet has an older measurement scope;
+it is not a complete substitute for this receipt checklist. In particular, the
+new context sweep and long64k-v2 are distinct requirements. Preserve its applicable
+serving/admission guards without treating unsupported or omitted cells as passes.

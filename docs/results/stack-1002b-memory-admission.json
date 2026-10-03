@@ -1,0 +1,90 @@
+{
+ "layout": {
+  "K": 3,
+  "slots": 4,
+  "capture_sizes": [
+   1,
+   4,
+   16
+  ],
+  "kv_blocks": 544,
+  "kv_tokens": 34816,
+  "max_model_len": 32768,
+  "ll128_off": false
+ },
+ "sim": {
+  "rule": "sim v4: interval lower bound >= 8.5 GiB on every rank (calibrate_v4.py row(), model_clears_8_5)",
+  "variant": "stop K3, 2.000 graph bank-equivalents",
+  "bank_rule": {
+   "used": 2.0,
+   "family": 2.0,
+   "descriptor": 0.6666666666666666,
+   "binding": "family"
+  },
+  "rank0": {
+   "point": 8.780535599518776,
+   "interval": [
+    8.676633927155494,
+    8.853187271882058
+   ]
+  },
+  "per_rank_lower_GiB": [
+   8.676633927155494,
+   10.025884720612526,
+   10.082418534089088,
+   9.81530961685276
+  ],
+  "admitted": true,
+  "reasons": []
+ },
+ "added_terms_GiB": {
+  "apc": -0.06,
+  "fast_load_shard_selection": -0.0,
+  "dirty_l2": 0.0,
+  "indexer_shortcut_off": 0.0
+ },
+ "combined": {
+  "rank0_point": 8.720535599518776,
+  "rank0_interval": [
+   8.616633927155494,
+   8.793187271882058
+  ],
+  "per_rank_lower_GiB": [
+   8.616633927155494,
+   9.965884720612525,
+   10.022418534089088,
+   9.75530961685276
+  ],
+  "min_lower_GiB": 8.616633927155494,
+  "margin_vs_8_5_GiB": 0.11663392715549392,
+  "margin_vs_8_0_watchdog_GiB": 0.6166339271554939,
+  "passes_8_5": true
+ },
+ "pre_capture": {
+  "floor_GiB": 10.0,
+  "kv_credit_vs_693_blocks_GiB": 0.4299159049987793,
+  "predicted_rank0_GiB": {
+   "dispram_attempt5": 10.32,
+   "dispram_attempt4": 10.47,
+   "fastload_hash_b_run1": 10.428,
+   "dispram_attempt6_scaled": 10.338
+  },
+  "min_predicted": 10.32,
+  "margin_GiB": 0.3200000000000003
+ },
+ "receipt_cross_check": {
+  "source": "mtp-kstop/FLEET_RESULT9.md: same window, 544 blocks, one slot",
+  "native_k2_1slot_hit_hold": 10.166,
+  "kstop_1slot_hit_hold": 9.986,
+  "kstop_1slot_build_hold": 9.193,
+  "sim_lower_for_that_layout": 8.677,
+  "note": "the sim held on both stop boots (+0.52 GiB on the BUILD boot); four slots add 7 descriptors and 56 rows over that screen, which the sim charges under the family rule (2 bank-equivalents) as for the screen"
+ },
+ "smallest_lossless_fallback": {
+  "change": "KV pin 544 -> 514 blocks (the campaign minimum for 32,768 + K3 lookahead + null block)",
+  "frees_GiB": 0.08656024932861328,
+  "applied": false,
+  "reason": "not needed: the combined lower bound passes 8.5 and the pre-capture margin is above 0.3 GiB"
+ },
+ "verdict": "ADMITTED"
+}

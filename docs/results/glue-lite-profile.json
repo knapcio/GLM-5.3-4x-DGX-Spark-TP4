@@ -1,0 +1,53 @@
+{
+  "protocol": "Glue-lite on native MTP K2 async: five added environment keys, all switches off by default; no argument change",
+  "added_env": {
+    "GLM_GLUE_ROUTER_BF16": "0",
+    "GLM_GLUE_MOE_WS": "0",
+    "GLM_GLUE_DSA_IDX_CACHE": "0",
+    "GLM_GLUE_ROUTER_EXPECT": "target:75,mtp:1",
+    "GLM_GLUE_IDX_EXPECT": "57"
+  },
+  "module": "overlay/bringup/glm_glue_lite.py",
+  "module_sha256": "2c7bab045594eade65e1e4ba52952e9daee592e8f078b66b76fea4bb603c362d",
+  "module_code_ast_sha256": "eab7f0f70088e3aea25e98da6e879e352783242b4f7d706308a74143413e2943",
+  "code_identity": "The module code (AST without the top-level docstring) equals the reviewed module used by the in-boot A/B packet; only two docstring lines differ (repository references instead of campaign paths).",
+  "source_pins": {
+    "vllm.model_executor.layers.fused_moe.router.gate_linear": "6fca8c7fba361ac79418dd56d6d3c281ef04f34ebfdd2044cb1d12e1fa9e70d7",
+    "vllm.model_executor.layers.fused_moe.router.grouped_topk_router": "6a541bfdcf9e9a09fc888ea3f4a2e9689181e889e3a3ac9f49716d8d59cca142",
+    "vllm.model_executor.layers.fused_moe.runner.moe_runner": "a19ecf2417c80b93c0fe5594e74528f686665847732196f9b29ef967b38110b0",
+    "vllm.model_executor.layers.fused_moe.experts.marlin_moe": "f00460310b033bcb84644677e16af83773464f026c0dad15bcfe25bd28b39745",
+    "vllm.model_executor.layers.quantization.utils.marlin_utils": "6f91cbf2b0ae276abd4b57b80b20f260307f9df3e24d40ee2b0abf76f4c7f100",
+    "vllm.model_executor.layers.mla": "936b06c4671d52fce52ae85bb24b986db17855f32740bf55b226053fc385c4b4",
+    "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "4449ea25921dcae1ec7988581ff26a6ff5a9e5d6d4a0ac4a68a0017ea108f136",
+    "vllm.v1.attention.backends.mla.sparse_utils": "cd95caf494f1d2a946ac87abfb4951f738827fe7749aeefd6c0fd83d1cee072d",
+    "vllm.model_executor.models.deepseek_v2": "58d8916458de7c6f73b40bfef9d2f57bdd6fa0fb79be9e269331af6e66149fe2",
+    "vllm.model_executor.models.deepseek_mtp": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f",
+    "vllm.v1.worker.gpu.model_runner": "f84255d75435e84f44972d3fd25e53447f9d4d2edd8bff4f8c19dfb793448415"
+  },
+  "levers": {
+    "GLM_GLUE_ROUTER_BF16": {
+      "fix": "F1",
+      "removes": "75 router-logit BF16->FP32 casts per target forward (one per MoE layer)",
+      "exactness": "the fused CUDA grouped_topk single-group kernel widens each BF16 logit to FP32 before any arithmetic, so the ids and weights are those of the cast input; armed only for E256 / one group / top-8 / sigmoid with an FP32 correction bias / renormalize / scaling 1.0 or 2.5",
+      "gpu_gate": "tests/gpu/gpu_bitexact_f1.py"
+    },
+    "GLM_GLUE_MOE_WS": {
+      "fix": "F2",
+      "removes": "75 torch.zeros lock-workspace allocations per target forward",
+      "exactness": "Marlin MoE resets every lock it used at the end of a completed call (barrier_release reset), so one persistent zeroed workspace reused in stream order sees the same zeros; preallocated at model load, a capture without it fails closed, other streams fall back to the stock allocation",
+      "gpu_gate": "tests/gpu/gpu_gate_f2.py"
+    },
+    "GLM_GLUE_DSA_IDX_CACHE": {
+      "fix": "F3",
+      "removes": "57 index conversions and their full_like(-1) per target forward on the static skip_topk layers",
+      "exactness": "a skip layer of the same forward reuses the (slots, counts) of the last computing layer only when every pointer, shape, stride, dtype and flag of the inputs is identical; any other MLA forward invalidates; the MTP model is never armed",
+      "gpu_gate": "tests/gpu/gpu_gate_f3.py"
+    }
+  },
+  "expected_saving_ms_per_cycle": {
+    "c1": 0.39,
+    "c4": 0.39,
+    "basis": "kernel plus launch-edge time of the removed launches in profiled rank-0 traces (62 cycles); not a measurement of the switch"
+  },
+  "status": "staged, default off: GPU gates written and self-checked on CPU, not run on a GPU; no fleet A/B yet"
+}

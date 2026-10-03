@@ -1,0 +1,17 @@
+{
+  "protocol": "Stack release candidate 1002b on native MTP: three levers on by default. Prefix caching (one flag flipped in place in profiles/serve-args.json, the same token the APC q5 kit flipped for glm53full-apcq-20261002-121736-b5); native MTP K-stop with the uniform-batch policy (environment), which makes the launcher select K3, capture sizes [1, 4, 16] and the 544-block KV pool; the short-context DSA shortcut off, because K-stop and the shortcut transform the same pinned sources. Native MTP shard selection (boot-fast-profile.json) is unchanged. skip-mla-plan, spec-sample and the dispram hook add no default key.",
+  "changed_env": {
+    "GLM_INDEXER_SHORTCUT": "0",
+    "GLM_MTP_KSTOP": "1",
+    "GLM_MTP_KSTOP_UNIFORM_BATCH": "1"
+  },
+  "flipped_flags": {
+    "--no-enable-prefix-caching": "--enable-prefix-caching"
+  },
+  "kstop_launch_shape": {
+    "speculative_config": {"num_speculative_tokens": 3},
+    "compilation_config": {"cudagraph_capture_sizes": [1, 4, 16], "max_cudagraph_capture_size": 16},
+    "kv_cache_memory_bytes": "1685372928",
+    "max_model_len": "32768"
+  }
+}

@@ -5,7 +5,7 @@
   "config": "native full GLM K3, runtime2048/constructor4096, split32, 2GiB KV/rank, 32K context, four slots, GPU2200 cap unchanged",
   "boots": [
     {
-      "label": "W4 README boot",
+      "label": "D2-W4 README boot",
       "receipt_sha256": "50d82b38633c146d83b960fd4d2f32829ed7aef9c95765907a9f0cd58adb92a3",
       "cells": {
         "prose/c1": {
@@ -55,7 +55,7 @@
       }
     },
     {
-      "label": "W5 stock boot",
+      "label": "D2-W5 stock boot",
       "receipt_sha256": "d38490472b8f12478f23343f666bdae6ad17e1a85b6416d95fded1a117be8a8f",
       "cells": {
         "prose/c1": {

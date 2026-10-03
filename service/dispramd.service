@@ -1,0 +1,28 @@
+# DRAFT, NOT DEPLOYED. Enabled at boot (owner 2026-10-02): at boot no borrower and no CUDA context exist,
+# so the guarded start is safe. Runs kindling's dispramd UNMODIFIED in docker via `dispram.sh service`:
+#  - start only with no GPU compute process, no borrower, no DRM user, DRM nodes locked (start refuses);
+#  - no automatic restart: Restart=no here and --restart no on the container. After a crash, an Xid/SMMU
+#    error or any other INVALID watch result the unit stays FAILED until a reboot or a manual
+#    `systemctl reset-failed dispramd && systemctl start dispramd` (RUN.md section 4, no GPU process);
+#  - watch every 60 s, fail closed; on INVALID: stop borrowers -> verify no CUDA context -> stop daemon -> exit 3.
+# Ordering: dispramd is itself a docker container, so it runs After=docker.service; the DRM lock runs
+# Before=docker. Engines never auto-start (the recipe uses --restart no) and every engine start passes
+# `dispram.sh preborrow`, so no borrower can precede the daemon.
+# `systemctl stop dispramd` with live borrowers leaves the daemon container up (dispram.sh stop refuses).
+[Unit]
+Description=GB10 display-carveout lender (kindling dispramd, AGPL-3.0, unmodified)
+Requires=docker.service dispram-drm-lock.service
+After=docker.service dispram-drm-lock.service nvidia-persistenced.service network-online.target
+
+[Service]
+Type=simple
+User=SERVICE_USER
+SupplementaryGroups=docker systemd-journal
+Environment=DISPRAM_HOME=/srv/glm-dispram DISPRAM_IMAGE=glm53-roce:v11-b58f34ea DISPRAM_WATCH_S=60 DISPRAM_ALLOW_RM_ALLOC_OOM=1
+ExecStart=/srv/glm-dispram/dispram.sh service
+ExecStop=/srv/glm-dispram/dispram.sh stop
+Restart=no
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

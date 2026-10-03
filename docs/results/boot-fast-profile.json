@@ -1,0 +1,11 @@
+{
+  "protocol": "Native MTP shard selection for the fast loader; two added environment switches, no argument change. The draft load yields the same weight_loader calls and bytes as the stock full scan (tests/test_mtp_select.py, real shards 270-274).",
+  "added_env": {
+    "GLM_MTP_ONLY_LOAD": "1",
+    "GLM_TARGET_SKIP_MTP": "1"
+  },
+  "modules": [
+    "overlay/overlay/glm_mtp_select.py",
+    "overlay/overlay/glm_fast_load.py"
+  ]
+}

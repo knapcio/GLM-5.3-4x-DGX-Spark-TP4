@@ -1,13 +1,12 @@
 {
   "current_default": {
-    "configuration": "native-mtp-k2-async",
-    "profile": "profiles/current.env",
+    "configuration": "native-mtp-kstop-k2-shortdsa-dispram64k-padv2",
+    "profile": "profiles/current.env + .env.example",
     "serve_args": "profiles/serve-args.json",
     "alternative_profile": "dspark-k3",
     "qualified": true,
-    "quality_receipt": "e5-qeval-admission.json",
-    "serving_receipt": "e5-serving.json",
-    "performance_receipt": "e5-comparison.json",
+    "quality_receipt": "w4-v2-summary.json",
+    "performance_receipt": "w4-v2-summary.json",
     "quality": {
       "scores": [
         71,
@@ -16,9 +15,32 @@
       ],
       "mean": 71.66666666666667,
       "threshold": 70.55347603224445,
-      "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
-      "intelligence_equivalence_proven": false
-    }
+      "new_recurring_failure_tasks": [],
+      "truncations": [],
+      "control_runs": 6,
+      "checker_sha256": "54719522d26996198c870264dfe5a93e2dd23f33436626c2477f1ac71206ffd2",
+      "qeval_source_sha256": "a83ccf00919153cae3acfaee49390be57d2f447b30e12ba4b4cbb9ac364a694e",
+      "passed": true,
+      "failure_tasks": [
+        [
+          "code_camel_to_snake",
+          "code_word_wrap",
+          "code_interval_intersect",
+          "json_manifest"
+        ],
+        [
+          "code_camel_to_snake",
+          "code_interval_intersect",
+          "json_manifest"
+        ],
+        [
+          "code_camel_to_snake",
+          "code_interval_intersect",
+          "json_manifest"
+        ]
+      ]
+    },
+    "runtime_commit": "0f243832dbaa45b6d659a1a076ec85bac13e1a8a"
   },
   "clock_cap_MHz": 2200,
   "historical_boot_a": {
@@ -62,5 +84,26 @@
     "tasks": 75,
     "status": "HOLD",
     "intelligence_equivalence_proven": false
+  },
+  "historical_default_before_stack1003": {
+    "configuration": "native-mtp-k2-async",
+    "profile": "profiles/current.env",
+    "serve_args": "profiles/serve-args.json",
+    "alternative_profile": "dspark-k3",
+    "qualified": true,
+    "quality_receipt": "e5-qeval-admission.json",
+    "serving_receipt": "e5-serving.json",
+    "performance_receipt": "e5-comparison.json",
+    "quality": {
+      "scores": [
+        71,
+        72,
+        72
+      ],
+      "mean": 71.66666666666667,
+      "threshold": 70.55347603224445,
+      "status": "PASS_OPERATIONAL_QEVAL_SCREEN",
+      "intelligence_equivalence_proven": false
+    }
   }
 }

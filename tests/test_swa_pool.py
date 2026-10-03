@@ -56,7 +56,7 @@ def specs(arm='rh'):
         t[f'model.layers.{i}.self_attn.indexer.k_cache'] = MLAAttentionSpec(
             block_size=64, num_kv_heads=1, head_size=132, dtype=torch.uint8)
     name = {'rh': 'redhat_dspark_config.json', 'alaya': 'alaya_dspark_config.json',
-            'swa6': 'synthetic_swa6_config.json'}[arm]
+            'dflash2': 'incoai_dflash2_config.json'}[arm]
     raw = json.loads((FIX / name).read_text())
     raw = raw.get('transformer_layer_config', raw)
     for i, lt in enumerate(raw['layer_types']):
@@ -96,7 +96,7 @@ class PoolTests(unittest.TestCase):
 
     def test_geometry_and_capacity(self):
         rows = []
-        for arm in ('rh', 'alaya', 'swa6'):
+        for arm in ('rh', 'alaya', 'dflash2'):
             for flight in (4096, 8192):
                 vc = config(flight=flight); s = specs(arm)
                 groups = U.get_kv_cache_groups(vc, s)

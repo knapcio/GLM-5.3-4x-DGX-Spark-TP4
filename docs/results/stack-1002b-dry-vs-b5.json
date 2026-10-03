@@ -1,0 +1,86 @@
+{
+ "reference": "glm53full-apcq-20261002-121736-b5 (APC q5 kit --apc on), per-rank argv from apc-released/runs/apc-q5-20261002-1217/b5-cand-on-boot/docker-run.jsonl",
+ "candidate": "DRY=1 ./start.sh serve of release/stack-1002b, CTN glm53full-stack1002b-dry",
+ "normalised": "container names and the runtime path (OVERLAY_REMOTE); docker flags, image tag, every mount and the prefix-caching flag position are identical on all four ranks",
+ "ranks_identical_shape": true,
+ "env": {
+  "GLM_GLUE_DSA_IDX_CACHE": {
+   "b5": null,
+   "candidate": "0",
+   "reason": "staged glue-lite switch, 0"
+  },
+  "GLM_GLUE_IDX_EXPECT": {
+   "b5": null,
+   "candidate": "57",
+   "reason": "glue-lite arming count, read only when a glue switch is 1"
+  },
+  "GLM_GLUE_MOE_WS": {
+   "b5": null,
+   "candidate": "0",
+   "reason": "staged glue-lite switch, 0"
+  },
+  "GLM_GLUE_ROUTER_BF16": {
+   "b5": null,
+   "candidate": "0",
+   "reason": "staged glue-lite switch from release/stack-1002, 0 (module not imported)"
+  },
+  "GLM_GLUE_ROUTER_EXPECT": {
+   "b5": null,
+   "candidate": "target:75,mtp:1",
+   "reason": "glue-lite arming count, read only when a glue switch is 1"
+  },
+  "GLM_INDEXER_SHORTCUT": {
+   "b5": "1",
+   "candidate": "0",
+   "reason": "K-stop and the shortcut transform the same pinned sources; the launcher and startup refuse the pair"
+  },
+  "GLM_MTP_KSTOP": {
+   "b5": null,
+   "candidate": "1",
+   "reason": "K-stop on by default (owner decision 2026-10-02)"
+  },
+  "GLM_MTP_KSTOP_CONTROL": {
+   "b5": null,
+   "candidate": "/overlay/kstop/control.json",
+   "reason": "K-stop control file (tau 0.74, k3-stop)"
+  },
+  "GLM_MTP_KSTOP_UNIFORM_BATCH": {
+   "b5": null,
+   "candidate": "1",
+   "reason": "multi-request batches draft K3 so verify rectangles replay graphs (otherwise eager mixed rectangles at c2-c4)"
+  },
+  "GLM_MTP_ONLY_LOAD": {
+   "b5": null,
+   "candidate": "1",
+   "reason": "fast-load shard selection, on (hash test: final GPU weights byte-equal)"
+  },
+  "GLM_SPEC_SAMPLE": {
+   "b5": null,
+   "candidate": "0",
+   "reason": "optional spec-sample switch, exported as 0"
+  },
+  "GLM_TARGET_SKIP_MTP": {
+   "b5": null,
+   "candidate": "1",
+   "reason": "fast-load shard selection, on"
+  }
+ },
+ "args": {
+  "--kv-cache-memory-bytes": {
+   "b5": "2147483648",
+   "candidate": "1685372928",
+   "reason": "K-stop R4a pool: 544 blocks (2 GiB = 693 blocks before)"
+  },
+  "--compilation-config": {
+   "b5": "{\"mode\": 0, \"cudagraph_mode\": \"FULL_DECODE_ONLY\", \"cudagraph_capture_sizes\": [1, 3, 6, 12], \"max_cudagraph_capture_size\": 12}",
+   "candidate": "{\"mode\": 0, \"cudagraph_mode\": \"FULL_DECODE_ONLY\", \"cudagraph_capture_sizes\": [1, 4, 16], \"max_cudagraph_capture_size\": 16}",
+   "reason": "K-stop capture sizes [1, 4, 16], max 16 (was [1, 3, 6, 12])"
+  },
+  "--speculative-config": {
+   "b5": "{\"method\": \"mtp\", \"num_speculative_tokens\": 2, \"draft_tensor_parallel_size\": 4, \"kv_cache_dtype\": \"fp8_e4m3\", \"draft_sample_method\": \"greedy\", \"rejection_sample_method\": \"standard\", \"attention_backend\": \"FLASHINFER_MLA_SPARSE_SM90\", \"quantization\": \"compressed-tensors\"}",
+   "candidate": "{\"method\": \"mtp\", \"num_speculative_tokens\": 3, \"draft_tensor_parallel_size\": 4, \"kv_cache_dtype\": \"fp8_e4m3\", \"draft_sample_method\": \"greedy\", \"rejection_sample_method\": \"standard\", \"attention_backend\": \"FLASHINFER_MLA_SPARSE_SM90\", \"quantization\": \"compressed-tensors\"}",
+   "reason": "num_speculative_tokens 3 (K-stop drafts up to three); every other field unchanged"
+  }
+ },
+ "same_diff_on_all_ranks": true
+}

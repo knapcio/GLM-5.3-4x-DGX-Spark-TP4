@@ -57,10 +57,37 @@ def compare():
         expected['env'].update(mtp['changed_env'])
         expected['env'].update(json.loads((ROOT/'docs/results/short-dsa-profile.json').read_text())['added_env'])
         expected['env'].update(json.loads((ROOT/'docs/results/dirty-l2-profile.json').read_text())['added_env'])
+        expected['env'].update(json.loads((ROOT/'docs/results/boot-fast-profile.json').read_text())['added_env'])
+        expected['env'].update(json.loads((ROOT/'docs/results/glue-lite-profile.json').read_text())['added_env'])
+        expected['env'].update(json.loads((ROOT/'docs/results/kstop-profile.json').read_text())['added_env'])
+        expected['env']['GLM_SPEC_SAMPLE'] = run_env.get('GLM_SPEC_SAMPLE', '0')
+        stack = json.loads((ROOT/'docs/results/stack-1002b-profile.json').read_text())
+        expected['env'].update(stack['changed_env'])
         expected['args'] = list(mtp['args'])
+        for old, new in stack['flipped_flags'].items():
+            expected['args'][expected['args'].index(old)] = new
+        shape = stack['kstop_launch_shape']
+        i = expected['args'].index('--speculative-config')+1
+        expected['args'][i] = json.dumps({**json.loads(expected['args'][i]), **shape['speculative_config']})
+        i = expected['args'].index('--compilation-config')+1
+        expected['args'][i] = json.dumps({**json.loads(expected['args'][i]), **shape['compilation_config']})
+        # K2 reuse default: exact c2 M6 from the existing capture bank.
+        expected['env']['GLM_MTP_KSTOP_UNIFORM_BATCH'] = 'k2'
+        expected['env']['GLM_PAD_HYGIENE'] = run_env.get('GLM_PAD_HYGIENE', '0')
+        expected['env']['GLM_MTP_KSTOP_CAPTURE_LAYOUT'] = run_env.get('GLM_MTP_KSTOP_CAPTURE_LAYOUT', 'reuse')
+        expected['args'][i] = json.dumps({**json.loads(expected['args'][i]),
+                                       'cudagraph_capture_sizes': [1, 4, 12, 16],
+                                       'max_cudagraph_capture_size': 16})
+        expected['args'][expected['args'].index('--kv-cache-memory-bytes')+1] = shape['kv_cache_memory_bytes']
+        expected['args'][expected['args'].index('--max-model-len')+1] = shape['max_model_len']
+        # Frozen stack-1003 selection from the measured v2 launch, not the render under test.
+        release = json.loads((ROOT/'docs/results/stack-1003-profile.json').read_text())
+        expected['env'].update(release['changed_env'])
+        for key, value in release['changed_arguments'].items():
+            expected['args'][expected['args'].index(key)+1] = value
         expected['args'][expected['args'].index('--node-rank')+1] = str(rank['rank'])
         if rank['rank']:
-            expected['args'].insert(expected['args'].index('--no-enable-prefix-caching'), '--headless')
+            expected['args'].insert(expected['args'].index('--enable-prefix-caching'), '--headless')
         a = json.dumps(expected, indent=2, sort_keys=True).splitlines(True)
         b = json.dumps(actual[rank['rank']], indent=2, sort_keys=True).splitlines(True)
         diff = ''.join(difflib.unified_diff(a, b, fromfile='best-clean-r%d' % rank['rank'], tofile='dry-r%d' % rank['rank']))
@@ -84,13 +111,19 @@ Boot B BEST_FULL_GLM.json vectors (source SHA256 in results/best-launch.json).
 
 Allowed removals: GLM_W4_TAIL, GLM_W6_GRAPH_RECEIPTS, and six profiler-config
 arguments. PROFILE=1 belongs to the diagnostic wrapper, not the container env.
-The earlier duplicate speculative-config is removed. The W4 profile changes constructor
+The earlier duplicate speculative-config is removed. D2-W4 changes constructor
 capacity512->4096 and adds drained serving cap2048 (results/w4-profile.json).
 The native MTP delta in results/e2b-profile.json selects method=mtp, K2, TP4 draft,
 compressed-tensors, FP8 draft KV, block64, async scheduling and graphs1/3/6/12;
 GLM_MTP_FIX=1 and the DSpark SWA/low-memory hooks are disabled. The /draft mount
 is omitted. results/short-dsa-profile.json adds GLM_INDEXER_SHORTCUT=1 and
-results/dirty-l2-profile.json adds GLM_DIRTY_L2=discard. Greedy drafting and standard rejection remain explicit. The DSpark
+results/dirty-l2-profile.json adds GLM_DIRTY_L2=discard. results/boot-fast-profile.json adds GLM_MTP_ONLY_LOAD=1 and
+GLM_TARGET_SKIP_MTP=1 (native MTP shard selection);
+results/glue-lite-profile.json adds the five glue-lite keys with every switch off and
+results/kstop-profile.json adds GLM_MTP_KSTOP, its control path and GLM_MTP_KSTOP_UNIFORM_BATCH.
+results/stack-1002b-profile.json then turns prefix caching on (one flag token), turns K-stop and its
+uniform-batch policy on with the launcher's K3 / [1, 4, 16] / 544-block layout, and sets
+GLM_INDEXER_SHORTCUT=0. Greedy drafting and standard rejection remain explicit. The DSpark
 alternative preserves the historical K3 vector separately.
 
 Docker's inherited CUDA/base-image environment is not a launcher override and is

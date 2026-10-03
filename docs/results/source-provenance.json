@@ -54,7 +54,8 @@
     }
   },
   "kernel_ast_sha256": {
-    "bringup/glm_full_mla_kernel.py": "3719d5a502c63a2daff2da265e430b70ca8f391b6045921dcb2152d089c35873",
-    "bringup/glm_full_mla_split_kernel.py": "c9161eaa1d0e45951dbb2a9255483a4f271ab677d48fbdc8b110c82486bef5a7"
-  }
+    "bringup/glm_full_mla_kernel.py": "93c7e163a762de23c1848882f2ac5d104137ef699b8ac2d3e737a8877e879b06",
+    "bringup/glm_full_mla_split_kernel.py": "c95977f3ae119c832d261546be6657a0ecb89ad78355750935a2e60dcdc0018c"
+  },
+  "kernel_ast_format": "Python 3.12 ast.dump(include_attributes=False), including empty fields; module docstring excluded"
 }

@@ -1,0 +1,249 @@
+{
+  "protocol": "Native MTP K-stop on native MTP K2 async: three added environment keys (switch off by default, control path, uniform-batch policy off); with the switch on the launcher selects K3, capture sizes [1, 4, 16] and one of two memory-admitted KV layouts, and requires the short-context DSA shortcut off",
+  "added_env": {
+    "GLM_MTP_KSTOP": "0",
+    "GLM_MTP_KSTOP_CONTROL": "/overlay/kstop/control.json",
+    "GLM_MTP_KSTOP_UNIFORM_BATCH": "0"
+  },
+  "switched_arguments": {
+    "--speculative-config": "num_speculative_tokens 3 (other fields unchanged)",
+    "--compilation-config": {
+      "cudagraph_mode": "FULL_DECODE_ONLY (required, unchanged)",
+      "cudagraph_capture_sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_cudagraph_capture_size": 16
+    },
+    "--kv-cache-memory-bytes and --max-model-len": {
+      "RECIPE_MAX_MODEL_LEN=32768 (default)": {
+        "kv_cache_memory_bytes": 1685372928,
+        "kv_blocks": 544,
+        "max_model_len": 32768,
+        "ll128": "on or off",
+        "rank0_prediction_GiB": {
+          "point": 8.781,
+          "interval": [
+            8.677,
+            8.853
+          ]
+        },
+        "status": "sim-admitted, never booted"
+      },
+      "RECIPE_MAX_MODEL_LEN=44224": {
+        "kv_cache_memory_bytes": 2147483648,
+        "kv_blocks": 693,
+        "max_model_len": 44224,
+        "ll128": "off (RECIPE_NCCL_NO_LL128=1 required)",
+        "rank0_prediction_GiB": {
+          "point": 8.7,
+          "interval": [
+            8.6,
+            8.77
+          ]
+        },
+        "status": "UNMEASURED: holds only if NCCL without LL128 frees the ledger's 0.44 GiB; measure that first"
+      }
+    },
+    "refused": [
+      "RECIPE_KV_PIN_L1=1",
+      "RECIPE_MAX_MODEL_LEN=44288",
+      "RECIPE_MAX_MODEL_LEN=44224 with LL128 on",
+      "capture sizes 1..16 at 693 blocks (predicted rank 0 7.82 [7.72, 7.90] GiB, under the 8.0 launcher floor): no switch combination produces it"
+    ],
+    "unchanged": [
+      "--max-num-seqs 4 (required)",
+      "--block-size 64",
+      "--async-scheduling"
+    ]
+  },
+  "requires": [
+    "GLM_INDEXER_SHORTCUT=0 (both transform the pinned runner, autoregressive speculator and graph manager sources; refused by the launcher and at startup)",
+    "GLM_MTP_FIX=1",
+    "native MTP, greedy drafts, standard rejection, async scheduling, TP4, block 64, at most 4 slots, FULL_DECODE_ONLY, modular Marlin MoE"
+  ],
+  "policy": {
+    "rule": "pass 1 always; pass 2 iff p1 >= tau; pass 3 iff p1*p2 >= tau; a low score keeps the token just computed",
+    "tau": 0.74,
+    "tau_source": "selected by equal-weight mean projected gain on a training split of saved teacher-forced native MTP proposals, with assumed costs K2 79.6 ms, K3 91.2 ms and 11.75 ms credit per skipped position (4.75 ms MTP pass + 7 ms verify row)",
+    "tau_refit": "tau should be refit once the per-position skip cost is measured on the fleet; window 4 measured the native K2 c1 cycle at 80-81 ms, the K3 and skip costs are unmeasured",
+    "projected_c1_gain_percent": {
+      "hard": [
+        2.569,
+        1.584,
+        3.503
+      ],
+      "easy": [
+        2.828,
+        0.737,
+        5.022
+      ],
+      "thinking": [
+        7.553,
+        6.23,
+        8.796
+      ],
+      "code": [
+        6.04,
+        4.806,
+        7.286
+      ],
+      "note": "held-out classes, point and paired 95 % prompt interval; conditional arithmetic on the assumed costs, not a measurement"
+    }
+  },
+  "control": {
+    "file": "overlay/kstop/control.json",
+    "value": {
+      "schema": 1,
+      "mode": "k3-stop",
+      "epoch": 0,
+      "tau": 0.74
+    },
+    "mode": "local only: every rank decides from its own copy of the all-gathered MTP logits; broadcast control is refused outside offline CPU tests",
+    "guard": "before the target forward and each further MTP pass, one fixed 13 x int64 (104 B) PyNccl MAX all-reduce carries 124 bits of a running SHA-256 of the decision inputs, the exact FP32 bits of the probabilities and a local-refusal flag; the flag rides the existing planner D2H copy and a mismatch raises the same error on every rank at the same host point",
+    "guard_cost": "isolated fleet canary: about 96 us per reduction (1 per K2-shaped cycle, 2-3 per K3-stop cycle); serving-path cost unmeasured"
+  },
+  "not_shipped": [
+    "GPU correctness gate, canary, coordinator, window, cycle receipts and A/B switch RPC (campaign harness, not in the served path)",
+    "deterministic MoE alignment overlay (separate, default off, not part of this switch)"
+  ],
+  "files": {
+    "overlay/kstop/glm_mtp_kstop.py": {
+      "sha256": "989f78ae01a8d6557f8c266560baef3f1106f3cfdac9972feda5a61ed899f348",
+      "identical_to_reviewed_packet": false,
+      "same_code_as_reviewed_packet": false,
+      "change": "reviewed packet code plus the default-off GLM_MTP_KSTOP_UNIFORM_BATCH policy; with the flag off every code path, fold and agreement payload is the packet's"
+    },
+    "overlay/kstop/kstop_runtime.py": {
+      "sha256": "4a2f917443fc35852d3dc23dc9fc0620423e484bd43597f14e8451a09863af19",
+      "identical_to_reviewed_packet": false,
+      "same_code_as_reviewed_packet": false,
+      "change": "reviewed packet code plus the default-off GLM_MTP_KSTOP_UNIFORM_BATCH policy; with the flag off every code path, fold and agreement payload is the packet's"
+    },
+    "overlay/kstop/kstop_policy.py": {
+      "sha256": "565cd839415361774030e0f507e2d1e4fe7c9e3ef223aad4c3a0a0ae3579ae95",
+      "code_ast_sha256": "9e7472938376e38ef4e48099f77df861b5046ec1113b8f8e27c6aa7a7c927b63",
+      "identical_to_reviewed_packet": true,
+      "same_code_as_reviewed_packet": true
+    },
+    "overlay/kstop/deadrow_ops.py": {
+      "sha256": "d13b51e19686376367a88b64c804f12c5772c7111a353648352936f9c67d6d89",
+      "code_ast_sha256": "fd9c227b370f00a6a117511bfafe2a1a6b85fab9da240577f7ae368e59214a80",
+      "identical_to_reviewed_packet": true,
+      "same_code_as_reviewed_packet": true
+    },
+    "overlay/kstop/source_pins.json": {
+      "sha256": "e4616c75d0717293ad9aeea570301525c91c77b5e320a14fa03db988cd7e1e5a",
+      "identical_to_reviewed_packet": true
+    }
+  },
+  "code_identity": "kstop_policy.py, deadrow_ops.py and source_pins.json are the reviewed fix12/fix13 packet files. glm_mtp_kstop.py adds one value check of GLM_MTP_KSTOP_UNIFORM_BATCH at registration; kstop_runtime.py adds the default-off uniform-batch policy and differs in one docstring credit line. control.json is new (the packet's harness wrote the control file).",
+  "evidence_to_date": {
+    "cpu": "campaign packet: 232 CPU tests in the pinned image (fix13); this repository: tests/test_kstop.py, launcher and startup tests, pinned-image composed startup",
+    "fleet": [
+      "guard canary PASS in five windows (symmetric refusal, dead-rank self-abort, recovery)",
+      "native K2 control layout booted, warmed and admitted (rank 0 post-warm 9.62-10.16 GiB in the one-slot layout)",
+      "native correctness gate: PASS 13/13 once, FAIL on run-to-run numerics twice; screen mode now separates hard safety checks",
+      "the K3-stop layout itself has never booted on the fleet; no speed or quality result exists"
+    ]
+  },
+  "status": "staged, default off until a fleet speed screen and a qualification pass",
+  "graph_descriptors": {
+    "source": "pinned vLLM 487ecf187 CudaGraphManager._init_candidates/dispatch after the overlay transform (decode_query_lens [2,3,4])",
+    "triple": "[tokens, requests, query length]",
+    "target": [
+      [
+        2,
+        1,
+        2
+      ],
+      [
+        3,
+        1,
+        3
+      ],
+      [
+        4,
+        1,
+        4
+      ],
+      [
+        4,
+        2,
+        2
+      ],
+      [
+        6,
+        2,
+        3
+      ],
+      [
+        16,
+        4,
+        4
+      ]
+    ],
+    "first_mtp": [
+      [
+        2,
+        1,
+        2
+      ],
+      [
+        3,
+        1,
+        3
+      ],
+      [
+        4,
+        1,
+        4
+      ],
+      [
+        4,
+        2,
+        2
+      ],
+      [
+        6,
+        2,
+        3
+      ],
+      [
+        16,
+        4,
+        4
+      ]
+    ],
+    "later_mtp": [
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        4,
+        4,
+        1
+      ]
+    ],
+    "total": 14,
+    "rows": 75,
+    "widths_1_to_16_total": 28,
+    "dispatch": {
+      "c1": "every shape exact (target/first M2, M3, M4; later M1)",
+      "c2": "q2, q3 exact; q4 pads to M16; later pads to M4",
+      "c3": "q4 pads to M16, later to M4; uniform q2/q3 eager",
+      "c4": "q4 exact M16, later exact M4; uniform q2/q3 eager",
+      "heterogeneous": "verify rectangles where requests drafted different lengths run the target eager in every layout (dead-row remap is not captured)"
+    }
+  },
+  "uniform_batch": {
+    "switch": "GLM_MTP_KSTOP_UNIFORM_BATCH (default 0; 1 requires GLM_MTP_KSTOP=1)",
+    "rule": "with more than one request in the draft batch every request drafts all three tokens (no stop decision, no decision guard, no confidence read); one request keeps the confidence stop",
+    "why": "heterogeneous verify rectangles run the target eager; with [1, 4, 16] only q4 replays a graph at c3/c4, so a common K of 3 is the only common K that never falls back to eager",
+    "rank_identity": "depends only on num_reqs (bound by the begin fold and the prepare guard); the flag is bound by the cold control agreement",
+    "status": "unmeasured; c4 screen spec in the campaign packet"
+  }
+}

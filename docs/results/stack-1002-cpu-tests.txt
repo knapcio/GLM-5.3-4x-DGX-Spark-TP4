@@ -1,0 +1,791 @@
+# Stack release candidate (release/stack-1002): offline checks, 2026-10-02 (Europe/Warsaw)
+# Checked tree: 779ff013e01c2ecf81a6a8f209297cda31631031 (all five lever commits), clean.
+# 1) GLM_IMAGE_SRC=<extracted image vllm source> tests/run_cpu_tests.sh on macOS: exit 0
+SOURCE PINS PASS: 21 files
+test_all_python_parses (__main__.Recipe.test_all_python_parses) ... ok
+test_dry_has_no_fleet_or_state_access (__main__.Recipe.test_dry_has_no_fleet_or_state_access) ... ok
+test_four_dry_vectors (__main__.Recipe.test_four_dry_vectors) ... ok
+test_glue_lite_registers_last_and_refuses_bad_modes (__main__.Recipe.test_glue_lite_registers_last_and_refuses_bad_modes) ... ok
+test_kernel_body_pins (__main__.Recipe.test_kernel_body_pins) ... ok
+test_kstop_overlay_ships_no_harness (__main__.Recipe.test_kstop_overlay_ships_no_harness) ... ok
+test_kstop_registers_last_and_requires_the_shortcut_off (__main__.Recipe.test_kstop_registers_last_and_requires_the_shortcut_off) ... ok
+test_mla_inert_and_bad_mode (__main__.Recipe.test_mla_inert_and_bad_mode) ... ok
+test_mla_pin_and_drift (__main__.Recipe.test_mla_pin_and_drift) ... ok
+test_model_revisions_and_complete_manifests (__main__.Recipe.test_model_revisions_and_complete_manifests) ... ok
+test_native_mtp_source_and_mapping_drift (__main__.Recipe.test_native_mtp_source_and_mapping_drift) ... ok
+test_native_mtp_starts_loader_without_swa_pool (__main__.Recipe.test_native_mtp_starts_loader_without_swa_pool) ... ok
+test_profiles_keep_staged_switches_off (__main__.Recipe.test_profiles_keep_staged_switches_off) ... ok
+test_qeval_count_and_final_content (__main__.Recipe.test_qeval_count_and_final_content) ... ok
+test_split_dispatch_contract (__main__.Recipe.test_split_dispatch_contract) ... ok
+test_startup_order_and_inert_gates (__main__.Recipe.test_startup_order_and_inert_gates) ... ok
+test_startup_registration_error_aborts (__main__.Recipe.test_startup_registration_error_aborts) ... ok
+test_verify_detects_corruption (__main__.Recipe.test_verify_detects_corruption) ... ok
+test_verify_receipt_expires_after_seven_days (__main__.Recipe.test_verify_receipt_expires_after_seven_days) ... ok
+test_verify_receipt_skips_only_unchanged_files (__main__.Recipe.test_verify_receipt_skips_only_unchanged_files) ... ok
+test_verify_rejects_path_escape (__main__.Recipe.test_verify_rejects_path_escape) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 1.460s
+
+OK
+SHA256 PASS: example/model, 1 files
+test_bad_values_and_other_profiles_refused (__main__.LaunchShape.test_bad_values_and_other_profiles_refused) ... ok
+test_c4_pass2_graph_adds_width_four_only (__main__.LaunchShape.test_c4_pass2_graph_adds_width_four_only) ... ok
+test_context_uses_the_whole_two_gib_pool (__main__.LaunchShape.test_context_uses_the_whole_two_gib_pool) ... ok
+test_context_values_are_closed_and_must_fit (__main__.LaunchShape.test_context_values_are_closed_and_must_fit) ... ok
+test_defaults_reproduce_the_saved_vector (__main__.LaunchShape.test_defaults_reproduce_the_saved_vector) ... ok
+test_kstop_refusals (__main__.LaunchShape.test_kstop_refusals) ... ok
+test_kstop_selects_k3_and_graph_widths_1_to_16 (__main__.LaunchShape.test_kstop_selects_k3_and_graph_widths_1_to_16) ... ok
+test_kstop_switch_and_control_reach_the_container (__main__.LaunchShape.test_kstop_switch_and_control_reach_the_container) ... ok
+test_kv_pin_l1_changes_only_the_pool (__main__.LaunchShape.test_kv_pin_l1_changes_only_the_pool) ... ok
+test_nccl_no_ll128_adds_only_the_protocol_variable (__main__.LaunchShape.test_nccl_no_ll128_adds_only_the_protocol_variable) ... ok
+test_rank_vectors_carry_the_switch (__main__.LaunchShape.test_rank_vectors_carry_the_switch) ... ok
+test_switches_are_not_container_variables (__main__.LaunchShape.test_switches_are_not_container_variables) ... ok
+test_boot_deadline_includes_admission (__main__.Launcher.test_boot_deadline_includes_admission) ... health 200 after 1.0 s
+ok
+test_capture_floor (__main__.Launcher.test_capture_floor) ... ok
+test_floor_stopped_rank_and_numeric_errors (__main__.Launcher.test_floor_stopped_rank_and_numeric_errors) ... ok
+test_jit_prep_failure_is_fail_closed (__main__.Launcher.test_jit_prep_failure_is_fail_closed) ... s1 JIT PREP sampling /cache/x.so
+s1 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s2 JIT PREP sampling /cache/x.so
+s2 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s4 JIT PREP sampling /cache/x.so
+s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+ok
+test_jit_prep_matches_model_container (__main__.Launcher.test_jit_prep_matches_model_container) ... ok
+test_lock_does_not_release_another_owner (__main__.Launcher.test_lock_does_not_release_another_owner) ... ok
+test_native_mtp_does_not_mount_external_draft (__main__.Launcher.test_native_mtp_does_not_mount_external_draft) ... ok
+test_nccl_hash_one_or_four_in_host_order (__main__.Launcher.test_nccl_hash_one_or_four_in_host_order) ... ok
+test_preexisting_swap_and_optional_warning (__main__.Launcher.test_preexisting_swap_and_optional_warning) ... ok
+test_prefill_busy_endpoint_never_mutates_control (__main__.Launcher.test_prefill_busy_endpoint_never_mutates_control) ... ok
+test_prefill_cap_selected_only_after_drain (__main__.Launcher.test_prefill_cap_selected_only_after_drain) ... Serving prefill cap 2048; constructor capacity4096
+ok
+test_prefill_control_requires_all_rank_readback (__main__.Launcher.test_prefill_control_requires_all_rank_readback) ... ok
+test_preflight_lock_check_is_head_only (__main__.Launcher.test_preflight_lock_check_is_head_only) ... ok
+test_progress_ignores_http_polls_and_static_metrics (__main__.Launcher.test_progress_ignores_http_polls_and_static_metrics) ... ok
+test_restart_and_preboot_swap_baseline_trip (__main__.Launcher.test_restart_and_preboot_swap_baseline_trip) ... ok
+test_roce_ready_counters_are_not_errors (__main__.Launcher.test_roce_ready_counters_are_not_errors) ... ok
+test_serve_runs_jit_prep_before_compaction (__main__.Launcher.test_serve_runs_jit_prep_before_compaction) ... s1 JIT PREP sampling /cache/x.so
+s1 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s2 JIT PREP sampling /cache/x.so
+s2 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s3 JIT PREP sampling /cache/x.so
+s3 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+s4 JIT PREP sampling /cache/x.so
+s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
+JIT PREP PASS
+s4 
+s3 
+s2 
+s1 
+Watchdog active in foreground; use another terminal for status and benchmarks. Ctrl-C stops the deployment.
+ok
+test_ssh_failure_retains_lock (__main__.Launcher.test_ssh_failure_retains_lock) ... ok
+test_stop_targets_only_owned_names (__main__.Launcher.test_stop_targets_only_owned_names) ... Four containers stopped and preserved; owned lock released
+ok
+test_swap_requires_three_samples_over_baseline (__main__.Launcher.test_swap_requires_three_samples_over_baseline) ... ok
+test_verify_command_binds_manifest_once_and_fits_one_argument (__main__.Launcher.test_verify_command_binds_manifest_once_and_fits_one_argument) ... ok
+test_verify_command_runs (__main__.Launcher.test_verify_command_runs) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 0.778s
+
+OK
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.572s
+
+OK
+glm-dsa-swa-pool: registered (487ecf187)
+W1002 09:05:18.225000 64738 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 09:05:18.226000 64738 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 09:05:18.226000 64738 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_spec_registry
+glm-dsa-swa-pool: pinned vllm.v1.kv_cache_interface
+glm-dsa-swa-pool: pinned vllm.v1.request
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_utils
+glm-dsa-swa-pool: pinned vllm.v1.core.block_pool
+glm-dsa-swa-pool: pinned vllm.v1.core.single_type_kv_cache_manager
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_coordinator
+glm-dsa-swa-pool: pinned vllm.v1.core.kv_cache_manager
+test_alloc_cancel_deferred_preemption (__main__.PoolTests.test_alloc_cancel_deferred_preemption) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_async_peak_and_admission_gate (__main__.PoolTests.test_async_peak_and_admission_gate) ... glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+ok
+test_full_attention_miss_reconciles_all_tables (__main__.PoolTests.test_full_attention_miss_reconciles_all_tables) ... glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_geometry_and_capacity (__main__.PoolTests.test_geometry_and_capacity) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1241, 2569), bytes=4293610752, target physical tokens=79424, usable=79360
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1208, 2569, 2049), bytes=4293072896, target physical tokens=77312, usable=77248
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1357, 1545), bytes=4294529280, target physical tokens=86848, usable=86784
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+glm-dsa-swa-pool: pool blocks=(1324, 2569), bytes=4294450176, target physical tokens=84736, usable=84672
+ok
+test_long_decode_plateau_and_multirequest_refs (__main__.PoolTests.test_long_decode_plateau_and_multirequest_refs) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_minimal_profile_config (__main__.PoolTests.test_minimal_profile_config) ... glm-dsa-swa-pool: pool blocks=(36, 36, 36), bytes=119337984, target physical tokens=2304, usable=2240
+ok
+test_no_cache_and_switch (__main__.PoolTests.test_no_cache_and_switch) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_pool_specific_exhaustion_atomic (__main__.PoolTests.test_pool_specific_exhaustion_atomic) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+ok
+test_prefix_hit_reconciles_and_missing_tail_replays (__main__.PoolTests.test_prefix_hit_reconciles_and_missing_tail_replays) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_prefix_shared_refs_and_payload (__main__.PoolTests.test_prefix_shared_refs_and_payload) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_rejection_page_boundary_and_committed_eviction (__main__.PoolTests.test_rejection_page_boundary_and_committed_eviction) ... glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1307, 1545), bytes=4293768960, target physical tokens=83648, usable=83584
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+glm-dsa-swa-pool: pool blocks=(1252, 1545, 2049), bytes=4293178368, target physical tokens=80128, usable=80064
+ok
+test_source_pins_and_refusal (__main__.PoolTests.test_source_pins_and_refusal) ... ok
+test_worker_rejects_group_blind_zero_and_copy (__main__.PoolTests.test_worker_rejects_group_blind_zero_and_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.375s
+
+OK
+W1002 09:05:40.249000 64976 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1002 09:05:40.250000 64976 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1002 09:05:40.251000 64976 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+test_capture_doubles_eligible_widths_under_short_context (__main__.Dispatch.test_capture_doubles_eligible_widths_under_short_context) ... glm-dsa-short: ModelManager captured 7 FULL graphs, short [(1, 1), (3, 1), (12, 4)]
+ok
+test_dispatch_promotes_only_when_eligible (__main__.Dispatch.test_dispatch_promotes_only_when_eligible) ... glm-dsa-short: ModelManager captured 5 FULL graphs, short [(3, 1), (12, 4)]
+glm-dsa-short: first short_dispatch ('FULL', 3, 1)
+glm-dsa-short: first stock_dispatch ('FULL', 3, 1)
+ok
+test_real_module_transformed_and_wrapped (__main__.Dispatch.test_real_module_transformed_and_wrapped) ... ok
+test_draft (__main__.Eligibility.test_draft) ... ok
+test_target_verify (__main__.Eligibility.test_target_verify) ... ok
+test_off_by_default_and_bad_value (__main__.Inert.test_off_by_default_and_bad_value) ... ok
+test_profile_flags (__main__.Inert.test_profile_flags) ... ok
+test_pins_and_transforms (__main__.Sources.test_pins_and_transforms) ... ok
+test_refuses_late_registration (__main__.Sources.test_refuses_late_registration) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 19.713s
+
+OK
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... skipped 'needs Triton without the interpreter'
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.502s
+
+OK (skipped=4)
+test_bankable_register_installs_all (__main__.Bankable.test_bankable_register_installs_all) ... ok
+test_bankable_without_harness_refuses (__main__.Bankable.test_bankable_without_harness_refuses) ... ok
+test_capture_receipts_per_bank_and_descriptor (__main__.Bankable.test_capture_receipts_per_bank_and_descriptor) ... ok
+test_control_bank_is_stock (__main__.Bankable.test_control_bank_is_stock) ... ok
+test_status_and_agreed_view (__main__.Bankable.test_status_and_agreed_view) ... ok
+test_ws_follows_bank (__main__.Bankable.test_ws_follows_bank) ... ok
+test_arm_refuses_split_topk_buffers (__main__.DsaIndexCacheF3.test_arm_refuses_split_topk_buffers) ... ok
+test_arm_strict_expect (__main__.DsaIndexCacheF3.test_arm_strict_expect) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+ok
+test_block_table_swap_misses (__main__.DsaIndexCacheF3.test_block_table_swap_misses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_check_mode_catches_unseen_writer (__main__.DsaIndexCacheF3.test_check_mode_catches_unseen_writer) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+ok
+test_next_forward_invalidates (__main__.DsaIndexCacheF3.test_next_forward_invalidates) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_no_arming_no_reuse (__main__.DsaIndexCacheF3.test_no_arming_no_reuse) ... ok
+test_skip_layers_reuse_and_match_stock (__main__.DsaIndexCacheF3.test_skip_layers_reuse_and_match_stock) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 9, 'other': 3}}
+ok
+test_unarmed_skip_layer_never_reuses (__main__.DsaIndexCacheF3.test_unarmed_skip_layer_never_reuses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}, 'mtp': {'skip_armed': 0, 'other': 1}}
+ok
+test_width_change_misses (__main__.DsaIndexCacheF3.test_width_change_misses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_glue_finder_in_front (__main__.ImportComposition.test_glue_finder_in_front) ... ok
+test_transform_finder_in_front (__main__.ImportComposition.test_transform_finder_in_front) ... ok
+test_capture_streams_recorded_per_graph (__main__.MoeWorkspaceF2.test_capture_streams_recorded_per_graph) ... ok
+test_cold_capture_fails_closed (__main__.MoeWorkspaceF2.test_cold_capture_fails_closed) ... ok
+test_explicit_keyword_workspace_untouched (__main__.MoeWorkspaceF2.test_explicit_keyword_workspace_untouched) ... ok
+test_foreign_stream_falls_back_to_stock (__main__.MoeWorkspaceF2.test_foreign_stream_falls_back_to_stock) ... ok
+test_one_persistent_workspace_preallocated (__main__.MoeWorkspaceF2.test_one_persistent_workspace_preallocated) ... ok
+test_positional_workspace_preserved_no_duplicate (__main__.MoeWorkspaceF2.test_positional_workspace_preserved_no_duplicate) ... ok
+test_warm_capture_uses_persistent (__main__.MoeWorkspaceF2.test_warm_capture_uses_persistent) ... ok
+test_every_pin_only_module_is_pinned (__main__.Pins.test_every_pin_only_module_is_pinned) ... ok
+test_image_sources_match_pins (__main__.Pins.test_image_sources_match_pins) ... ok
+test_sparse_utils_pin_enforced_at_import (__main__.Pins.test_sparse_utils_pin_enforced_at_import) ... skipped 'image-only'
+test_inert_by_default (__main__.Register.test_inert_by_default) ... ok
+test_armed_gate_refuses_non_bf16_activations (__main__.RouterF1.test_armed_gate_refuses_non_bf16_activations) ... ok
+test_armed_logits_are_the_pre_cast_bf16 (__main__.RouterF1.test_armed_logits_are_the_pre_cast_bf16) ... ok
+test_contract_accepts_exactly_e256_g1_tg1_top8 (__main__.RouterF1.test_contract_accepts_exactly_e256_g1_tg1_top8) ... glm-glue-lite: F1 router bf16 logits armed {'target': 1}, refused 0
+ok
+test_contract_refusals (__main__.RouterF1.test_contract_refusals) ... glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'scoring is not sigmoid'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'correction bias is not FP32 [256]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'correction bias is not FP32 [256]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G2/TG1/top8 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G8/TG4/top8 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G1/TG1/top6 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'weight is not BF16 [256, 6144]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routed_scaling_factor 3.0 not covered by the GPU gate'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'renormalize differs from the gated contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'monolithic/unknown expert kernel (logits would reach the expert kernel)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'fused shared-expert gate (logits come from F.linear on combined weights)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'gate is not exactly GateLinear'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'weight is not BF16 [256, 6144]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'allow_cublas_router_gemm active (not the Tier-6 cast path)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'allow_specialized_router_gemm active (not the Tier-6 cast path)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'out_dtype is not FP32'))
+ok
+test_fused_topk_disabled_refuses_and_strict_raises (__main__.RouterF1.test_fused_topk_disabled_refuses_and_strict_raises) ... glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'fused CUDA grouped_topk disabled'))
+ok
+test_strict_expected_counts (__main__.RouterF1.test_strict_expected_counts) ... glm-glue-lite: F1 router bf16 logits armed {'target': 3, 'mtp': 1}, refused 0
+glm-glue-lite: F1 router bf16 logits armed {'target': 3}, refused 0
+ok
+test_strict_refuses_any_out_of_contract_router (__main__.RouterF1.test_strict_refuses_any_out_of_contract_router) ... glm-glue-lite: F1 router bf16 logits armed {'target': 1}, refused 1 (first: ('target:1', 'routing E256/G2/TG1/top8 outside the proven E256/G1/TG1/top8 contract'))
+ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 0.722s
+
+OK (skipped=1)
+test_cpu_remap_reads_both_snapshots_before_writing (__main__.DeadRowOp.test_cpu_remap_reads_both_snapshots_before_writing) ... ok
+test_dead_rows_reuse_the_request_root_and_keep_the_bonus_row (__main__.Policy.test_dead_rows_reuse_the_request_root_and_keep_the_bonus_row) ... ok
+test_incremental_decisions_equal_the_rule (__main__.Policy.test_incremental_decisions_equal_the_rule) ... ok
+test_uniform_cumulative_rule (__main__.Policy.test_uniform_cumulative_rule) ... ok
+test_default_off_installs_nothing (__main__.Register.test_default_off_installs_nothing) ... ok
+test_refusals (__main__.Register.test_refusals) ... ok
+test_registers_first_and_refuses_late_registration (__main__.Register.test_registers_first_and_refuses_late_registration) ... ok
+test_shipped_control (__main__.Register.test_shipped_control) ... ok
+test_broadcast_control_is_refused_without_the_offline_flag (__main__.Runtime.test_broadcast_control_is_refused_without_the_offline_flag) ... ok
+test_c1_selects_the_physical_width_without_changing_the_schedule (__main__.Runtime.test_c1_selects_the_physical_width_without_changing_the_schedule) ... ok
+test_c4_dead_rows_reuse_root_experts_and_keep_bonus_rows (__main__.Runtime.test_c4_dead_rows_reuse_root_experts_and_keep_bonus_rows) ... ok
+test_control_file_read_once_per_process (__main__.Runtime.test_control_file_read_once_per_process) ... ok
+test_guard_mismatch_refuses_at_the_common_check (__main__.Runtime.test_guard_mismatch_refuses_at_the_common_check) ... ok
+test_guard_rides_the_planner_copy_without_an_extra_sync (__main__.Runtime.test_guard_rides_the_planner_copy_without_an_extra_sync) ... ok
+test_identity_batches_launch_no_remap (__main__.Runtime.test_identity_batches_launch_no_remap) ... ok
+test_skipped_draft_slots_hold_valid_ids (__main__.Runtime.test_skipped_draft_slots_hold_valid_ids) ... ok
+test_synthetic_cycles_do_not_communicate (__main__.Runtime.test_synthetic_cycles_do_not_communicate) ... ok
+test_k3_graph_widths_come_from_the_transformed_manager (__main__.SourcePins.test_k3_graph_widths_come_from_the_transformed_manager) ... ok
+test_pins_match_and_every_transform_compiles (__main__.SourcePins.test_pins_match_and_every_transform_compiles) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 5.080s
+
+OK
+test_boundary_rejection_null_and_padding (__main__.KernelTests.test_boundary_rejection_null_and_padding) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.087s
+
+OK
+glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.2 s (0.08 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp9i17hyss): 207 eager + 9 mmap tensors, 0.0 GiB in 0.1 s (0.08 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp9i17hyss): last slab released after 0.5 s
+OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
+OK: wiring
+GLM_ROCE: the image already routes through b12x_ar_comm (B12X_ROCENANTE); the shim stays off
+PASS test_boot_hook_patch_failure_is_loud
+PASS test_boot_hook_patches_on_import_once
+PASS test_boot_off_installs_nothing
+PASS test_existing_b12x_slot_keeps_shim_off
+PASS test_four_ranks_limits_differ_all_raise
+PASS test_four_ranks_one_rank_cannot_all_raise
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+GLM_ROCE disabled on every rank: rank 2: needs an integrated GPU with an active RDMA device; collectives stay on NCCL.
+PASS test_four_ranks_one_rank_cannot_lenient_all_nccl
+PASS test_four_ranks_route_decode_sizes
+PASS test_four_ranks_single_node_skips_without_error
+PASS test_graph_capture_wrapper_order_and_passthrough
+PASS test_graph_capture_wrapper_propagates_errors
+PASS test_is_tp_group
+PASS test_parse_byte_size
+PASS test_pth_file_contents
+PASS test_read_limits_defaults_and_validation
+PASS test_worker_guard_failure_and_no_comm
+PASS test_worker_guard_sync_none_async
+PASS test_worker_patch_wraps_both_entry_points
+ALL PASS
+# 2) Pinned base image sha256:4def0ef6..., Colima, --pull never --network none, no GPU, nice 10, one container
+#    at a time: tests/test_dirty_l2.py (interpreter and sm_121 compile), tests/test_glue_lite.py,
+#    tests/test_kstop.py (real vLLM sources, one-rank Gloo)
+# image ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
+# repo 779ff013e01c2ecf81a6a8f209297cda31631031 dirty=0
+# 2026-10-02T07:06:49Z tests/test_dirty_l2.py TRITON_INTERPRET=1
+waiting for an empty docker ps
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... ok
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... ok
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... skipped 'needs Triton without the interpreter'
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 45.064s
+
+OK (skipped=1)
+# 2026-10-02T07:08:07Z tests/test_dirty_l2.py TRITON_INTERPRET=0
+test_bit_identical_and_full_coverage (__main__.InterpreterNumerics.test_bit_identical_and_full_coverage) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_fp8_cache (__main__.InterpreterNumerics.test_fp8_cache) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_installed_dispatch_matches_released (__main__.InterpreterNumerics.test_installed_dispatch_matches_released) ... skipped 'needs Triton with TRITON_INTERPRET=1'
+test_reduce_discards_after_barrier (__main__.StaticPTX.test_reduce_discards_after_barrier) ... ok
+test_dispatch_passes_released_partial_at_split32 (__main__.Wiring.test_dispatch_passes_released_partial_at_split32) ... glm-dirty-l2: armed (discard, split 32)
+glm-dirty-l2: first discard dispatch rows=3
+ok
+test_hook_runs_after_import (__main__.Wiring.test_hook_runs_after_import) ... ok
+test_off_by_default_installs_nothing (__main__.Wiring.test_off_by_default_installs_nothing) ... ok
+test_only_static_discard_at_split32 (__main__.Wiring.test_only_static_discard_at_split32) ... ok
+test_profiles_and_startup_order (__main__.Wiring.test_profiles_and_startup_order) ... ok
+test_source_pin_refuses_drift (__main__.Wiring.test_source_pin_refuses_drift) ... ok
+test_split_kernel_pin_and_kernel_ast (__main__.Wiring.test_split_kernel_pin_and_kernel_ast) ... ok
+test_startup_registers_and_aborts_on_bad_mode (__main__.Wiring.test_startup_registers_and_aborts_on_bad_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.066s
+
+OK (skipped=3)
+# 2026-10-02T07:08:10Z tests/test_glue_lite.py (image: real vLLM sources, Gloo on loopback)
+test_bankable_register_installs_all (__main__.Bankable.test_bankable_register_installs_all) ... ok
+test_bankable_without_harness_refuses (__main__.Bankable.test_bankable_without_harness_refuses) ... ok
+test_capture_receipts_per_bank_and_descriptor (__main__.Bankable.test_capture_receipts_per_bank_and_descriptor) ... ok
+test_control_bank_is_stock (__main__.Bankable.test_control_bank_is_stock) ... ok
+test_status_and_agreed_view (__main__.Bankable.test_status_and_agreed_view) ... ok
+test_ws_follows_bank (__main__.Bankable.test_ws_follows_bank) ... ok
+test_arm_refuses_split_topk_buffers (__main__.DsaIndexCacheF3.test_arm_refuses_split_topk_buffers) ... ok
+test_arm_strict_expect (__main__.DsaIndexCacheF3.test_arm_strict_expect) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+ok
+test_block_table_swap_misses (__main__.DsaIndexCacheF3.test_block_table_swap_misses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_check_mode_catches_unseen_writer (__main__.DsaIndexCacheF3.test_check_mode_catches_unseen_writer) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 2, 'other': 1}}
+ok
+test_next_forward_invalidates (__main__.DsaIndexCacheF3.test_next_forward_invalidates) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_no_arming_no_reuse (__main__.DsaIndexCacheF3.test_no_arming_no_reuse) ... ok
+test_skip_layers_reuse_and_match_stock (__main__.DsaIndexCacheF3.test_skip_layers_reuse_and_match_stock) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 9, 'other': 3}}
+ok
+test_unarmed_skip_layer_never_reuses (__main__.DsaIndexCacheF3.test_unarmed_skip_layer_never_reuses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}, 'mtp': {'skip_armed': 0, 'other': 1}}
+ok
+test_width_change_misses (__main__.DsaIndexCacheF3.test_width_change_misses) ... glm-glue-lite: F3 armed {'target': {'skip_armed': 1, 'other': 1}}
+ok
+test_glue_finder_in_front (__main__.ImportComposition.test_glue_finder_in_front) ... ok
+test_transform_finder_in_front (__main__.ImportComposition.test_transform_finder_in_front) ... ok
+test_capture_streams_recorded_per_graph (__main__.MoeWorkspaceF2.test_capture_streams_recorded_per_graph) ... ok
+test_cold_capture_fails_closed (__main__.MoeWorkspaceF2.test_cold_capture_fails_closed) ... ok
+test_explicit_keyword_workspace_untouched (__main__.MoeWorkspaceF2.test_explicit_keyword_workspace_untouched) ... ok
+test_foreign_stream_falls_back_to_stock (__main__.MoeWorkspaceF2.test_foreign_stream_falls_back_to_stock) ... ok
+test_one_persistent_workspace_preallocated (__main__.MoeWorkspaceF2.test_one_persistent_workspace_preallocated) ... ok
+test_positional_workspace_preserved_no_duplicate (__main__.MoeWorkspaceF2.test_positional_workspace_preserved_no_duplicate) ... ok
+test_warm_capture_uses_persistent (__main__.MoeWorkspaceF2.test_warm_capture_uses_persistent) ... ok
+test_every_pin_only_module_is_pinned (__main__.Pins.test_every_pin_only_module_is_pinned) ... ok
+test_image_sources_match_pins (__main__.Pins.test_image_sources_match_pins) ... ok
+test_sparse_utils_pin_enforced_at_import (__main__.Pins.test_sparse_utils_pin_enforced_at_import) ... glm-glue-lite: registered {'router': False, 'ws': False, 'idx': True}
+ok
+test_inert_by_default (__main__.Register.test_inert_by_default) ... ok
+test_armed_gate_refuses_non_bf16_activations (__main__.RouterF1.test_armed_gate_refuses_non_bf16_activations) ... ok
+test_armed_logits_are_the_pre_cast_bf16 (__main__.RouterF1.test_armed_logits_are_the_pre_cast_bf16) ... ok
+test_contract_accepts_exactly_e256_g1_tg1_top8 (__main__.RouterF1.test_contract_accepts_exactly_e256_g1_tg1_top8) ... glm-glue-lite: F1 router bf16 logits armed {'target': 1}, refused 0
+ok
+test_contract_refusals (__main__.RouterF1.test_contract_refusals) ... glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'scoring is not sigmoid'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'correction bias is not FP32 [256]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'correction bias is not FP32 [256]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G2/TG1/top8 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G8/TG4/top8 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routing E256/G1/TG1/top6 outside the proven E256/G1/TG1/top8 contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'weight is not BF16 [256, 6144]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'routed_scaling_factor 3.0 not covered by the GPU gate'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'renormalize differs from the gated contract'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'monolithic/unknown expert kernel (logits would reach the expert kernel)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'fused shared-expert gate (logits come from F.linear on combined weights)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'gate is not exactly GateLinear'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'weight is not BF16 [256, 6144]'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'allow_cublas_router_gemm active (not the Tier-6 cast path)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'allow_specialized_router_gemm active (not the Tier-6 cast path)'))
+glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'out_dtype is not FP32'))
+ok
+test_fused_topk_disabled_refuses_and_strict_raises (__main__.RouterF1.test_fused_topk_disabled_refuses_and_strict_raises) ... glm-glue-lite: F1 router bf16 logits armed {'target': 0}, refused 1 (first: ('target:0', 'fused CUDA grouped_topk disabled'))
+ok
+test_strict_expected_counts (__main__.RouterF1.test_strict_expected_counts) ... glm-glue-lite: F1 router bf16 logits armed {'target': 3, 'mtp': 1}, refused 0
+glm-glue-lite: F1 router bf16 logits armed {'target': 3}, refused 0
+ok
+test_strict_refuses_any_out_of_contract_router (__main__.RouterF1.test_strict_refuses_any_out_of_contract_router) ... glm-glue-lite: F1 router bf16 logits armed {'target': 1}, refused 1 (first: ('target:1', 'routing E256/G2/TG1/top8 outside the proven E256/G1/TG1/top8 contract'))
+ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 2.883s
+
+OK
+# 2026-10-02T07:08:17Z tests/test_kstop.py (image: real vLLM sources, Gloo on loopback)
+test_cpu_remap_reads_both_snapshots_before_writing (__main__.DeadRowOp.test_cpu_remap_reads_both_snapshots_before_writing) ... ok
+test_dead_rows_reuse_the_request_root_and_keep_the_bonus_row (__main__.Policy.test_dead_rows_reuse_the_request_root_and_keep_the_bonus_row) ... ok
+test_incremental_decisions_equal_the_rule (__main__.Policy.test_incremental_decisions_equal_the_rule) ... ok
+test_uniform_cumulative_rule (__main__.Policy.test_uniform_cumulative_rule) ... ok
+test_default_off_installs_nothing (__main__.Register.test_default_off_installs_nothing) ... ok
+test_refusals (__main__.Register.test_refusals) ... ok
+test_registers_first_and_refuses_late_registration (__main__.Register.test_registers_first_and_refuses_late_registration) ... ok
+test_shipped_control (__main__.Register.test_shipped_control) ... ok
+test_broadcast_control_is_refused_without_the_offline_flag (__main__.Runtime.test_broadcast_control_is_refused_without_the_offline_flag) ... ok
+test_c1_selects_the_physical_width_without_changing_the_schedule (__main__.Runtime.test_c1_selects_the_physical_width_without_changing_the_schedule) ... ok
+test_c4_dead_rows_reuse_root_experts_and_keep_bonus_rows (__main__.Runtime.test_c4_dead_rows_reuse_root_experts_and_keep_bonus_rows) ... ok
+test_control_file_read_once_per_process (__main__.Runtime.test_control_file_read_once_per_process) ... ok
+test_guard_mismatch_refuses_at_the_common_check (__main__.Runtime.test_guard_mismatch_refuses_at_the_common_check) ... ok
+test_guard_rides_the_planner_copy_without_an_extra_sync (__main__.Runtime.test_guard_rides_the_planner_copy_without_an_extra_sync) ... ok
+test_identity_batches_launch_no_remap (__main__.Runtime.test_identity_batches_launch_no_remap) ... ok
+test_skipped_draft_slots_hold_valid_ids (__main__.Runtime.test_skipped_draft_slots_hold_valid_ids) ... ok
+test_synthetic_cycles_do_not_communicate (__main__.Runtime.test_synthetic_cycles_do_not_communicate) ... ok
+test_k3_graph_widths_come_from_the_transformed_manager (__main__.SourcePins.test_k3_graph_widths_come_from_the_transformed_manager) ... ok
+test_pins_match_and_every_transform_compiles (__main__.SourcePins.test_pins_match_and_every_transform_compiles) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.091s
+
+OK
+exit 0
+# 3) Pinned image, real startup chain with profiles/current.env (host NCCL preload removed) plus overrides;
+#    imports the hooked vLLM modules and checks each enabled lever's installation. Expected exits: 0, 0, 0, 0, 78.
+# scenario default: PASS=True checks=['cuda_uninitialised', 'dirty_l2', 'dsa_short_imported', 'full_mla_forward_armed', 'glue_imported', 'kstop_imported']
+# scenario glue: PASS=True checks=['cuda_uninitialised', 'dirty_l2', 'dsa_short_imported', 'full_mla_forward_armed', 'glue_idx_convert', 'glue_imported', 'glue_mla_forward', 'glue_moe_ws', 'glue_pins_all_checked', 'glue_router_forward', 'glue_runner_hooked', 'kstop_imported']
+# scenario kstop: PASS=True checks=['cuda_uninitialised', 'dirty_l2', 'dsa_short_imported', 'full_mla_forward_armed', 'glue_imported', 'kstop_control_valid', 'kstop_gate_absent', 'kstop_imported', 'kstop_mla', 'kstop_mla_planner', 'kstop_moe_remap', 'kstop_mtp_installed', 'kstop_runner', 'kstop_sampler']
+# scenario kstop+glue: PASS=True checks=['cuda_uninitialised', 'dirty_l2', 'dsa_short_imported', 'full_mla_forward_armed', 'glue_idx_convert', 'glue_imported', 'glue_mla_forward', 'glue_moe_ws', 'glue_pins_all_checked', 'glue_router_forward', 'glue_runner_hooked', 'kstop_control_valid', 'kstop_gate_absent', 'kstop_imported', 'kstop_mla', 'kstop_mla_planner', 'kstop_moe_remap', 'kstop_mtp_installed', 'kstop_runner', 'kstop_sampler']
+# image ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
+# repo 779ff013e01c2ecf81a6a8f209297cda31631031 dirty=0
+# 2026-10-02T07:08:23Z scenario default (expect exit 0)
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+glm-dirty-l2: armed (discard, split 32)
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-window-memory: capture guard source pin PASS
+{
+ "scenario": "default",
+ "finders": [
+  "glm_dirty_l2.Hooks",
+  "glm_dsa_short.Finder",
+  "glm_prefill_switch.Hook",
+  "glm_window_memory.Finder",
+  "glm_full_mla.Finder",
+  "glm_mtp_fix.Hook",
+  "glm_fast_load._Hook",
+  "_distutils_hack.DistutilsMetaFinder",
+  "builtins.type",
+  "builtins.type",
+  "builtins.type"
+ ],
+ "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "ok",
+ "glm_full_mla_split_kernel": "ok",
+ "vllm.v1.worker.gpu.cudagraph_utils": "ok",
+ "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.mtp.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.rejection_sampler": "ok",
+ "vllm.v1.worker.gpu.model_runner": "ok",
+ "vllm.v1.worker.gpu_worker": "ok",
+ "vllm.model_executor.layers.fused_moe.runner.moe_runner": "ok",
+ "vllm.model_executor.layers.fused_moe.router.gate_linear": "ok",
+ "vllm.model_executor.layers.fused_moe.router.grouped_topk_router": "ok",
+ "vllm.model_executor.layers.fused_moe.experts.marlin_moe": "ok",
+ "vllm.model_executor.layers.quantization.utils.marlin_utils": "ok",
+ "vllm.model_executor.layers.mla": "ok",
+ "vllm.v1.attention.backends.mla.sparse_utils": "ok",
+ "vllm.model_executor.models.deepseek_v2": "ok",
+ "vllm.model_executor.models.deepseek_mtp": "ok",
+ "checks": {
+  "full_mla_forward_armed": true,
+  "dirty_l2": true,
+  "dsa_short_imported": true,
+  "glue_imported": true,
+  "kstop_imported": true,
+  "cuda_uninitialised": true
+ },
+ "PASS": true
+}
+# scenario default exit 0
+# 2026-10-02T07:08:41Z scenario glue (expect exit 0)
+glm-glue-lite: registered {'router': True, 'ws': True, 'idx': True}
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+glm-dirty-l2: armed (discard, split 32)
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-window-memory: capture guard source pin PASS
+{
+ "scenario": "glue",
+ "finders": [
+  "glm_glue_lite._AfterImport",
+  "glm_dirty_l2.Hooks",
+  "glm_dsa_short.Finder",
+  "glm_prefill_switch.Hook",
+  "glm_window_memory.Finder",
+  "glm_full_mla.Finder",
+  "glm_mtp_fix.Hook",
+  "glm_fast_load._Hook",
+  "_distutils_hack.DistutilsMetaFinder",
+  "builtins.type",
+  "builtins.type",
+  "builtins.type"
+ ],
+ "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "ok",
+ "glm_full_mla_split_kernel": "ok",
+ "vllm.v1.worker.gpu.cudagraph_utils": "ok",
+ "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.mtp.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.rejection_sampler": "ok",
+ "vllm.v1.worker.gpu.model_runner": "ok",
+ "vllm.v1.worker.gpu_worker": "ok",
+ "vllm.model_executor.layers.fused_moe.runner.moe_runner": "ok",
+ "vllm.model_executor.layers.fused_moe.router.gate_linear": "ok",
+ "vllm.model_executor.layers.fused_moe.router.grouped_topk_router": "ok",
+ "vllm.model_executor.layers.fused_moe.experts.marlin_moe": "ok",
+ "vllm.model_executor.layers.quantization.utils.marlin_utils": "ok",
+ "vllm.model_executor.layers.mla": "ok",
+ "vllm.v1.attention.backends.mla.sparse_utils": "ok",
+ "vllm.model_executor.models.deepseek_v2": "ok",
+ "vllm.model_executor.models.deepseek_mtp": "ok",
+ "glue_pins_checked": 11,
+ "checks": {
+  "full_mla_forward_armed": true,
+  "dirty_l2": true,
+  "dsa_short_imported": true,
+  "glue_imported": true,
+  "glue_runner_hooked": true,
+  "glue_router_forward": true,
+  "glue_moe_ws": true,
+  "glue_mla_forward": true,
+  "glue_idx_convert": true,
+  "glue_pins_all_checked": true,
+  "kstop_imported": true,
+  "cuda_uninitialised": true
+ },
+ "PASS": true
+}
+# scenario glue exit 0
+# 2026-10-02T07:08:58Z scenario kstop (expect exit 0)
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+glm-dirty-l2: armed (discard, split 32)
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-window-memory: capture guard source pin PASS
+{
+ "scenario": "kstop",
+ "finders": [
+  "glm_mtp_kstop.Hook",
+  "glm_dirty_l2.Hooks",
+  "glm_prefill_switch.Hook",
+  "glm_window_memory.Finder",
+  "glm_full_mla.Finder",
+  "glm_mtp_fix.Hook",
+  "glm_fast_load._Hook",
+  "_distutils_hack.DistutilsMetaFinder",
+  "builtins.type",
+  "builtins.type",
+  "builtins.type"
+ ],
+ "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "ok",
+ "glm_full_mla_split_kernel": "ok",
+ "vllm.v1.worker.gpu.cudagraph_utils": "ok",
+ "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.mtp.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.rejection_sampler": "ok",
+ "vllm.v1.worker.gpu.model_runner": "ok",
+ "vllm.v1.worker.gpu_worker": "ok",
+ "vllm.model_executor.layers.fused_moe.runner.moe_runner": "ok",
+ "vllm.model_executor.layers.fused_moe.router.gate_linear": "ok",
+ "vllm.model_executor.layers.fused_moe.router.grouped_topk_router": "ok",
+ "vllm.model_executor.layers.fused_moe.experts.marlin_moe": "ok",
+ "vllm.model_executor.layers.quantization.utils.marlin_utils": "ok",
+ "vllm.model_executor.layers.mla": "ok",
+ "vllm.v1.attention.backends.mla.sparse_utils": "ok",
+ "vllm.model_executor.models.deepseek_v2": "ok",
+ "vllm.model_executor.models.deepseek_mtp": "ok",
+ "kstop_pins": [
+  "vllm.model_executor.layers.fused_moe.runner.moe_runner",
+  "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90",
+  "vllm.v1.worker.gpu.cudagraph_utils",
+  "vllm.v1.worker.gpu.model_runner",
+  "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator",
+  "vllm.v1.worker.gpu.spec_decode.mtp.speculator",
+  "vllm.v1.worker.gpu.spec_decode.rejection_sampler",
+  "vllm.v1.worker.gpu_worker"
+ ],
+ "kstop_control": {
+  "schema": 1,
+  "mode": "k3-stop",
+  "epoch": 0,
+  "tau": 0.74
+ },
+ "checks": {
+  "full_mla_forward_armed": true,
+  "dirty_l2": true,
+  "dsa_short_imported": true,
+  "glue_imported": true,
+  "kstop_imported": true,
+  "kstop_runner": true,
+  "kstop_mla": true,
+  "kstop_moe_remap": true,
+  "kstop_sampler": true,
+  "kstop_mla_planner": true,
+  "kstop_mtp_installed": true,
+  "kstop_gate_absent": true,
+  "kstop_control_valid": true,
+  "cuda_uninitialised": true
+ },
+ "PASS": true
+}
+# scenario kstop exit 0
+# 2026-10-02T07:09:13Z scenario kstop+glue (expect exit 0)
+glm-glue-lite: registered {'router': True, 'ws': True, 'idx': True}
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+glm-dirty-l2: armed (discard, split 32)
+glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
+glm-window-memory: capture guard source pin PASS
+{
+ "scenario": "kstop+glue",
+ "finders": [
+  "glm_mtp_kstop.Hook",
+  "glm_glue_lite._AfterImport",
+  "glm_dirty_l2.Hooks",
+  "glm_prefill_switch.Hook",
+  "glm_window_memory.Finder",
+  "glm_full_mla.Finder",
+  "glm_mtp_fix.Hook",
+  "glm_fast_load._Hook",
+  "_distutils_hack.DistutilsMetaFinder",
+  "builtins.type",
+  "builtins.type",
+  "builtins.type"
+ ],
+ "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": "ok",
+ "glm_full_mla_split_kernel": "ok",
+ "vllm.v1.worker.gpu.cudagraph_utils": "ok",
+ "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.mtp.speculator": "ok",
+ "vllm.v1.worker.gpu.spec_decode.rejection_sampler": "ok",
+ "vllm.v1.worker.gpu.model_runner": "ok",
+ "vllm.v1.worker.gpu_worker": "ok",
+ "vllm.model_executor.layers.fused_moe.runner.moe_runner": "ok",
+ "vllm.model_executor.layers.fused_moe.router.gate_linear": "ok",
+ "vllm.model_executor.layers.fused_moe.router.grouped_topk_router": "ok",
+ "vllm.model_executor.layers.fused_moe.experts.marlin_moe": "ok",
+ "vllm.model_executor.layers.quantization.utils.marlin_utils": "ok",
+ "vllm.model_executor.layers.mla": "ok",
+ "vllm.v1.attention.backends.mla.sparse_utils": "ok",
+ "vllm.model_executor.models.deepseek_v2": "ok",
+ "vllm.model_executor.models.deepseek_mtp": "ok",
+ "glue_pins_checked": 11,
+ "kstop_pins": [
+  "vllm.model_executor.layers.fused_moe.runner.moe_runner",
+  "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90",
+  "vllm.v1.worker.gpu.cudagraph_utils",
+  "vllm.v1.worker.gpu.model_runner",
+  "vllm.v1.worker.gpu.spec_decode.autoregressive.speculator",
+  "vllm.v1.worker.gpu.spec_decode.mtp.speculator",
+  "vllm.v1.worker.gpu.spec_decode.rejection_sampler",
+  "vllm.v1.worker.gpu_worker"
+ ],
+ "kstop_control": {
+  "schema": 1,
+  "mode": "k3-stop",
+  "epoch": 0,
+  "tau": 0.74
+ },
+ "checks": {
+  "full_mla_forward_armed": true,
+  "dirty_l2": true,
+  "dsa_short_imported": true,
+  "glue_imported": true,
+  "glue_runner_hooked": true,
+  "glue_router_forward": true,
+  "glue_moe_ws": true,
+  "glue_mla_forward": true,
+  "glue_idx_convert": true,
+  "glue_pins_all_checked": true,
+  "kstop_imported": true,
+  "kstop_runner": true,
+  "kstop_mla": true,
+  "kstop_moe_remap": true,
+  "kstop_sampler": true,
+  "kstop_mla_planner": true,
+  "kstop_mtp_installed": true,
+  "kstop_gate_absent": true,
+  "kstop_control_valid": true,
+  "cuda_uninitialised": true
+ },
+ "PASS": true
+}
+# scenario kstop+glue exit 0
+# 2026-10-02T07:09:28Z scenario kstop-with-short-dsa (expect exit 78)
+Traceback (most recent call last):
+  File "/overlay/bringup/sitecustomize.py", line 48, in <module>
+    raise RuntimeError('GLM_MTP_KSTOP=1 requires GLM_INDEXER_SHORTCUT=0')
+RuntimeError: GLM_MTP_KSTOP=1 requires GLM_INDEXER_SHORTCUT=0
+# scenario kstop-with-short-dsa exit 78

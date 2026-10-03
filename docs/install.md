@@ -1,70 +1,95 @@
-# Installation
+# stack-1003 installation
 
-The supported topology is four DGX Sparks behind a RoCE switch, with NVIDIA Sync managing the data rails.
-Management SSH remains on LAN/Wi-Fi or Tailscale. Configure the fabric through Sync before using this recipe;
-the launcher consumes existing addresses and does not write network configuration.
-
-Copy this repository to each node for the image build and CPU downloads. Docker/NVIDIA Container Toolkit
-must support `--gpus all` and ARM64. Build on an idle fleet, never while another owner is serving or measuring.
+Prepare four DGX Sparks with Docker/NVIDIA Container Toolkit, an existing switched
+RoCE fabric and complete full-model weights at identical operator-selected paths.
+The administrator configures private addresses, rail identifiers, image IDs and
+paths in `.env`; published examples contain template fields only.
 
 ```bash
 docker build --platform linux/arm64 -f Dockerfile.roce -t glm53-roce:v11-b58f34ea .
 docker image inspect glm53-roce:v11-b58f34ea --format '{{.Architecture}} {{.Id}}'
-scripts/download_weights.sh "$HOME/models"
+scripts/download_weights.sh "$MODEL_ROOT"
 ```
 
-The base is `ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6`.
-It contains the v11 vLLM `487ecf187` build and its model support. The final stage adds only the pinned b12x
-transport subset, the v11 import shim and a CPU-built libibverbs proxy. Image source checks refuse all 20
-pinned files if their bytes differ. Per-node Docker image IDs can differ after local builds.
+The base image and b12x subset remain digest/source pinned. Model revisions,
+file sizes and hashes are in `manifests/`; [weights](weights.md) describes the
+resumable download and verification procedure. Install the pinned NCCL library,
+record its binary hash privately and provide the administrator's compaction helper
+at `/usr/local/sbin/spark-compact-mem.sh`. Keep the existing ownership/watchdog rules.
 
-## NCCL
+## Pinned, unmodified dispramd
 
-The measured configuration preloads NCCL 2.30.7 from a host mount. A source build on each Spark is:
+The external lender is kindling's
+[dispramd at the pinned revision](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram).
+It is an AGPL-3.0 tool fetched and built separately; no daemon source is vendored here.
+The wrapper pins commit `5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e`, hashes the
+source and resulting library, and preserves upstream licence/bundling notices.
+NVIDIA headers are separately pinned to `20e4e6e19cc26ba47b5cbe23130a396be100c427`.
+The script expects its pinned driver/toolchain; a hash mismatch is a refusal.
+
+On each idle node, install the wrapper in the generic service directory and
+fetch/build the upstream tool unchanged. These commands are operator setup,
+not actions performed by the offline docs preparation.
 
 ```bash
-git clone https://github.com/NVIDIA/nccl.git nccl-2.30.7-src
-cd nccl-2.30.7-src
-git checkout 73cf112295c33aee2b895f329f592f2a9b4b0f97
-make -j4 src.build CUDA_HOME=/usr/local/cuda NVCC_GENCODE='-gencode=arch=compute_121,code=sm_121'
-mkdir -p "$HOME/nccl-2.30.7"
-cp -a build/lib/. "$HOME/nccl-2.30.7/"
-sha256sum "$HOME/nccl-2.30.7/libnccl.so.2.30.7"
+sudo install -d -o "$SERVICE_USER" -g "$SERVICE_GROUP" /srv/glm-dispram
+sudo install -m 0755 -o "$SERVICE_USER" -g "$SERVICE_GROUP" \
+  scripts/dispram.sh /srv/glm-dispram/dispram.sh
+export DISPRAM_HOME=/srv/glm-dispram
+/srv/glm-dispram/dispram.sh fetch
+/srv/glm-dispram/dispram.sh build
 ```
 
-That commit is NVIDIA's `v2.30.7-1` tag. Toolchains can produce different binary hashes. Pin the installed
-binary in `.env` as `NCCL_SHA256`: one hash when all four hosts have identical bytes, otherwise four
-comma-separated hashes in `HOSTS` order. The example values are the libraries read from the measured fleet,
-whose second host has a separately built 2.30.7 binary; they are not a claim that every source build produces them. The precise flags of that
-historical binary build are unknown. NCCL source and binaries retain NVIDIA's own licence.
+Run fetch/build as the chosen service user, with Docker access. Keep the standard
+`/srv/glm-dispram` location consistent across the launcher, lender and lock helper.
+For another location, render all three configurations consistently before install.
+The local wrapper is separate from the external AGPL implementation.
 
-## Compaction and ownership
+## Start and persist the lender
 
-The launcher requires `/usr/local/sbin/spark-compact-mem.sh`, installed by the administrator. Its minimal
-operation is `sync`, then `echo 1 > /proc/sys/vm/compact_memory`; it does not drop caches or persist tuning.
-Allow noninteractive sudo for this exact helper, rather than putting passwords in `.env`. The helper must
-return success; compaction failures stop launch. No clock command or persistent sysctl tuning is included.
+Prefer the included persistent units: render the service user in
+`service/dispramd.service` and `service/sudoers-dispram`, review them, then follow
+[service setup](../service/README.md). The DRM lock is ordered before Docker;
+the daemon runs after Docker and the lock. No borrower may start before preborrow.
 
-From the workstation, set `.env` hostnames, IPs, paths and fabric names. All four target/draft directories
-must be identical to their manifests. `./start.sh preflight` hashes every file, checks ARM64 images and
-NCCL bytes, requires at least 110 GiB MemAvailable per node, verifies the primary data address, refuses
-partial downloads, GPU containers and existing runtime directories, and checks the compaction sudo rule.
-
-`serve` acquires `$HOME/fleet_busy` on rank 0 with noclobber before staging. It never steals a lock.
-It saves the exact ownership token locally, copies the runtime to a fresh `OVERLAY_REMOTE`, creates a
-private cache, compacts all nodes and launches workers 3/2/1 before the head. It keeps the lock while the
-foreground watchdog is active. `stop` targets only the recorded four container names; it releases the lock
-only after all four are verified stopped and only if the lock contents match its token. An unreachable node
-leaves ownership retained for recovery through management SSH or a local console.
-
-Container names include time and a random suffix. Existing names are never reused. Containers are stopped
-and preserved. Select another fresh runtime path after stopping; keep old caches and logs for diagnosis.
-The recipe makes no automatic model restart, power-cycle or unrelated-container stop.
-
-The API is loopback port 8095 on the head. For remote use, an SSH tunnel is sufficient:
+For a manual session on an idle node:
 
 ```bash
-ssh -L 18095:127.0.0.1:8095 Spark_01
+/srv/glm-dispram/dispram.sh drm-lock
+/srv/glm-dispram/dispram.sh start
+/srv/glm-dispram/dispram.sh watch
+/srv/glm-dispram/dispram.sh preborrow
 ```
 
-Image build and fresh runtime qualification were not executed during the offline packaging job.
+The DRM-lock command uses sudo authentication on stdin. Use the local
+administrator's normal authentication; store no credential in this repository.
+`start` refuses GPU contexts, borrowers, DRM users or unreadable checks.
+The daemon is never automatically restarted. [Recovery](../service/README.md#recovery)
+requires borrower shutdown and verified release before stopping the lender.
+
+## Select the release layout
+
+Build the included ARM64 copy guard with the locally cached pinned runtime image:
+
+```bash
+bash overlay/guard/build_guard.sh
+```
+
+This runs the CPU interposition test, builds
+`overlay/guard/libdispram_copy_guard.so`, and records source/binary hashes in
+`overlay/guard/SHA256SUMS`. The source is the same guard used in the fleet gate.
+Without the built library, the launcher refuses dispram. The guard catches the
+dynamic CUDA runtime copy and memset paths; its source documents the interception
+limits. GPU positive-control evidence remains in the dispram qualification.
+
+Configure the private `.env` values shown in [runtime](runtime.md), including
+`RECIPE_DISPRAM=require`, `RECIPE_MAX_MODEL_LEN=66112`, short DSA on,
+uniform K2, c2 reuse and descriptor-scoped pad hygiene v2 on.
+The example selects these switches; the primary v2 gate passed.
+Keep spec-sample off. Then perform preflight, guarded boot and the
+[release gate](validation-release-RUN.md) before publishing filled measurements.
+
+W4 used the narrowly scoped `DISPRAM_ALLOW_RM_ALLOC_OOM=1` lender setting
+described in [runtime](runtime.md#display-carveout-kv). Use it consistently in
+the private `.env` and manual `watch`, `preborrow`, `postcheck` and `verified-free`
+checks. It does not suppress unrelated GPU faults.

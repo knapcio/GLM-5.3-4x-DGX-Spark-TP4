@@ -7,10 +7,10 @@
   "selected_variants": [],
   "reason": "95% cycle-ms halfwidths0.697\u20131.224 exceed0.5ms target. A/A controls are noisy. v4 prose positive isolated timing screen but code uncertainty and -0.099 committed/cycle signal require confirmation. No candidate qualifies the complete generic recipe.32-token public free-running outputs are not a large fixed teacher-forced acceptance panel.",
   "committed_equivalence_margin": 0.02,
-  "c4_status": "NOT_IMPLEMENTED: full-wave physical-shape harness;40 samples include mixed target4/8/12/16 and draft3/6/9/12, no comparative gain credited",
+  "c4_status": "PARKED-IMPL full-wave physical-shape harness;40 samples include mixed target4/8/12/16 and draft3/6/9/12, no comparative gain credited",
   "raw": "cycles32/rows.jsonl",
   "summary": "cycles32/summary.json",
   "protocol": "cycles32/c1-protocol.json",
-  "round_budget_note": "Original80-round estimate used128-token receipts;32-token runs have a larger measured A/A floor. New same-width128-token or GPU-boundary timing confirmation required.",
+  "round_budget_note": "Original80-round estimate used128-token receipts;32-token runs have a larger measured A/A floor. New same-width128-token or GPU-boundary timing confirmation required; no idea rejection.",
   "correction": "Earlier draft counter37 corrected to the40 rows in the completed interruption receipt."
 }

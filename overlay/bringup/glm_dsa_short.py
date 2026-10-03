@@ -7,8 +7,8 @@ never reads the indexer logits. This module skips the indexer query GEMM,
 query RoPE/quantisation and the paged MQA logits for exactly those rows and
 keeps every stock key/cache operation. No new GPU kernel.
 
-Eligibility is decided on the CPU before graph dispatch (native MTP K2:
-target verify M3/M12, draft passes M1/M4, one or four requests); eligible
+Eligibility is decided on the CPU before graph dispatch (native MTP K2 or Kstop K3:
+target verify q2/q3/q4 with Kstop, draft passes q1, one or four requests); eligible
 batches replay separately captured FULL graphs. Everything else, including
 prefill, mixed widths and contexts above 2048, uses the stock path.
 Register before vLLM imports; every transformed module is source-pinned.
@@ -36,6 +36,10 @@ PINS = {
     RUN: 'f84255d75435e84f44972d3fd25e53447f9d4d2edd8bff4f8c19dfb793448415',
 }
 ENABLED = False
+KSTOP = False
+UNIFORM = False
+UNIFORM_Q = 4     # =1 uses q4; =k2 uses q3. c1 keeps q2/q3/q4.
+SHARED = {AUTO, CG, RUN}
 SHORT = ContextVar('full_glm_dsa_short', default=False)
 COUNTS = dict(eligible=0, fallback=0, short_dispatch=0, stock_dispatch=0)
 CAPTURE_HITS = {}
@@ -83,14 +87,16 @@ def supported(config, parallel=None):
 def eligible(schedule, batch, computed, uniform, supported_model=True):
     """Same pre-step CPU upper bounds used by prepare_inputs, no GPU sync.
 
-    Actual GPU rejection can shorten a verifier batch. Scheduled P+4 is still
+    Actual GPU rejection can shorten a verifier batch. Scheduled P+width is still
     an upper bound on all causal rows. Never substitute positions for the
     native metadata lengths. Reject padding, prefill, resume and mixed widths.
     """
-    if not supported_model or batch is None or uniform != 3 or batch.has_prefill:
+    if not supported_model or batch is None or uniform not in verify_widths() or batch.has_prefill:
+        return False
+    if not captured_shape(len(schedule.num_scheduled_tokens), uniform):
         return False
     ns = schedule.num_scheduled_tokens
-    if len(ns) not in (1, 4) or any(n != 3 for n in ns.values()):
+    if len(ns) not in (1, 4) or any(n != uniform for n in ns.values()):
         return False
     if (schedule.scheduled_new_reqs
             or getattr(schedule, 'has_structured_output_requests', False)
@@ -98,23 +104,40 @@ def eligible(schedule, batch, computed, uniform, supported_model=True):
             or getattr(schedule.scheduled_cached_reqs, 'resumed_req_ids', set())):
         return False
     if (set(batch.req_ids) != set(ns) or len(batch.req_ids) != len(ns)
-            or batch.num_tokens != 3 * len(ns)
+            or batch.num_tokens != uniform * len(ns)
             or schedule.total_num_scheduled_tokens != batch.num_tokens
-            or any(int(n) != 3 for n in batch.num_scheduled_tokens)):
+            or any(int(n) != uniform for n in batch.num_scheduled_tokens)):
         return False
-    if any(len(schedule.scheduled_spec_decode_tokens.get(r, ())) != 2 for r in ns):
+    if any(len(schedule.scheduled_spec_decode_tokens.get(r, ())) != uniform - 1 for r in ns):
         return False
     return (len(computed) == len(ns)
-            and all(0 < int(p) and int(p) + 3 <= 2048 for p in computed))
+            and all(0 < int(p) and int(p) + uniform <= 2048 for p in computed))
+
+
+def verify_widths():
+    return (2, 3, 4) if KSTOP else (3,)
+
+
+def graph_widths():
+    return (1, *verify_widths())
+
+
+def captured_shape(num_reqs, uniform):
+    """With K-stop uniform batches only the c4 q<UNIFORM_Q> rectangle has a short graph (install_cg); any other
+    four-request width (warm-up K3 rectangles under k2, for example) stays on the stock path."""
+    return not (KSTOP and UNIFORM and num_reqs == 4 and uniform not in (1, UNIFORM_Q))
 
 
 def draft_eligible(lengths, num_reqs, num_tokens, uniform, step, has_prefill=False, dummy=False):
+    # Bound the WHOLE cycle before step 0 writes the shared MTP indices.
+    # Native on_prefill_end compacts those rows, steps 1+ reuse unchanged.
+    # A cycle approaching 2048 stays entirely on the stock path.
     # Same native CPU upper bounds consumed by _build_draft_attn_metadata;
     # no positions/rejection guesses, and no device-to-host synchronization.
     return (not dummy and not has_prefill and num_reqs in (1,4)
-            and uniform in (1,3) and num_tokens == num_reqs*uniform
-            and step in (0,1) and len(lengths)==num_reqs
-            and all(0 < int(n) and int(n)+step <= 2048 for n in lengths))
+            and uniform in graph_widths() and captured_shape(num_reqs, uniform) and num_tokens == num_reqs*uniform
+            and 0 <= step <= (2 if KSTOP else 1) and len(lengths)==num_reqs
+            and all(0 < int(n) and int(n) + max(step, (2 if KSTOP else 1)) <= 2048 for n in lengths))
 
 def select_draft(lengths, num_reqs, num_tokens, uniform, step, **kwargs):
     SHORT.set(draft_eligible(lengths,num_reqs,num_tokens,uniform,step,**kwargs))
@@ -229,15 +252,15 @@ def install_runner(mod):
     def loaded(self, *a, **kw):
         sp = self.speculative_config
         from vllm.config.compilation import CUDAGraphMode
-        if (sp is None or sp.method != 'mtp' or self.num_speculative_steps != 2
+        if (sp is None or sp.method != 'mtp' or self.num_speculative_steps != (3 if KSTOP else 2)
                 or self.compilation_config.cudagraph_mode != CUDAGraphMode.FULL_DECODE_ONLY
                 or self.lora_config is not None):
-            raise RuntimeError('GLM_INDEXER_SHORTCUT requires native MTP K2, FULL_DECODE_ONLY, no LoRA')
+            raise RuntimeError('GLM_INDEXER_SHORTCUT requires native MTP K2/Kstop K3, FULL_DECODE_ONLY, no LoRA')
         result = load(self, *a, **kw)
         self._dsa_short_supported = supported(self.model_config.hf_config, self.parallel_config)
         if not self._dsa_short_supported:
             raise RuntimeError('GLM_INDEXER_SHORTCUT requires full GLM non-pooled TP4/PCP1/DCP1')
-        sys.stderr.write('glm-dsa-short: armed (native MTP K2, context <= 2048)\n')
+        sys.stderr.write('glm-dsa-short: armed (native MTP K2/Kstop K3, context <= 2048)\n')
         return result
 
     @functools.wraps(gather)
@@ -273,10 +296,39 @@ def install_cg(mod):
         if isinstance(self, mod.CudaGraphManager):
             self._capture_descs = {mode: [d for old in descs for d in (
                 (old, dataclasses.replace(old, short_context=True))
-                if old.uniform_token_count in (1,3)
+                if old.uniform_token_count in graph_widths()
                 and old.num_tokens == old.uniform_token_count * old.num_reqs
                 and old.num_reqs in (1, 4) and old.num_active_loras == 0
+                and not (KSTOP and UNIFORM and old.num_reqs == 4
+                         and old.uniform_token_count not in (1, UNIFORM_Q))
                 else (old,))] for mode, descs in self._capture_descs.items()}
+            # Sparse capture lists cannot round to every c1/c4 width. Add exact SHORT captures only;
+            # stock _candidates and its padding/dispatch remain unchanged.
+            # Only shapes eligible() / draft_eligible() can select: verify and
+            # first-draft managers never run a short q1 rectangle (K-stop
+            # verifies q2..q4), and with uniform batches a four-request
+            # rectangle uses UNIFORM_Q. Unreachable shapes are not captured
+            # (each FULL graph costs host memory); they would fall back to the
+            # stock graph, which computes the same bytes.
+            if KSTOP:
+                full = self._capture_descs.get(mod.CUDAGraphMode.FULL, [])
+                if full:
+                    template = full[0]
+                    max_reqs = getattr(self, 'max_num_reqs', max(d.num_reqs or 0 for d in full))
+                    max_tokens = max(d.num_tokens for d in full)
+                    widths = (1,) if getattr(self, 'decode_query_len', 4) == 1 else verify_widths()
+                    for n in (1, 4):
+                        for q in widths:
+                            if n == 4 and UNIFORM and q != UNIFORM_Q and q != 1:
+                                continue
+                            if n <= max_reqs and n*q <= max_tokens:
+                                desc = dataclasses.replace(template, num_tokens=n*q,
+                                    num_reqs=n, uniform_token_count=q,
+                                    num_active_loras=0, short_context=True)
+                                if desc not in full:full.append(desc)
+                    full.sort(key=lambda d:d.num_tokens, reverse=True)
+            self._short_exact = {(d.num_reqs,d.num_tokens,d.uniform_token_count):d
+                for d in self._capture_descs.get(mod.CUDAGraphMode.FULL, []) if d.short_context}
 
     @functools.wraps(capture)
     def captured(self, factory, *a, **kw):
@@ -293,9 +345,13 @@ def install_cg(mod):
                    num_active_loras, max_query_len=None):
         desc = dispatch(self, num_reqs, num_tokens, uniform_token_count,
                         num_active_loras, max_query_len)
+        exact = getattr(self, '_short_exact', {}).get((num_reqs,num_tokens,uniform_token_count))
+        if (KSTOP and active() and exact is not None and num_active_loras == 0
+                and max_query_len in (None,uniform_token_count)):
+            desc = exact
         if (isinstance(self, mod.CudaGraphManager) and active()
                 and desc.cg_mode == mod.CUDAGraphMode.FULL
-                and uniform_token_count in (1,3) and num_active_loras == 0
+                and uniform_token_count in graph_widths() and num_active_loras == 0
                 and desc.num_tokens == num_tokens == uniform_token_count * num_reqs
                 and desc.num_reqs == num_reqs and num_reqs in (1, 4)
                 and desc.uniform_token_count == uniform_token_count):
@@ -355,7 +411,7 @@ class Finder(importlib.abc.MetaPathFinder):
         self.done = set()
 
     def find_spec(self, name, path=None, target=None):
-        if name not in TRANSFORMS or name in self.done:
+        if name not in TRANSFORMS or name in self.done or (KSTOP and name in SHARED):
             return None
         sys.meta_path.remove(self)
         try:
@@ -387,13 +443,19 @@ def flag(env):
 
 
 def register(env=None):
-    global ENABLED
+    global ENABLED, KSTOP, UNIFORM, UNIFORM_Q
     env = os.environ if env is None else env
     if not flag(env):
         return False
     loaded = [name for name in TRANSFORMS if name in sys.modules]
     if loaded:
         raise RuntimeError('GLM_INDEXER_SHORTCUT must register before vLLM imports: ' + repr(loaded))
+    KSTOP = env.get("GLM_MTP_KSTOP", "0") == "1"
+    uniform = env.get("GLM_MTP_KSTOP_UNIFORM_BATCH", "0")
+    if uniform not in ('0', '1', 'k2', ''):
+        raise ValueError('GLM_MTP_KSTOP_UNIFORM_BATCH must be 0, 1 or k2')
+    UNIFORM = KSTOP and uniform in ('1', 'k2')
+    UNIFORM_Q = 3 if uniform == 'k2' else 4
     ENABLED = True
     if not any(isinstance(h, Finder) for h in sys.meta_path):
         sys.meta_path.insert(0, Finder())

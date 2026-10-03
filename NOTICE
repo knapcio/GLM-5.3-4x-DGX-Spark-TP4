@@ -21,9 +21,9 @@ arithmetic bodies match the saved deployed control; source adaptation and
 startup-hook changes are recorded in docs/results/source-provenance.json.
 
 The local fast loader follows Willian-Zhang's vLLM#58726 observation and the
-author's local DeepSeek loader port. It is not a blanket relicensing of the
-DeepSeek repository. The benchmark/checker files and the fresh-clone release gate are local
-recipe tools by the repository author, following the Flash/DeepSeek gate protocols; the external sparkDash collector is not vendored. Its MIT
+owner's local DeepSeek loader port. It is not a blanket relicensing of the
+DeepSeek repository. The benchmark/checker files and fresh-clone release coordinator are owner-authored local
+recipe tools following the Flash/DeepSeek gate protocols; the external sparkDash collector is not vendored. Its MIT
 notice is retained in LICENSES/MIT-sparkDash.txt.
 
 Z.ai's native GLM-5.3 MTP and Tech2wild's target checkpoint use the GLM-5.3
@@ -41,6 +41,13 @@ The dirty-L2 reduce kernel and its adapter are Apache-2.0-labelled local code. T
 reduce repeats the local split32 MLA reduce arithmetic and adds an NVIDIA PTX
 discard.global.L2 through Triton inline assembly; nothing is vendored. The
 diagnosis and the fix are the recipe author's own work.
+The staged glue-lite adapter is Apache-2.0-labelled local code. It wraps pinned
+vLLM functions after import (GateLinear, fused_marlin_moe, the MLA wrapper and the
+sparse index conversion), adds no kernel and vendors no source.
+The native MTP K-stop overlay (overlay/kstop) is Apache-2.0-labelled
+local code that transforms pinned vLLM sources at import and keeps their SPDX
+attribution; its one Triton remap kernel is local campaign code. The DeepSeek
+verify-cap mechanism is credited as an idea; no DeepSeek model or code is included.
 The alternate CPU allocator fixtures contain configuration geometry only;
 they do not contain model weights or select an alternative runtime.
 
@@ -48,3 +55,16 @@ FlashInfer, vLLM, Triton, PyTorch, Marlin, CUDA, NCCL and other dependencies
 in external images retain their respective licences. This notice is not a
 complete inventory or relicensing of an external image. See CREDITS.md for
 pinned source links and provenance.
+
+kindling dispramd and librmlist are referenced at
+5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e in kindling-spark-os:
+https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram
+The AGPL-3.0 tool is fetched and built externally, used unmodified and not vendored.
+Its upstream LICENSE, LICENSE-GPL and BUNDLING-EXCEPTION are retained in that
+installation. Local integration does not replace those terms.
+
+Ash Hart (ashhart) / TensorFold: MIT, credited for execution/speculation evidence
+and ideas. Jay Leaton's GLM TensorFold Spark recipe: Apache-2.0, credited for
+recipe ideas/evidence. No source from either project is copied here. Matt
+Mastracci is credited for sparse-MLA ideas only. All existing authors and
+component notices remain applicable; see CREDITS.md and LICENSES/README.md.

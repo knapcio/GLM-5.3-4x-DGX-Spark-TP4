@@ -1,0 +1,4 @@
+# DRAFT, NOT DEPLOYED (/etc/sudoers.d/dispram, mode 0440, visudo -c). Lets the recipe launcher start the
+# installed unit without a password. Starting is still refused by the unit itself when it is FAILED
+# (the launcher checks is-failed first) and by dispram.sh start's refusals.
+SERVICE_USER ALL=(root) NOPASSWD: /usr/bin/systemctl start dispramd.service

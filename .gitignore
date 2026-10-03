@@ -11,3 +11,4 @@ tests/results/
 qeval-*.json
 tests/memory-results.json
 image-source/
+overlay/guard/*.so

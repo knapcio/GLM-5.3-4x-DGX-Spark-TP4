@@ -20,7 +20,7 @@ G = importlib.util.module_from_spec(spec); spec.loader.exec_module(G)
 
 def fixture(c=1):
     config = dict(port=8095, modelId='GLM-5.3', concurrencies=[c], maxTokens=256, promptType='prose')
-    posted = dict(benchId='fresh-123', startedAt=100, sparkId='spark-01')
+    posted = dict(benchId='fresh-123', startedAt=100, sparkId='configured-node')
     job = {**posted, 'completedAt': 200, 'status':'completed', 'error':None, 'config':config,
            'progress':dict(completedLevels=1,totalLevels=1),
            'results':[dict(concurrency=c, streamsOk=c, streamsFailed=0, totalCompletionTokens=c*256,
@@ -46,7 +46,7 @@ class Evidence(unittest.TestCase):
     def test_stream_identity_tokens_reasoning_and_job_pins(self):
         job, posted, config = fixture(16)
         self.assertEqual(P.validate_job(job,posted,config),[])
-        changes = [('benchId','stale'),('sparkId','spark-02'),('status','failed'),('completedAt',float('nan'))]
+        changes = [('benchId','stale'),('sparkId','other-node'),('status','failed'),('completedAt',float('nan'))]
         for key,value in changes:
             d=copy.deepcopy(job);d[key]=value
             self.assertTrue(P.validate_job(d,posted,config))

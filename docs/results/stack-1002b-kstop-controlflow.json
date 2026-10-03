@@ -1,0 +1,40 @@
+{
+ "test": "kstop real control-flow CPU test (campaign tests/controlflow_cpu.py, unmodified): real EngineCore.step_with_batch_queue, AsyncScheduler, transformed GPUModelRunner / MTPSpeculator / SM90 planner, warmup_kernels, kstop initialize on the meta-built full GLM-5.3; tensor math mocked; max_num_seqs 2; pinned image 4def0ef6, no GPU",
+ "runtime_sha256": "6c8081ac3fdb3c7a67518ee2ea4f2685572a403bf0f98c8b848affc4e56dd719",
+ "hook_sha256": "1582d9f80307f454c0a7dd86a7f80b3ffc316c84617e2314b3333d1d65583ea3",
+ "runs": {
+  "GLM_MTP_KSTOP_UNIFORM_BATCH=0": {
+   "warmup": "PASS",
+   "scenarios": {
+    "chunked_prefill_and_stop": "PASS",
+    "finish_mid_cycle": "PASS",
+    "missing_proposal_fails_closed": "REFUSED (expected): RuntimeError: collective-safe kstop refusal at prepare (guard: digest/probability-bit/validity mismatch across ranks; planner/proposal/request order/epoch/proba",
+    "one_request": "PASS",
+    "preempt_and_resume": "PASS",
+    "second_arrives_mid_decode": "PASS",
+    "two_requests": "PASS"
+   },
+   "two_requests": {
+    "guards": 29,
+    "stop_decisions": 10
+   }
+  },
+  "GLM_MTP_KSTOP_UNIFORM_BATCH=1": {
+   "warmup": "PASS",
+   "scenarios": {
+    "chunked_prefill_and_stop": "PASS",
+    "finish_mid_cycle": "PASS",
+    "missing_proposal_fails_closed": "REFUSED (expected): RuntimeError: collective-safe kstop refusal at prepare (guard: digest/probability-bit/validity mismatch across ranks; planner/proposal/request order/epoch/proba",
+    "one_request": "PASS",
+    "preempt_and_resume": "PASS",
+    "second_arrives_mid_decode": "PASS",
+    "two_requests": "PASS"
+   },
+   "two_requests": {
+    "guards": 18,
+    "stop_decisions": 0
+   }
+  }
+ },
+ "reading": "every serving scenario passes with the policy off and on; the missing-proposal case still refuses on every rank; with the policy on the two-request batch makes no stop decision (all K3) and runs fewer guards"
+}

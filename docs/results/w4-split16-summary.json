@@ -1,5 +1,5 @@
 {
-  "status": "NOT_SELECTED_TIMEBOX / HOLD_LOADED_CORRECTNESS",
+  "status": "PARKED-IMPL_TIMEBOX / HOLD_LOADED_CORRECTNESS",
   "cells": {
     "v1": {
       "saved_ms": {
@@ -51,7 +51,7 @@
   "limitations": [
     "Counter-RPC midpoint timing is a proxy with150\u2013350ms-scale RPC scheduling uncertainty; A/A spread must be accounted for; worker-side timestamps or GPU boundary timing required for sub-ms qualification.",
     "SSE token-id delta per replay is a window proxy, not a large fixed teacher-forced acceptance test.",
-    "Loaded all-layer/all-rank/three-snapshot numerical oracle missing; no bit-equality veto."
+    "Loaded all-layer/all-rank/three-snapshot numerical oracle missing; no bit-equality veto or idea rejection."
   ],
   "kernel_scope": "Inherited unchanged split16 kernel only12<=T<=36, bank3; defaultbank0 split32",
   "selected": false

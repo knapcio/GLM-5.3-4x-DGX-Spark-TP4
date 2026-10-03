@@ -7,6 +7,7 @@ and bytes. Slab size, read-ahead, thread count and consumed-page eviction
 are environment settings; the current full-model profile selects 64 MiB,
 256 MiB, four threads and targeted page eviction. GLM_FAST_LOAD_VERIFY=2
 compares two tensors per shard against the stock safetensors mmap.
+GLM_MTP_ONLY_LOAD / GLM_TARGET_SKIP_MTP select native MTP shards (glm_mtp_select).
 
 Credit: Willian-Zhang, vLLM#58726; local DeepSeek/Flash loader port.
 """
@@ -19,6 +20,8 @@ import struct
 import sys
 import threading
 import time
+
+import glm_mtp_select
 
 logger = logging.getLogger("glm_fast_load")
 
@@ -384,8 +387,19 @@ def _make_wrapper(orig, wu):
     def safetensors_weights_iterator(hf_weights_files, use_tqdm_on_load, safetensors_load_strategy=None,
                                      local_expert_ids=None, **kwargs):
         if safetensors_load_strategy not in (None, "lazy"):
-            yield from orig(hf_weights_files, use_tqdm_on_load, safetensors_load_strategy,
-                            local_expert_ids=local_expert_ids, **kwargs)
+            ctx = glm_mtp_select.active()
+            if ctx is None:
+                yield from orig(hf_weights_files, use_tqdm_on_load, safetensors_load_strategy,
+                                local_expert_ids=local_expert_ids, **kwargs)
+                return
+
+            def run_stock(selected, skip):
+                return ((n, t) for n, t in orig(selected, use_tqdm_on_load, safetensors_load_strategy,
+                                                 local_expert_ids=local_expert_ids, **kwargs) if not skip(n))
+
+            yield from glm_mtp_select.iterate(
+                ctx, sorted(hf_weights_files, key=wu._natural_sort_key),
+                lambda n: wu.should_skip_weight(n, local_expert_ids), run_stock)
             return
         from safetensors.torch import safe_open
 
@@ -405,11 +419,20 @@ def _make_wrapper(orig, wu):
         _load_count[0] += 1
         label = f"load {_load_count[0]} ({len(files)} files, {os.path.dirname(files[0]) if files else '-'})"
         stats = _Stats()
+
+        def stock_skip(n):
+            return wu.should_skip_weight(n, local_expert_ids)
+
+        def run(selected, skip):
+            return fast_safetensors_iterator(selected, keys_of, open_stock, skip=skip,
+                                             progress=progress, stats=stats)
+
+        ctx = glm_mtp_select.active()
         try:
-            yield from fast_safetensors_iterator(
-                files, keys_of, open_stock,
-                skip=lambda n: wu.should_skip_weight(n, local_expert_ids),
-                progress=progress, stats=stats)
+            if ctx is None:
+                yield from run(files, stock_skip)
+            else:
+                yield from glm_mtp_select.iterate(ctx, files, stock_skip, run)
         finally:
             release(stats, label)
 
@@ -445,6 +468,10 @@ def _patch_default_loader(module):
     _patch_weight_utils(wu)
     if hasattr(module, "safetensors_weights_iterator"):
         module.safetensors_weights_iterator = wu.safetensors_weights_iterator
+    cls = module.DefaultModelLoader
+    if any(f != "0" for f in glm_mtp_select.flags()) and not getattr(cls.load_weights, "_glm_mtp_select", False):
+        cls.load_weights = glm_mtp_select.wrap_load_weights(cls.load_weights)
+        _log("MTP shard selection armed (GLM_MTP_ONLY_LOAD=%s GLM_TARGET_SKIP_MTP=%s)" % glm_mtp_select.flags())
 
 
 _TARGETS = {
@@ -456,6 +483,8 @@ _TARGETS = {
 def register():
     import importlib.abc
     import importlib.util
+
+    glm_mtp_select.flags()  # reject a malformed selection flag at startup
 
     class _Hook(importlib.abc.MetaPathFinder):
         _glm_fast_load = True

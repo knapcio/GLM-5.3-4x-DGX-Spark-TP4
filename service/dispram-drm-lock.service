@@ -1,0 +1,18 @@
+# DRAFT, NOT DEPLOYED. Enabled at boot with dispramd.service (owner 2026-10-02: survive reboots).
+# Root oneshot: DRM exclusion for as long as the carveout may be lent; never unlocked while a lease may exist. Runs after udev has applied its
+# default modes and before docker, so no container can open a DRM node first. Reboot or ExecStop
+# (udev re-trigger) restores the default modes.
+[Unit]
+Description=Lock /dev/dri nodes (mode 0000) while the GB10 carveout may be lent
+After=systemd-udev-trigger.service systemd-modules-load.service
+Before=docker.service dispramd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/dispram-drm-lock lock
+# Unlocks only when provably no lender, no CUDA context and nothing lent (helper refuses otherwise).
+ExecStop=/usr/local/sbin/dispram-drm-lock unlock
+
+[Install]
+WantedBy=multi-user.target

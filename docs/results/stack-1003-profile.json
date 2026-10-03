@@ -1,0 +1,23 @@
+{
+  "source": "0f243832dbaa45b6d659a1a076ec85bac13e1a8a",
+  "receipt": "W4 v2 primary; full gate PASS",
+  "changed_env": {
+    "GLM_INDEXER_SHORTCUT": "1",
+    "GLM_PAD_HYGIENE": "1",
+    "GLM_SPEC_SAMPLE": "0",
+    "GLM_DISPRAM_KV": "require",
+    "DISPRAM_GUARD_REQUIRED": "1",
+    "LD_PRELOAD": "/opt/nccl/libnccl.so.2.30.7:/overlay/guard/libdispram_copy_guard.so"
+  },
+  "changed_arguments": {
+    "--max-model-len": "66112",
+    "--kv-cache-memory-bytes": "1073741824"
+  },
+  "kv_blocks_per_rank": 1039,
+  "capture_sizes": [
+    1,
+    4,
+    12,
+    16
+  ]
+}

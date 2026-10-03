@@ -3,6 +3,7 @@
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import random
 import statistics
@@ -45,7 +46,7 @@ def validate_job(job, posted, config):
     for key in ('benchId', 'startedAt', 'sparkId'):
         if job.get(key) != posted.get(key):
             errors.append('job identity changed: ' + key)
-    if job.get('sparkId') != 'spark-01' or job.get('status') != 'completed' or job.get('error'):
+    if job.get('sparkId') != os.environ.get('SPARKDASH_SPARK_ID', 'configured-node') or job.get('status') != 'completed' or job.get('error'):
         errors.append('job failed or wrong Spark')
     if any((job.get('config') or {}).get(k) != v for k, v in config.items()):
         errors.append('config mismatch')
@@ -204,7 +205,7 @@ class Probes:
             if not done or not first or not usage or usage.get('prompt_tokens') != target or usage.get('completion_tokens') != 1:
                 save(self.out/'prefill.json', rows); raise RuntimeError('incomplete cold prefill')
             cached = usage.get('prompt_tokens_details', {}).get('cached_tokens', usage.get('cached_tokens'))
-            # Profile disables prefix caching; nonce also prevents reuse. Missing usage is labelled.
+            # The nonce prevents prefix-cache reuse (prefix caching is on in the native profile). Missing usage is labelled.
             if cached not in (None, 0): raise RuntimeError('cold prefill used cached tokens')
             row.update(status='MEASURED', cached_tokens_reported=cached is not None, prefill_tps=target/first)
             save(self.out/'prefill.json', rows)
@@ -228,7 +229,7 @@ class Probes:
                         logs = (ch.get('logprobs') or {}).get('content')
                         finite = bool(logs) and all(type(x.get('logprob')) in (int, float) and math.isfinite(x['logprob']) for x in logs)
                         return dict(temp=temp, repeat=repeat, phase=phase, target=target, expected=codes[target],
-                                    cache_scope='disabled-profile; no warm-hit qualification', response=r, passed=ok and finite)
+                                    cache_scope='one cache_salt per repeat: first is cold, repeat can hit when prefix caching is on', response=r, passed=ok and finite)
                     with ThreadPoolExecutor(max_workers=4) as pool:
                         for row in pool.map(collect, (0, 31, 255, 511)):
                             rows.append(row); save(self.out/'prefix-sampling.json', rows)

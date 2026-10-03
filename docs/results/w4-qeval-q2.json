@@ -1,6 +1,6 @@
 {
   "label": "w4-final-q2",
-  "url": "http://127.0.0.1:18095/v1/chat/completions",
+  "url": "http://localhost:18095/v1/chat/completions",
   "concurrency": 1,
   "wall_s": 259.0,
   "utc": "2026-09-30T12:31:09Z",
@@ -984,8 +984,8 @@
     }
   ],
   "meta": {
-    "fleet_owner": "W4 boot 2026-09-30",
-    "window_id": "W4-20260930",
+    "fleet_owner": "glm53-full-20260929/day2/w4 D2-W4 2026-09-30",
+    "window_id": "D2-W4-20260930",
     "boot_ids": [
       "6242a01c-8ada-43f7-9a35-fbd33a6aef2b",
       "6b467f70-faf9-4be3-92fe-e576af6e22a2",

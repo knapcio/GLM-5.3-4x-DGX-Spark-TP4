@@ -1,0 +1,28 @@
+{
+  "test": "tests/test_mtp_select.py RealShards (GLM_MTP_LAB = 6 real shards 00001, 00270-00274 + the full 282-shard index + config)",
+  "date": "2026-10-02",
+  "host": "Mac (CPU, no fleet)",
+  "reference": "stock vLLM 487ecf187 safetensors_weights_iterator over all present shards",
+  "compared": "every DeepSeekMTP.load_weights weight_loader call (parameter, shard/expert ids, dtype, shape, SHA-256 of bytes) and the returned loaded set",
+  "modes": {
+    "1": "identical",
+    "audit": "identical"
+  },
+  "tensors_loaded": 2343,
+  "params_loaded": 38,
+  "call_list_sha256": "178d6b40b879a150e0377a67a26b41e54db776ef4fad65ce62ccc1812f427f83",
+  "shards_read_mode_1": [
+    "model-00270-of-00282.safetensors",
+    "model-00271-of-00282.safetensors",
+    "model-00272-of-00282.safetensors",
+    "model-00273-of-00282.safetensors",
+    "model-00274-of-00282.safetensors"
+  ],
+  "mtp_tensor_gib": 9.35,
+  "full_checkpoint_gib_per_rank": 365.4,
+  "log": [
+    "glm-fast-load: mtp-only 1: 5/6 shards hold 2343 MTP tensors, 9.35 of 15.8 GiB; index agrees: model-00270..00274",
+    "glm-fast-load: mtp-only 1 check PASS: 2343 tensors -> 38 parameters loaded"
+  ],
+  "mac_seconds_note": "Mac wall times (4.7 s stock, 5.0 s mode 1, 5.4 s audit) ran from a warm page cache and are not a fleet prediction"
+}

@@ -66,7 +66,8 @@ def plan():
                 'compare same-window reference; preserve qualified candidate or restore reference'],
         known_gaps=['Default profile max_model_len=32768; 64k/128k unsupported, full requested gate HOLD.',
                     'Client c>4 queues on four active slots; no actual batch16 graph claim.',
-                    'Prefix caching disabled: first/repeat scans do not qualify cache hits.',
+                    'Prefix caching (on in the native profile): cold prefill and teacher requests carry a nonce or a fresh '
+                    'cache_salt; the first/repeat scans check answers, not the hit rate.',
                     'No historical Flash KL threshold imported; full-GLM A/A must satisfy frozen limits.'])
 
 
@@ -118,12 +119,15 @@ class Gate:
         if checker_sha != '54719522d26996198c870264dfe5a93e2dd23f33436626c2477f1ac71206ffd2':
             raise ValueError('original 75-task qeval checker/prompt/budget hash mismatch')
         args = json.loads((dest/'profiles/serve-args.json').read_text())
-        if '--no-enable-prefix-caching' not in args:
-            raise ValueError('this gate expects the release profile with prefix cache disabled')
+        flags = [flag for flag in ('--enable-prefix-caching', '--no-enable-prefix-caching') if flag in args]
+        if len(flags) != 1 or args.count(flags[0]) != 1:
+            raise ValueError('the release profile must carry exactly one prefix-caching flag')
+        prefix_caching = flags[0] == '--enable-prefix-caching'
         limit = int(args[args.index('--max-model-len')+1])
         if args[args.index('--port')+1] != '8095' or args[args.index('--max-num-seqs')+1] != '4':
             raise ValueError('gate expects port8095 and four active request slots')
         info = dict(qeval_checker_sha256=checker_sha, name=name, commit=commit, config=conf, runtime=runtime, max_model_len=limit,
+                    prefix_caching=prefix_caching,
                     manifests={kind: hashlib.sha256((dest/f'manifests/{kind}.json').read_bytes()).hexdigest() for kind in ('target','drafter')})
         self.report[name] = info; self.receipt()
         return dest
@@ -325,7 +329,7 @@ class Gate:
         path.write_text('Serving on head loopback :8095. Watchdog PID '+str(self.proc.pid)+'.\n\n'
                         'Keep this workstation running. Foreground watchdog remains attached to the recorded deployment.\n'
                         'Stop with `cd '+str(repo)+' && ./start.sh stop`. Containers are preserved.\n'
-                        'Fleet marker remains owned while serving; hand it over explicitly before the next deployment.\n')
+                        'Fleet marker remains owned while serving; arrange an explicit handoff with the next coordinator.\n')
         return dict(checkout=str(repo), watchdog_pid=self.proc.pid, deployment=deployment, instructions=str(path))
 
 
@@ -338,8 +342,8 @@ def main():
     ap.add_argument('--reference-repo', type=Path)
     ap.add_argument('--reference-rev', default='HEAD')
     ap.add_argument('--candidate-rev', default='HEAD')
-    ap.add_argument('--base', default='http://127.0.0.1:18095')
-    ap.add_argument('--dash', default='http://127.0.0.1:5555/api/sparks/spark-01/llm')
+    ap.add_argument('--base', default='http://localhost:18095')
+    ap.add_argument('--dash', default='http://localhost:5555/api/sparks/configured-node/llm')
     ap.add_argument('--window-minutes', type=int, default=90)
     ap.add_argument('--aa-max', type=float, default=0.01)
     ap.add_argument('--kl-max', type=float, default=0.01)

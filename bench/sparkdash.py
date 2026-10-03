@@ -1,7 +1,7 @@
 """sparkDash decode and prefill sweep behind the README results tables. Run it on the head node, next to sparkDash
 and the endpoint on port 8095:
 
-    SPARKDASH_API=http://127.0.0.1:5555/api/sparks/spark-01/llm python3 bench/sparkdash.py full 32768 > sparkdash.jsonl
+    SPARKDASH_API=http://localhost:5555/api/sparks/configured-node/llm python3 bench/sparkdash.py full 32768 > sparkdash.jsonl
 
 Arguments: mode (`full` or `short`) and the served max_model_len (default 32768).
 
@@ -20,7 +20,7 @@ import json, os, statistics, sys, time, urllib.request
 
 MODE = sys.argv[1] if len(sys.argv) > 1 else 'short'
 MAX_LEN = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 32768
-API = os.environ.get('SPARKDASH_API', 'http://127.0.0.1:5555/api/sparks/spark-01/llm')
+API = os.environ.get('SPARKDASH_API', 'http://localhost:5555/api/sparks/configured-node/llm')
 PORT = 8095
 POLL = float(os.environ.get('SPARKDASH_POLL_S', '2'))  # offline tests set 0
 KINDS = ('prose', 'code', 'structured', 'json')
@@ -87,8 +87,11 @@ def decode_cell(kind, c):
 
 def prefill_cells(s32):
     out = []
-    for label, size in zip(('4k', '8k', '16k', '32k'), PREFILL[:3] + (s32,)):
-        res = [x for r in rows if r.get('phase') == 'prefill-scored' and not r.get('error')
+    sizes = list(zip(('4k', '8k', '16k', '32k'), PREFILL[:3] + (s32,)))
+    if MAX_LEN >= 65536 + 64 + 16:
+        sizes.append(('64k', 65536))
+    for label, size in sizes:
+        res = [x for r in rows if r.get('phase') in ('prefill-scored', 'prefill-64k-scored') and not r.get('error')
                for x in (r.get('result') or {}).get('results', []) if int(x.get('targetTokens') or x.get('contextSize') or 0) == size]
         tps = [float(x['prefillTps']) for x in res if x.get('prefillTps')]
         cell = {'cell': label, 'target_tokens': size, 'n': len(tps)}
@@ -99,6 +102,10 @@ def prefill_cells(s32):
     return out
 
 
+if MODE == 'c3':
+    for _ in range(3): bench('prose', 3, 'scored')
+    print(json.dumps({'c3': decode_cell('prose', 3), 'mode': MODE}), flush=True)
+    sys.exit(0)
 if MODE == 'full':
     for kind in KINDS:
         bench(kind, 1, 'warmup-discarded')
@@ -110,6 +117,8 @@ if MODE == 'full':
     for _ in range(3):
         prefill(list(PREFILL[:3]), 'prefill-scored')
         prefill([s32], 'prefill-scored')
+    if MAX_LEN >= 65536 + 64 + 16:
+        for _ in range(3): prefill([65536], 'prefill-64k-scored')
 else:
     for kind in ('prose', 'code'):
         bench(kind, 1, 'warmup-discarded')

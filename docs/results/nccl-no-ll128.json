@@ -1,0 +1,19 @@
+{
+  "switch": "RECIPE_NCCL_NO_LL128=1 -> NCCL_PROTO=^LL128 in every container (and the JIT prep containers)",
+  "status": "staged, default off: not measured; must be shown bit-exact and not slower first",
+  "memory_ledger_2026_10_02": {
+    "nccl_pinned_host_buffers_GiB_per_rank": 0.58,
+    "connections": 96,
+    "MiB_per_connection": 6.1875,
+    "of_which_LL128_MiB_per_connection": 4.69,
+    "expected_saving_GiB_per_rank": 0.44,
+    "tokens_of_KV_at_rank0": 9600,
+    "open_question": "two NCCL communicators appear to hold buffers (12 connections per channel); up to 0.29 GiB more may be recoverable separately"
+  },
+  "exactness": {
+    "decode": "eligible TP all-reduces use the RoCE one-shot path, not NCCL",
+    "nccl_ops": "all-gathers move bytes and are exact under any protocol; all-reduces that stay on NCCL (larger prefill sizes) could change reduction chunking if NCCL ever selected LL128 for them on this network transport; to be checked by greedy A/B on the same boot pair",
+    "status": "not measured"
+  },
+  "to_measure": "two boots per arm (no runtime switch): pinned host memory per rank, greedy outputs on fixed prompts, RigMark 1.0.0 thinking-on c1 and sparkDash"
+}

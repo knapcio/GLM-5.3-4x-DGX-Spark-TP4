@@ -6,14 +6,20 @@ import json
 from pathlib import Path
 
 
-def check(root):
-    pins = json.loads((Path(__file__).resolve().parents[1] / 'overlay/source_pins.json').read_text())
+def check_pins(root, pin_file):
+    pins = json.loads(pin_file.read_text())
     for name, expected in pins.items():
         path = root / (name.replace('.', '/') + '.py')
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         if actual != expected:
             raise ValueError('Source drift: ' + str(path))
-    print('SOURCE PINS PASS: %d files' % len(pins))
+    print('SOURCE PINS PASS: %d files (%s)' % (len(pins), pin_file.name))
+
+
+def check(root):
+    overlay = Path(__file__).resolve().parents[1] / 'overlay'
+    for pin_file in (overlay / 'source_pins.json', overlay / 'kstop/compat_source_pins.json'):
+        check_pins(root, pin_file)
 
 
 if __name__ == '__main__':

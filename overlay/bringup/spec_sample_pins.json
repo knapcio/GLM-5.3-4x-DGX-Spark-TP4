@@ -1,0 +1,6 @@
+{
+  "vllm.config.speculative": "eaf52a03351398f72d3e85f0d1ce3bf80d1f92e0fddc8f28bdb11738aeab7875",
+  "vllm.v1.worker.gpu.spec_decode.speculator": "325dca3bb1aee7f3ce237f913e301f3008d765525ebf650ea4b88f195692471e",
+  "vllm.v1.worker.gpu.spec_decode.rejection_sampler_utils": "659e82c2ce1249a6e614f7adf62e3824329a7b79e7a4caa55cfadf254068a98a",
+  "vllm.v1.worker.gpu.sample.gumbel": "8d04f3068a8dc22de69ec7ec6ab4f4192b8d45b5c3e253dcb7817eaf6c1314cd"
+}

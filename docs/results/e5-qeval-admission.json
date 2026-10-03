@@ -57,5 +57,5 @@
       "tasks": 75
     }
   ],
-  "raw_receipts": "Raw receipts not distributed; unchanged E3 runner with the E5 boot and exact async recipe hash"
+  "raw_receipts": "Retained in campaign day3/e5/async-quality/qeval; unchanged E3 runner with E5 fleet owner and exact async recipe hash"
 }

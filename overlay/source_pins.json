@@ -19,5 +19,7 @@
   "vllm.model_executor.model_loader.weight_utils": "b42ff2bd9301c4034592598f86a03df7d60a9fc7e13576054deb44bce9ceccf7",
   "vllm.model_executor.model_loader.default_loader": "9c9d54b1b650bf5affc924ebb8b8c73711e187ae7486cadd9f737bb1279cc7b8",
   "vllm.v1.worker.gpu_model_runner": "5be64e11d25f9802a1970089e9203ae4b18977b340471a6d0761f0274b54c4b6",
-  "vllm.model_executor.models.deepseek_mtp": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f"
+  "vllm.model_executor.models.deepseek_mtp": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f",
+  "vllm.model_executor.models.utils": "a93f50ddf56cac4992dcb7699da48cf70207c8fb0e533beea8818c8f48b1e2d8",
+  "vllm.model_executor.models.deepseek_v2": "58d8916458de7c6f73b40bfef9d2f57bdd6fa0fb79be9e269331af6e66149fe2"
 }

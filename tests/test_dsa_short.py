@@ -4,12 +4,13 @@ import hashlib
 import os
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from types import SimpleNamespace as NS
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = Path(os.environ.get('GLM_IMAGE_SRC', '/image-source'))
-SHIM = ROOT / 'tests/.cpu-shim/vllm-0.1.dev20051+cpu.dist-info'
+SHIM = Path(tempfile.mkdtemp(prefix='glm-dsa-cpu-')) / 'vllm-0.1.dev20051+cpu.dist-info'
 SHIM.mkdir(parents=True, exist_ok=True)
 (SHIM / 'METADATA').write_text('Metadata-Version: 2.1\nName: vllm\nVersion: 0.1.dev20051+cpu\n')
 sys.path[:0] = [str(ROOT / 'overlay/bringup'), str(SHIM.parent), str(SRC)]
@@ -50,7 +51,9 @@ class Inert(unittest.TestCase):
 
     def test_profile_flags(self):
         current = (ROOT / 'profiles/current.env').read_text()
-        self.assertIn("export GLM_INDEXER_SHORTCUT='1'", current)
+        # Shortcut remains opt-in; K-stop compatibility does not change defaults.
+        self.assertIn("export GLM_INDEXER_SHORTCUT='0'", current)
+        self.assertIn("export GLM_MTP_KSTOP='1'", current)
         self.assertIn("export GLM_INDEXER_SHORTCUT='0'", (ROOT / 'profiles/dspark-k3.env').read_text())
         boot = (ROOT / 'overlay/bringup/sitecustomize.py').read_text()
         self.assertLess(boot.index('glm_prefill_switch.register()'), boot.index('glm_dsa_short.register()'))

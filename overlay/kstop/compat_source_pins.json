@@ -1,0 +1,9 @@
+{
+  "vllm.model_executor.models.deepseek_mtp": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f",
+  "vllm.model_executor.layers.mla": "936b06c4671d52fce52ae85bb24b986db17855f32740bf55b226053fc385c4b4",
+  "vllm.v1.worker.gpu.spec_decode.speculator": "325dca3bb1aee7f3ce237f913e301f3008d765525ebf650ea4b88f195692471e",
+  "vllm.v1.worker.gpu.sample.gumbel": "8d04f3068a8dc22de69ec7ec6ab4f4192b8d45b5c3e253dcb7817eaf6c1314cd",
+  "vllm.v1.worker.gpu.sample.states": "4e3671f93695ba5a48fad7d2d13beb231ac8741034904ed5a15d9f7b9b86662e",
+  "vllm.v1.worker.gpu.sample.sampler": "76070739447fc9f7563ef164ef80c0777208d1ea07dec3a6f6d2a0755188d7ae",
+  "vllm.v1.worker.gpu.buffer_utils": "51d37bde4f2f17d5aa9354faf35269ca1adde0eb16e73ae0d8b9860353ce57b7"
+}
