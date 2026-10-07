@@ -1,0 +1,62 @@
+{
+  "format": "fp4x",
+  "ordinary_bytes": 3906994176,
+  "groups": [
+    "attn",
+    "shared",
+    "dense",
+    "mtp"
+  ],
+  "recent_window": 0,
+  "max_model_len": 186752,
+  "capacity_max_model_len": 186752,
+  "blocks": 2957,
+  "required_blocks": 2920,
+  "layout": {
+    "format": "fp4x",
+    "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+    "mla_row_bytes": 368,
+    "index_row_bytes": 132,
+    "block_bytes": 2046464,
+    "kv_bytes": 3906994176,
+    "blocks": 2957,
+    "tokens": 189248,
+    "aligned_bytes": 6051399680,
+    "max_model_len": "188864",
+    "requires_no_ll128": false,
+    "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+  },
+  "per_rank_point_GiB": [
+    10.257915267141328,
+    11.076248600474662,
+    11.473470822696884,
+    11.283470822696884
+  ],
+  "per_rank_admission_lower_GiB": [
+    9.470202460143398,
+    10.288535793476731,
+    10.685758015698953,
+    10.495758015698954
+  ],
+  "per_rank_lower_GiB": [
+    8.401202460143399,
+    8.771535793476732,
+    9.536758015698954,
+    9.600758015698954
+  ],
+  "passes_admission_8_5": false,
+  "passes_8_5": false,
+  "passes_live_8_0": false,
+  "outside_measured_admission_range": true,
+  "empirical_allowance_GiB": 0.78771280699793,
+  "unmeasured_group_allowance_GiB": 0,
+  "context_allowance_GiB": 0.25,
+  "stress_debit_GiB": [
+    0.819,
+    1.267,
+    0.899,
+    0.645
+  ],
+  "page_cache_credit_GiB": 0,
+  "scope": "fixed K-stop reuse [1,4,12,16], four slots, LL128 on; no automatic fleet authority"
+}

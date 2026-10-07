@@ -14,6 +14,7 @@ import time
 import uuid
 
 ROOT = Path(os.environ['RECIPE_ROOT'])
+sys.path.insert(0, str(ROOT/'scripts'))
 ENV = os.environ
 HOSTS = ENV['RECIPE_HOSTS'].split()
 IPS = ENV['RECIPE_IPS'].split()
@@ -22,18 +23,40 @@ STATE = ROOT / 'state/deployment.json'
 SERVE_ARGS = Path(ENV.get('RECIPE_SERVE_ARGS', ROOT / 'profiles/serve-args.json'))
 # RECIPE_* lines in current.env are launch-shape switches read here; they never enter a container.
 PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
-                if not k.startswith('RECIPE_')]
+                if not k.startswith('RECIPE_') and k not in ('GLM_ATTN_WEIGHTS', 'GLM_NVFP4_GROUPS',
+                    'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT')]
 GiB = 1 << 30
 HEALTH_POLL_S = 1          # loopback /health while booting
 SAMPLE_BOOT_S = 5          # rank samples (memory floors, admission window) while booting
 SAMPLE_STEADY_S = 10       # rank samples once admitted
+# MemAvailable floors in GiB (profiles/current.env sets the release values; these code defaults are the earlier ones).
+FLOOR_DEFAULTS = dict(RECIPE_LIVE_FLOOR_GIB='6.0', RECIPE_CAPTURE_HEADROOM_GIB='8.0', RECIPE_ADMISSION_FLOOR_GIB='8.0')
+
+
+def floor_gib(key):
+    text = ENV.get(key, '').strip() or FLOOR_DEFAULTS[key]
+    value = float(text)
+    if not 2.5 <= value <= 32.0:   # 2.5: lowest guard used for a ballast test under the serving watch
+        raise ValueError(key + ' must be 2.5..32 GiB')
+    return value
+
+
+def floors_note():
+    """Validated memory floors as one line (DRY and serve log)."""
+    pre = float(ENV.get('GLM_PRECAPTURE_FLOOR_GIB', '').strip() or '10')
+    if not 3.0 <= pre <= 32.0:
+        raise ValueError('GLM_PRECAPTURE_FLOOR_GIB must be 3..32 GiB')
+    return ('Memory floors (GiB MemAvailable per rank): live %g, capture headroom %g, admission %g for 60 s, '
+            'in-process pre-capture %g' % (floor_gib('RECIPE_LIVE_FLOOR_GIB'), floor_gib('RECIPE_CAPTURE_HEADROOM_GIB'),
+                                           floor_gib('RECIPE_ADMISSION_FLOOR_GIB'), pre))
 
 # Launch-shape switches and their released defaults (profiles/current.env). Every other value is refused.
 LAUNCH_DEFAULTS = {'RECIPE_C4_PASS2_GRAPH': '0', 'RECIPE_MAX_MODEL_LEN': '32768', 'RECIPE_KV_PIN_L1': '0',
-                   'RECIPE_NCCL_NO_LL128': '0'}
+                   'RECIPE_NCCL_NO_LL128': '0', 'RECIPE_KV_HEAD_BYTES': str(1 << 30),
+                   'RECIPE_PAGE_CACHE_POLICY': '0'}
 # Context lengths with a recorded reason: the released 32,768, the full 2 GiB pool (693 blocks, one null) for
 # native K2, and 44,224 for the K-stop full-pool layout (one max-length request + K3 lookahead + null = 693 blocks).
-MAX_MODEL_LENS = ('32768', '44224', '44288', '66112')
+MAX_MODEL_LENS = ('32768', '44224', '44288', '66112', '100288')
 # Pinned target KV per rank: the released 2 GiB (693 blocks) or the mem-ledger L1 pin of 821 blocks (2.369 GiB).
 KV_PIN_BYTES = {'0': 2147483648, '1': 2543549952}
 # FP8 MLA KV of this checkpoint: 79 MLA layers x 576 B + 22 indexer layers x 132 B per token, 64-token blocks.
@@ -77,7 +100,7 @@ DISPRAM_HEAD_KV_BYTES = KSTOP_DISPRAM_LAYOUT['kv_bytes']
 
 
 def dispram_guard_present():
-    # Built locally from the included source with overlay/guard/build_guard.sh.
+    # Not in git: copied from dispram-a2 guard/build into the clone's overlay before a dispram boot.
     return (ROOT / DISPRAM_GUARD.replace('/overlay/', 'overlay/', 1)).is_file()
 
 
@@ -95,16 +118,53 @@ def dispram():
                          'which this release does not include; set RECIPE_DISPRAM=0' % mode) from None
     if not dispram_guard_present():
         raise ValueError('RECIPE_DISPRAM needs the copy guard at overlay/guard/libdispram_copy_guard.so '
-                         '(run bash overlay/guard/build_guard.sh; verify its SHA256SUMS)')
+                         '(dispram-a2 guard/build, sha256 in its SHA256SUMS)')
     return dispram_recipe
 
 
+def kv_format():
+    mode = ENV.get('GLM_KV_FORMAT', 'fp8')
+    if mode not in ('fp8', 'fp4x'):
+        raise ValueError('GLM_KV_FORMAT must be fp8 or fp4x')
+    if mode == 'fp4x':
+        if ENV.get('GLM_FULL_MLA') != 'triton' or ENV.get('VLLM_USE_V2_MODEL_RUNNER') != '1':
+            raise ValueError('FP4x requires Triton MLA and V2 runner')
+        if ENV.get('RECIPE_PROFILE', 'native-mtp-k2') != 'native-mtp-k2':
+            raise ValueError('FP4x uses the one native-mtp-k2 profile')
+        if ENV.get('GLM_MLA_SPLIT_K') != '32' or ENV.get('GLM_MLA_SPLIT_MAX_ROWS', '36') != '36':
+            raise ValueError('FP4x release requires split32 and the 36-row dispatch cap')
+        for key in ('GLM_FP4_PROBE_SIM', 'GLM_FP4_PROBE_CAPTURE', 'GLM_DSA_SWA_POOL',
+                    'GLM_GLUE_DSA_IDX_CACHE', 'GLM_SPEC_SAMPLE', 'GLM_TRITON_MLA_PREFILL'):
+            if ENV.get(key, '0') not in ('', '0'):
+                raise ValueError('FP4x does not compose with ' + key)
+    return mode
+
+
 def launch_switches():
+    mode = kv_format()
     values = {key: ENV.get(key, default).strip() for key, default in LAUNCH_DEFAULTS.items()}
+    head = values['RECIPE_KV_HEAD_BYTES']
+    if not head.isdigit() or int(head) < GiB or int(head) % (2 << 20):
+        raise ValueError('RECIPE_KV_HEAD_BYTES must be >=1 GiB, aligned to 2 MiB')
+    if int(head) != GiB and (mode != 'fp4x' or ENV.get('RECIPE_DISPRAM') != 'require'):
+        raise ValueError('larger ordinary KV heads require FP4x and dispram require')
+    if values['RECIPE_PAGE_CACHE_POLICY'] not in ('0', '1'):
+        raise ValueError('RECIPE_PAGE_CACHE_POLICY must be 0 or 1')
+    if mode == 'fp4x' and (ENV.get('GLM_MTP_KSTOP') != '1' or ENV.get('RECIPE_DISPRAM') != 'require'):
+        raise ValueError('FP4x requires K-stop and dispram require')
+    if mode == 'fp8' and values['RECIPE_MAX_MODEL_LEN'] == '100288':
+        raise ValueError('100288 requires GLM_KV_FORMAT=fp4x')
     for key in ('RECIPE_C4_PASS2_GRAPH', 'RECIPE_KV_PIN_L1', 'RECIPE_NCCL_NO_LL128'):
         if values[key] not in ('0', '1'):
             raise ValueError(key + ' must be 0 or 1')
-    if values['RECIPE_MAX_MODEL_LEN'] not in MAX_MODEL_LENS:
+    packed_cap = 0
+    if mode == 'fp4x':
+        from fp4_kv_layout import layout as packed_layout
+        packed_cap = int(packed_layout(mode, int(head))['max_model_len'])
+    packed_length = (mode == 'fp4x' and values['RECIPE_MAX_MODEL_LEN'].isdigit()
+                     and 64 <= int(values['RECIPE_MAX_MODEL_LEN']) <= packed_cap
+                     and int(values['RECIPE_MAX_MODEL_LEN']) % 64 == 0)
+    if values['RECIPE_MAX_MODEL_LEN'] not in MAX_MODEL_LENS and not packed_length:
         raise ValueError('RECIPE_MAX_MODEL_LEN must be one of ' + ', '.join(MAX_MODEL_LENS))
     values['GLM_MTP_KSTOP'] = ENV.get('GLM_MTP_KSTOP', '0').strip()
     if values['GLM_MTP_KSTOP'] not in ('0', '1'):
@@ -153,6 +213,13 @@ def kstop_layout(values):
     if mode not in ('0', 'require'):
         raise ValueError('GLM_MTP_KSTOP=1 with dispram requires RECIPE_DISPRAM=require (no plain-pool fallback)')
     if mode == 'require':
+        if kv_format() == 'fp4x':
+            from fp4_kv_layout import layout
+            packed = layout('fp4x', int(values['RECIPE_KV_HEAD_BYTES']))
+            length = values['RECIPE_MAX_MODEL_LEN']
+            if not length.isdigit() or not 64 <= int(length) <= int(packed['max_model_len']) or int(length)%64:
+                raise ValueError('FP4x requires a 64-token context grid within packed capacity')
+            return dict(packed, max_model_len=values['RECIPE_MAX_MODEL_LEN'])
         if values['RECIPE_MAX_MODEL_LEN'] != KSTOP_DISPRAM_LAYOUT['max_model_len']:
             raise ValueError('GLM_MTP_KSTOP=1 with RECIPE_DISPRAM=require launches RECIPE_MAX_MODEL_LEN=66112 only')
         return KSTOP_DISPRAM_LAYOUT
@@ -257,11 +324,18 @@ def remote(rank, command, timeout=45):
 # Opt-in keys that reach the containers only when set to a value other than 0, so the default vector carries
 # none of them: the MLA plan skip (1 = static, ab = in-boot A/B through worker RPCs) and vLLM's dev API, which
 # the A/B mode needs on the private loopback port.
-OPTIONAL_KEYS = ('GLM_SKIP_MLA_PLAN', 'GLM_SKIP_MLA_PLAN_AB_INIT', 'VLLM_SERVER_DEV_MODE')
+OPTIONAL_KEYS = ('GLM_SKIP_MLA_PLAN', 'GLM_SKIP_MLA_PLAN_AB_INIT', 'VLLM_SERVER_DEV_MODE', 'GLM_PARAM_HASH')
 
 
 def optional_env():
     env = {k: ENV[k].strip() for k in OPTIONAL_KEYS if ENV.get(k, '').strip() not in ('', '0')}
+    sys.path.insert(0, str(ROOT / 'overlay/bringup'))
+    from glm_recent_kv import options as recent_options
+    recent_window, _, recent_ab = recent_options(ENV)
+    if recent_window:
+        env.update({k: ENV[k] for k in ('GLM_FP4_RECENT_WINDOW','GLM_FP4_RECENT_AB','GLM_FP4_RECENT_INIT') if k in ENV})
+        if recent_ab:
+            env['VLLM_SERVER_DEV_MODE']='1'
     mode = env.get('GLM_SKIP_MLA_PLAN', '0')
     if mode not in ('0', '1', 'ab'):
         raise ValueError('GLM_SKIP_MLA_PLAN must be 0, 1 or ab')
@@ -269,16 +343,72 @@ def optional_env():
         raise ValueError('VLLM_SERVER_DEV_MODE and GLM_SKIP_MLA_PLAN_AB_INIT must be 0 or 1')
     if mode != '0' and ENV.get('GLM_FULL_MLA') != 'triton':
         raise ValueError('GLM_SKIP_MLA_PLAN needs GLM_FULL_MLA=triton')
-    if (mode == 'ab') != ('VLLM_SERVER_DEV_MODE' in env):
-        raise ValueError('VLLM_SERVER_DEV_MODE=1 is set only with GLM_SKIP_MLA_PLAN=ab (in-boot A/B windows)')
+    hashing = env.get('GLM_PARAM_HASH', '0')
+    if hashing not in ('0', '1'):
+        raise ValueError('GLM_PARAM_HASH must be 0 or 1')
+    if (mode == 'ab' or hashing == '1' or recent_ab) != ('VLLM_SERVER_DEV_MODE' in env):
+        raise ValueError('VLLM_SERVER_DEV_MODE=1 needs GLM_SKIP_MLA_PLAN=ab or GLM_PARAM_HASH=1 or recent KV AB')
     if 'GLM_SKIP_MLA_PLAN_AB_INIT' in env and mode != 'ab':
         raise ValueError('GLM_SKIP_MLA_PLAN_AB_INIT applies to GLM_SKIP_MLA_PLAN=ab only')
+    # Include zero explicitly so FP4x's default-on scheduler can be disabled.
+    adaptive = {k: ENV[k] for k in ('GLM_PREFILL_CHUNK_ADAPTIVE', 'GLM_PREFILL_CHUNK_THRESHOLD') if k in ENV}
+    if adaptive.get('GLM_PREFILL_CHUNK_ADAPTIVE', '0') not in ('0', '1'):
+        raise ValueError('GLM_PREFILL_CHUNK_ADAPTIVE must be 0 or 1')
+    if int(adaptive.get('GLM_PREFILL_CHUNK_THRESHOLD', '16384')) <= 0:
+        raise ValueError('GLM_PREFILL_CHUNK_THRESHOLD must be positive')
+    env.update(adaptive)
+    weights = ENV.get('GLM_ATTN_WEIGHTS', 'int8')
+    if weights not in ('int8', 'nvfp4'):
+        raise ValueError('GLM_ATTN_WEIGHTS must be int8 or nvfp4')
+    if weights == 'nvfp4':
+        sys.path.insert(0, str(ROOT / 'overlay' / 'overlay'))
+        import glm_nvfp4_groups as nvfp4_groups
+        selected_groups = nvfp4_groups.groups(ENV)
+        sidecar = ENV.get('GLM_ATTN_NVFP4_DIR', '')
+        if not sidecar.startswith('/') or sidecar == ENV['MODEL_DIR']:
+            raise ValueError('NVFP4 needs an absolute, separate GLM_ATTN_NVFP4_DIR')
+        if ENV.get('GLM_NVFP4_WSIM', '') not in ('', '0'):
+            raise ValueError('real NVFP4 cannot be combined with weight simulator')
+        env.update(GLM_ATTN_WEIGHTS='nvfp4', GLM_ATTN_NVFP4_DIR='/attn-nvfp4')
+        # Omit the default selector entirely: serving DRY vectors remain byte-identical.
+        if selected_groups != ('attn',):
+            more = ENV.get('GLM_NVFP4_MORE_DIR', '')
+            if not more.startswith('/') or more == ENV['MODEL_DIR'] or more == sidecar:
+                raise ValueError('extra groups require a separate absolute GLM_NVFP4_MORE_DIR')
+            if 'mtp' in selected_groups and (ENV.get('GLM_MTP_ONLY_LOAD') != '1' or ENV.get('GLM_TARGET_SKIP_MTP') != '1'):
+                raise ValueError('MTP NVFP4 requires native selected target/draft loading')
+            env.update(GLM_NVFP4_GROUPS=','.join(selected_groups), GLM_NVFP4_MORE_DIR='/more-nvfp4')
+    elif ENV.get('GLM_NVFP4_GROUPS', 'attn') != 'attn':
+        raise ValueError('extra real groups require GLM_ATTN_WEIGHTS=nvfp4')
+    # Explicit loader opt-in reaches every rank without changing the profile default.
+    loader = ENV.get('GLM_LOADER', '').strip()
+    if loader not in ('', 'fast', 'coalesced'):
+        raise ValueError('GLM_LOADER must be fast or coalesced')
+    if loader:
+        env['GLM_LOADER'] = loader
+    loader_keys = ('GLM_COALESCED_BATCH_MB', 'GLM_COALESCED_OWNED_MB',
+                   'GLM_COALESCED_THREADS', 'GLM_COALESCED_DIRECT',
+                   'GLM_COALESCED_EMERGENCY_MB', 'GLM_COALESCED_MARGIN_MB')
+    settings = {k: ENV[k] for k in loader_keys if k in ENV}
+    if settings and loader != 'coalesced':
+        raise ValueError('GLM_COALESCED settings need GLM_LOADER=coalesced')
+    if loader == 'coalesced':
+        sys.path.insert(0, str(ROOT / 'overlay/overlay'))
+        from glm_coalesced_load import options
+        options(ENV)
+        env.update(settings)
     return env
 
 
 def rank_env(rank):
     env = {k: ENV[k] for k in PROFILE_KEYS}
     env.update(optional_env())
+    if kv_format() == 'fp4x':
+        env['GLM_KV_FORMAT'] = 'fp4x'
+        switches = launch_switches()
+        if int(switches['RECIPE_KV_HEAD_BYTES']) != GiB:
+            env['GLM_FP4_POOL_BLOCKS'] = str(kstop_layout(switches)['blocks'])
+            env['GLM_FP4_MAX_MODEL_LEN'] = switches['RECIPE_MAX_MODEL_LEN']
     if 'NCCL_PROTO' in env:
         raise ValueError('set NCCL_PROTO through RECIPE_NCCL_NO_LL128 only')
     if launch_switches()['RECIPE_NCCL_NO_LL128'] == '1':
@@ -332,7 +462,7 @@ def select_serving_prefill():
     cap = int(ENV.get('GLM_W2_PREFILL_CHUNK', '512'))
     deadline = time.monotonic() + 30
     while time.monotonic() < deadline:
-        metrics = remote(0, 'curl -fsS -m5 http://localhost:8095/metrics')
+        metrics = remote(0, 'curl -fsS -m5 http://127.0.0.1:8095/metrics')
         counts = []
         for key in ('vllm:num_requests_running', 'vllm:num_requests_waiting'):
             vals = [float(line.split()[-1]) for line in metrics.splitlines() if line.startswith(key+'{') or line.startswith(key+' ')]
@@ -362,6 +492,10 @@ def docker_command(rank, ctn):
                               (ENV['OVERLAY_REMOTE'], '/overlay', True),
                               (ENV['OVERLAY_REMOTE'] + '/cache', '/cache', False),
                               (ENV['NCCL_HOST_DIR'], '/opt/nccl', True)]
+    if ENV.get('GLM_ATTN_WEIGHTS', 'int8') == 'nvfp4':
+        mounts.append((ENV['GLM_ATTN_NVFP4_DIR'], '/attn-nvfp4', True))
+        if ENV.get('GLM_NVFP4_GROUPS', 'attn') != 'attn':
+            mounts.append((ENV['GLM_NVFP4_MORE_DIR'], '/more-nvfp4', True))
     if uses_external_draft():
         mounts.append((ENV['DRAFT_DIR'], '/draft', True))
     for source, dest, ro in mounts:
@@ -473,6 +607,7 @@ def overlay_hash():
 def persist_parts(image_id):
     env = rank_env(0)
     return dict(schema=1, image=image_id, overlay=overlay_hash(),
+                kv_format=kv_format(), kv_abi=('fp4x_v1_e2m1_s16_e4m3_pow2_r64' if kv_format() == 'fp4x' else 'fp8_e4m3'),
                 arch={k: env.get(k, '') for k in ('FLASHINFER_CUDA_ARCH_LIST', 'TORCH_CUDA_ARCH_LIST')},
                 cache_env={k: env.get(k, '') for k in PERSIST_CACHE_ENV})
 
@@ -706,7 +841,18 @@ def unlock(token):
                     f'\np.unlink() if p.exists() and p.read_text()=={token!r} else None'))
 
 
+def page_cache_state(action):
+    if ENV.get('RECIPE_PAGE_CACHE_POLICY', '0') == '1':
+        for rank in range(4):
+            remote(rank, 'python3 /usr/local/sbin/glm-page-cache-policy.py ' + action, timeout=45)
+
+
 def stop(deployment):
+    policy_error = None
+    try:
+        page_cache_state('end')
+    except Exception as exc:
+        policy_error = exc  # a broken optional timer must never prevent docker stop
     def stop_rank(rank):
         remote(rank, 'docker stop -t 60 ' + shlex.quote(deployment['ctn'] + f'-r{rank}'), timeout=80)
         status = remote(rank, 'docker inspect -f ' + shlex.quote('{{.State.Running}}') + ' ' + shlex.quote(deployment['ctn'] + f'-r{rank}'))
@@ -725,23 +871,28 @@ def stop(deployment):
     hook = dispram()
     if hook is not None:
         hook.postcheck(HOSTS, ENV)      # raises (lock retained) if a carveout lease outlived its engine
+    if policy_error is not None:
+        raise RuntimeError('Containers stopped; cache policy end failed; lock retained: ' + str(policy_error))
     unlock(deployment['token'])
     print('Four containers stopped and preserved; owned lock released', flush=True)
 
 
-SAMPLE_CODE = '''import json,pathlib,subprocess
+SAMPLE_CODE = '''import json,pathlib,subprocess,re
 p=pathlib.Path
 m={l.split(':')[0]:int(l.split()[1]) for l in p('/proc/meminfo').read_text().splitlines()}
 v={l.split()[0]:int(l.split()[1]) for l in p('/proc/vmstat').read_text().splitlines()}
 d=json.loads(subprocess.check_output(['docker','inspect',NAME]))[0]
 logs=subprocess.check_output(['docker','logs','--tail','150',NAME],stderr=subprocess.STDOUT).decode(errors='replace')
+# On a failure only, recover the beginning of the traceback from complete logs.
+if re.search(r'Traceback|EngineDead|CUDA error|illegal memory access|device-side assert|Worker.*(?:ERROR|failed|Failed)',logs):
+ logs=subprocess.check_output(['docker','logs',NAME],stderr=subprocess.STDOUT).decode(errors='replace')
 gpu=subprocess.check_output(['nvidia-smi','--query-gpu=utilization.gpu','--format=csv,noheader,nounits']).decode()
 print(json.dumps(dict(mem=m,vm=v,state=d['State'],restarts=d['RestartCount'],logs=logs,gpu=gpu)))
 '''
 
 
 def health():
-    return remote(0, "curl -s -m 3 -o /dev/null -w '%{http_code}' http://localhost:8095/health || true") == '200'
+    return remote(0, "curl -s -m 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:8095/health || true") == '200'
 
 
 def fatal_line(line):
@@ -753,16 +904,33 @@ def fatal_line(line):
                 or re.search(r'Worker.*(\bERROR\b|\bfailed\b|\bFailed\b)', line))
 
 
+def failure_summary(logs):
+    """First traceback/exception and first terminal Error, never a caret/frame."""
+    # The routine import_utils WARNING (duplicate NCCL runtime probe) prints its own traceback at every start;
+    # it is never the failure (fatal_line excludes it too).
+    lines = [l for l in logs.splitlines() if not ('import_utils' in l and 'WARNING' in l)]
+    exception = next((l for l in lines if 'Traceback (most recent call last)' in l), None)
+    error = next((l for l in lines if re.search(r'\b(?:[A-Za-z_][\w.]*Error|[A-Za-z_][\w.]*Exception|Exception):', l)), None)
+    if exception is None:exception = error
+    if error is None:
+        error = next((l for l in lines if fatal_line(l) and not re.search(r'(?:\^+$|File "|Traceback|\]\s+(?:return |raise |self\.|[a-z_]+ =))', l)), None)
+    return ' | '.join(dict.fromkeys(l for l in (exception, error) if l))
+
+
 def inspect_samples(samples, swap_base, growing):
     available = []
+    failures = []
     for rank, sample in enumerate(samples):
         mem = sample['mem']; available.append(mem['MemAvailable'])
         if sample.get('restarts', 0):
             raise RuntimeError(f'rank {rank} container restarted')
         if not sample['state']['Running'] or sample['state']['OOMKilled']:
-            raise RuntimeError(f'rank {rank} exited or was OOM killed')
-        if mem['MemAvailable'] < 6 * 1048576:
-            raise RuntimeError(f'rank {rank} MemAvailable below 6 GiB')
+            summary=failure_summary(sample['logs'])
+            failures.append(f'rank {rank} exited or was OOM killed'+(': '+summary if summary else ''))
+            continue
+        live = floor_gib('RECIPE_LIVE_FLOOR_GIB')
+        if mem['MemAvailable'] < live * 1048576:
+            raise RuntimeError(f'rank {rank} MemAvailable below {live:g} GiB')
         used = mem['SwapTotal'] - mem['SwapFree']
         swap_base.setdefault(rank, used)
         growing[rank] = growing.get(rank, 0) + 1 if used - swap_base[rank] >= 64 * 1024 else 0
@@ -770,18 +938,21 @@ def inspect_samples(samples, swap_base, growing):
             raise RuntimeError(f'rank {rank} sustained swap growth >=64 MiB')
         errors = [line for line in sample['logs'].splitlines() if fatal_line(line)]
         if errors:
-            raise RuntimeError(f'rank {rank} runtime error: {errors[0]}')
+            failures.append(f'rank {rank} runtime error: {failure_summary(sample["logs"]) or errors[0]}')
+    if failures:
+        raise RuntimeError('\n'.join(failures))
     return available
 
 
 def capture_headroom(samples, avail):
-    # The in-process hook refuses capture below 10 GiB before it starts. The capture
-    # progress lines stay in the log tail until health 200, so this 8 GiB floor covers
+    # The in-process hook refuses capture below GLM_PRECAPTURE_FLOOR_GIB before it starts. The capture
+    # progress lines stay in the log tail until health 200, so this floor (RECIPE_CAPTURE_HEADROOM_GIB) covers
     # capture, the post-capture warm-up and API start. The cold FlashInfer JIT builds
     # that dipped below it are made before launch by jit_prep().
     capturing = any('Capturing CUDA graph' in s['logs'] or 'Capturing cudagraph' in s['logs'] for s in samples)
-    if capturing and min(avail) < 8 * 1048576:
-        raise RuntimeError('capture headroom below 8 GiB')
+    floor = floor_gib('RECIPE_CAPTURE_HEADROOM_GIB')
+    if capturing and min(avail) < floor * 1048576:
+        raise RuntimeError('capture headroom below %g GiB' % floor)
 
 
 def progress_fingerprint(samples, metrics=None):
@@ -825,28 +996,33 @@ def monitor(deployment, boot=False):
             avail = inspect_samples(samples, swap_base, growing)
             if boot and not ready:
                 capture_headroom(samples, avail)
-            if boot and now-started > 900:
-                raise RuntimeError('boot exceeded 900 seconds')
+            # Serving-clone watchdog (nvfp4w/nvfp4a): sidecar hash + Marlin repack margin.
+            if boot and now-started > 1800:
+                raise RuntimeError('boot exceeded 1800 seconds')
             if ready and boot:
-                steady = (steady or now) if min(avail) >= 8 * 1048576 else None
+                admission = floor_gib('RECIPE_ADMISSION_FLOOR_GIB')
+                steady = (steady or now) if min(avail) >= admission * 1048576 else None
                 if steady is not None and now-steady >= 60:
-                    print('Admission PASS: >=8 GiB on all ranks for 60 s (%.1f s after start)' % (now-started), flush=True)
+                    print('Admission PASS: >=%g GiB on all ranks for 60 s (%.1f s after start)' % (admission, now-started), flush=True)
                     select_serving_prefill()
                     if deployment.get('persistent_cache'):
                         saver = PersistentCacheSave(deployment, now)
                     boot = False
                     next_sample = now + SAMPLE_STEADY_S
             if not boot:
-                metrics = remote(0, 'curl -fsS -m 5 http://localhost:8095/metrics')
+                page_cache_state('ready')
+            if not boot:
+                metrics = remote(0, 'curl -fsS -m 5 http://127.0.0.1:8095/metrics')
                 fingerprint = progress_fingerprint(samples, metrics)
             else:
                 fingerprint = progress_fingerprint(samples)
             busy = any(float(v.strip()) > 20 for sample in samples for v in sample['gpu'].splitlines())
-            # Idle time must not consume the next request's stall allowance.
+            # Idle time must not consume the next request's stall allowance (as the serving watch).
             if progress.get('value') != fingerprint or not busy:
                 progress = dict(value=fingerprint, time=now)
-            if busy and now-progress.get('time', now) > 180:
-                raise RuntimeError('GPU busy without progress for 180 seconds')
+            # A cold long prefill completes before /metrics counts it (serving watch allowance).
+            if busy and now-progress.get('time', now) > 600:
+                raise RuntimeError('GPU busy without progress for 600 seconds')
             if saver is not None:
                 saver.poll(now)
     except BaseException:
@@ -860,6 +1036,23 @@ def monitor(deployment, boot=False):
 def serve(ctn):
     if STATE.exists():
         raise RuntimeError('Local deployment state exists; use status/stop before another serve')
+    # Cached-header diagnostic runs locally before fleet operations and never vetoes boot.
+    import tempfile
+    from boot_preflight import advisory
+    try:
+        with tempfile.TemporaryDirectory(prefix='glm-preflight-') as tmp:
+            dry = Path(tmp)/'dry.txt'
+            headers = ENV.get('RECIPE_BOOT_PREFLIGHT_HEADERS')
+            if headers and Path(headers).is_file():
+                dry.write_text('\n'.join(shlex.join(docker_command(rank, ctn)) for rank in range(4))+'\n')
+            result = advisory(ROOT, dry, Path(tmp)/'report.json', headers,
+                       ENV.get('RECIPE_BOOT_PREFLIGHT_IMAGE'), ENV.get('RECIPE_BOOT_PREFLIGHT', '1') == '1')
+            logdir = ROOT/'logs'/ctn
+            logdir.mkdir(parents=True, exist_ok=True)
+            (logdir/'cpu-boot-preflight.json').write_text(json.dumps(result, indent=2)+'\n')
+    except Exception as exc:
+        print('WARNING: CPU boot preflight unavailable: '+str(exc)+'; continuing', file=sys.stderr)
+    page_cache_state('begin')  # includes checkpoint reads in preflight verification
     preflight(ctn)
     token = ctn + ':' + uuid.uuid4().hex
     lock(token)
@@ -914,6 +1107,7 @@ def serve(ctn):
 def main():
     validate()
     launch_switches()
+    floors = floors_note()
     command = sys.argv[1] if len(sys.argv) > 1 else 'status'
     ctn = ENV.get('CTN', 'glm53full-' + time.strftime('%Y%m%d-%H%M%S') + '-' + uuid.uuid4().hex[:8])
     if not re.fullmatch(r'glm53full-[A-Za-z0-9_-]+', ctn):
@@ -927,6 +1121,7 @@ def main():
                 print(shlex.join(persist_command(rank, ctn, 'sha256:' + '0' * 64, 'seed')))
         if kstop_note():
             print('# ' + kstop_note())
+        print('# ' + floors)
         for rank in range(4):
             print(f'# jit-prep rank={rank} host={HOSTS[rank]}')
             print(shlex.join(jit_prep_command(rank, ctn)))
@@ -950,6 +1145,7 @@ def main():
     if command == 'serve':
         if kstop_note():
             print(kstop_note(), flush=True)
+        print(floors, flush=True)
         serve(ctn)
         return
     deployment = json.loads(STATE.read_text())

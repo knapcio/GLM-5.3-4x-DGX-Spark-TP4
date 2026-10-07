@@ -499,6 +499,10 @@ def initialize(runner):
         moes=moes+draft_moes
     for m in moes:
         q=m.experts._quant_method;kernel=getattr(q,'moe_kernel',None);impl=getattr(kernel,'impl',kernel)
+        # NVFP4 MTP experts (glm_nvfp4_mtp): non-monolithic, consume the runner's topk ids after the
+        # remap hook through moe_align + moe_wna16_marlin_gemm, with no modular kernel object.
+        if getattr(q,'glm_marlin_topk_consumer',False) and not q.is_monolithic:
+            continue
         if q.is_monolithic or 'Marlin' not in type(getattr(impl,'fused_experts',None)).__name__:
             raise RuntimeError('kstop dead rows require modular Marlin topk hook')
     if r.control=='local':check_local(runner,tp_group())

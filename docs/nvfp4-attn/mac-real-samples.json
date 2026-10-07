@@ -1,0 +1,109 @@
+{
+  "scope": "offline Mac; existing local shards only; partial checkpoint, cannot serve",
+  "elapsed_seconds": 8.356847624760121,
+  "count": 9,
+  "tensors": {
+    "model.layers.1.self_attn.q_a_proj": {
+      "file": "attn-000.safetensors",
+      "sha256": "56cd38f03b1151cc320f682a8575a689adf1611c93b52bf10f83f07bec472985",
+      "shape": [
+        2048,
+        6144
+      ],
+      "bytes": 7078260,
+      "global_scale": 5.659319140249863e-05
+    },
+    "model.layers.1.self_attn.kv_a_proj_with_mqa": {
+      "file": "attn-001.safetensors",
+      "sha256": "ad4a83e2cabb48a31faeb2295bb674f859ecb776c0daff346baea1c6a2b8c43c",
+      "shape": [
+        576,
+        6144
+      ],
+      "bytes": 1991036,
+      "global_scale": 0.000496001448482275
+    },
+    "model.layers.1.self_attn.kv_b_proj": {
+      "file": "attn-002.safetensors",
+      "sha256": "65add1d13f81de1dc00de0aebb792e67187050e4a3aba5f307d89f6cac662c73",
+      "shape": [
+        28672,
+        512
+      ],
+      "bytes": 8257908,
+      "global_scale": 4.5598972064908594e-05
+    },
+    "model.layers.1.self_attn.o_proj": {
+      "file": "attn-003.safetensors",
+      "sha256": "27fb678f250ea7a876a3955d745fa4b6c235d77fd2bf1164f9a6ce6a54db4d7e",
+      "shape": [
+        6144,
+        16384
+      ],
+      "bytes": 56623476,
+      "global_scale": 8.47095507197082e-05
+    },
+    "model.layers.77.self_attn.q_a_proj": {
+      "file": "attn-004.safetensors",
+      "sha256": "04ebed2e274a8e135d349061fbeea5c5900b63d11a2058c216e4471b972d2922",
+      "shape": [
+        2048,
+        6144
+      ],
+      "bytes": 7078260,
+      "global_scale": 9.444214083487168e-05
+    },
+    "model.layers.77.self_attn.q_b_proj": {
+      "file": "attn-005.safetensors",
+      "sha256": "1811d841ce692df08be2d0930bc2323ec6fb8b56136eecb761aa1411c34d6259",
+      "shape": [
+        16384,
+        2048
+      ],
+      "bytes": 18874748,
+      "global_scale": 0.000243675138335675
+    },
+    "model.layers.77.self_attn.kv_a_proj_with_mqa": {
+      "file": "attn-006.safetensors",
+      "sha256": "d2b6dd11c59a3fe24d94ed8ecfb985f9296012f07abe7b4bb79184709daa655a",
+      "shape": [
+        576,
+        6144
+      ],
+      "bytes": 1991036,
+      "global_scale": 0.00032441955409012735
+    },
+    "model.layers.77.self_attn.kv_b_proj": {
+      "file": "attn-007.safetensors",
+      "sha256": "4801546120260eece9be8e8c546de190af0b796f24f182aa75ff8b7066fa7e84",
+      "shape": [
+        28672,
+        512
+      ],
+      "bytes": 8257908,
+      "global_scale": 0.00010741892037913203
+    },
+    "model.layers.77.self_attn.o_proj": {
+      "file": "attn-008.safetensors",
+      "sha256": "da95aea00065894df699fe0239cef1a5aa24ba778d5e1a823c843e535606b1f2",
+      "shape": [
+        6144,
+        16384
+      ],
+      "bytes": 56623476,
+      "global_scale": 0.00017518656386528164
+    }
+  },
+  "source": {
+    "index_sha256": "c935795467984516f24a64d2dc2ce07bed74a8f83ada76950f28b847786eeddf",
+    "config_sha256": "238781b1049848b65be244adda218845c1a63a4aa49c4941eb59a05dec681f3b",
+    "shards": {
+      "model-00001-of-00282.safetensors": "f88a783fd01a00d5ef512355133f967a946fd69d005f7abebff6d249d0640c8b",
+      "model-00270-of-00282.safetensors": "e7acac7ebed442d4cd3294b6731341369fc403bdd610217031759599df1b2323"
+    }
+  },
+  "algorithm": "glm-wsim-fp32-absmax-e2m1-e4m3-rne-block16-v1",
+  "fp32_qdq_bit_exact_vs_qualified_simulator": true,
+  "elements_verified": 296484864,
+  "original_source_shards_hash_unchanged": true
+}

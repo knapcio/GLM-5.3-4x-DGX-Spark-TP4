@@ -1,0 +1,101 @@
+{
+  "scope": "Offline indexer risk screen: real weights, synthetic activations, isolated top-k.\n\nThis omits trained activation distributions, RoPE, FP8 index-cache rounding and\nruntime scoring. It demonstrates sensitivity, not long-context qualification.\nReal selected-index overlap must be collected from identical runtime activations.\n",
+  "seed": 5306,
+  "tokens": 4096,
+  "queries": 8,
+  "topk": 2048,
+  "weights": {
+    "wq_b": {
+      "shape": [
+        4096,
+        2048
+      ],
+      "nrmse": 0.09235250949859619,
+      "source_tensor_sha256": "6e0e45e520bae4947c97ed543a58a1fc9ba27c747af36ddca27c85a978015ffb"
+    },
+    "wk": {
+      "shape": [
+        128,
+        6144
+      ],
+      "nrmse": 0.09377288818359375,
+      "source_tensor_sha256": "16003ad7a63649f87ef40b19a044b1d273789334c1c2ccc66a56f4e0b73b510b"
+    },
+    "weights_proj": {
+      "shape": [
+        32,
+        6144
+      ],
+      "nrmse": 0.09344775974750519,
+      "source_tensor_sha256": "0cc42992aef95e086d86c5311363fea793afafe682583358f79b14052bb07cc6"
+    }
+  },
+  "rows": [
+    {
+      "query": 0,
+      "topk_overlap": 0.9580078125,
+      "swapped": 86,
+      "boundary_gap": 0.016162872314453125,
+      "max_score_perturbation": 9.92900276184082,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 1,
+      "topk_overlap": 0.9384765625,
+      "swapped": 126,
+      "boundary_gap": 0.0012421607971191406,
+      "max_score_perturbation": 8.526653289794922,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 2,
+      "topk_overlap": 0.9306640625,
+      "swapped": 142,
+      "boundary_gap": 0.011340141296386719,
+      "max_score_perturbation": 10.914152145385742,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 3,
+      "topk_overlap": 0.93798828125,
+      "swapped": 127,
+      "boundary_gap": 0.003551959991455078,
+      "max_score_perturbation": 8.350032806396484,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 4,
+      "topk_overlap": 0.94287109375,
+      "swapped": 117,
+      "boundary_gap": 0.004405021667480469,
+      "max_score_perturbation": 9.95697021484375,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 5,
+      "topk_overlap": 0.935546875,
+      "swapped": 132,
+      "boundary_gap": 0.00907278060913086,
+      "max_score_perturbation": 7.639268398284912,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 6,
+      "topk_overlap": 0.93408203125,
+      "swapped": 135,
+      "boundary_gap": 0.0027942657470703125,
+      "max_score_perturbation": 7.98435115814209,
+      "sufficient_stability_margin": false
+    },
+    {
+      "query": 7,
+      "topk_overlap": 0.9365234375,
+      "swapped": 130,
+      "boundary_gap": 0.0039048194885253906,
+      "max_score_perturbation": 9.074560165405273,
+      "sufficient_stability_margin": false
+    }
+  ],
+  "mean_topk_overlap": 0.93927001953125,
+  "recommendation": "Indexer opt-in only. Do not ship from weight RMS or simulator quality; require REAL-path long-context retrieval and runtime selected-index overlap."
+}

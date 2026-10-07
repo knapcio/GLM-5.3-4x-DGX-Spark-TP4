@@ -1,0 +1,32 @@
+{
+  "run": "day3/release-stack/stack-1002b/fp4x-20261005-1147",
+  "fp8": {
+    "prefix_tokens": 61440,
+    "post_warm_GiB": [
+      9.398,
+      10.261,
+      10.357,
+      10.347
+    ],
+    "prefill_min_GiB": [
+      8.793,
+      9.965,
+      10.078,
+      10.055
+    ]
+  },
+  "fp4x": {
+    "prefix_tokens": 50000,
+    "prefix_source": "owner estimate; no per-chunk token counter in receipts",
+    "post_warm_rank0_GiB": 9.0,
+    "prefill_rank0_GiB": 7.987
+  },
+  "source_sha256": {
+    "a/memwatch-minima.json": "290f79c142de658b52fd04fcb0393a582282c7ec2343911ae85df91ed23201a4",
+    "a/hold-post-warm.json": "91a8a9952b278289712d10aa4efad669942f0f09a2ba32dd93499192e38c70e0",
+    "b/memwatch-minima.json": "fc748a1ce2154e76dd3f3c46220d2718d25964582b4efcafbaf42dd70cdfac7c",
+    "b/memwatch-STOP.json": "de4a6a870378b8dae0108a22c697a076948ab4188e1a74bfce081580864b6dd6",
+    "b/receipts.json": "7c72873dfb0c7f17f50797ddc73c8bb04f657218d85bdcbe399a17e5fe1e15c9",
+    "b/rank0-full.log": "e398a0ec434bf0f442edf3ad94dbe24a58537b39a13e5dc9c19c25f9d2ed90e2"
+  }
+}

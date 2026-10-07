@@ -52,7 +52,7 @@ class Inert(unittest.TestCase):
     def test_profile_flags(self):
         current = (ROOT / 'profiles/current.env').read_text()
         # Shortcut remains opt-in; K-stop compatibility does not change defaults.
-        self.assertIn("export GLM_INDEXER_SHORTCUT='0'", current)
+        self.assertIn("export GLM_INDEXER_SHORTCUT='1'", current)
         self.assertIn("export GLM_MTP_KSTOP='1'", current)
         self.assertIn("export GLM_INDEXER_SHORTCUT='0'", (ROOT / 'profiles/dspark-k3.env').read_text())
         boot = (ROOT / 'overlay/bringup/sitecustomize.py').read_text()

@@ -3,7 +3,6 @@
 import hashlib
 import json
 import math
-import os
 from pathlib import Path
 import random
 import statistics
@@ -46,7 +45,7 @@ def validate_job(job, posted, config):
     for key in ('benchId', 'startedAt', 'sparkId'):
         if job.get(key) != posted.get(key):
             errors.append('job identity changed: ' + key)
-    if job.get('sparkId') != os.environ.get('SPARKDASH_SPARK_ID', 'configured-node') or job.get('status') != 'completed' or job.get('error'):
+    if job.get('sparkId') != 'rank0' or job.get('status') != 'completed' or job.get('error'):
         errors.append('job failed or wrong Spark')
     if any((job.get('config') or {}).get(k) != v for k, v in config.items()):
         errors.append('config mismatch')

@@ -1,0 +1,130 @@
+{
+  "scope": "Analytic forecast only; memory ledger is exact tensor bytes minus stated allowances, no admission/cap change",
+  "baseline_cycle_prior_ms": 75,
+  "baseline_note": "75ms illustrative current B prior, replace with paired same-day cycle.py median",
+  "bandwidth_GBs": 255,
+  "discount": 2,
+  "groups": {
+    "shared": {
+      "resident_source_bytes": 718848000,
+      "resident_nvfp4_bytes": 398132100,
+      "padding_bytes": 0,
+      "extra_workspace_bytes": 14400,
+      "freed_bytes": 320701500,
+      "read_source_bytes_per_cycle": 718848000,
+      "read_nvfp4_bytes_per_cycle": 398132100,
+      "bandwidth_saved_ms_x2": 0.6288547058823529,
+      "trace_saved_ms_x2": 0.8831590601211939,
+      "added_split_calls_per_cycle": 75,
+      "split_launch_allowance_ms": 0.48701298701298706,
+      "predicted_saved_ms": 0.3961460731082069,
+      "freed_GB_per_rank": 0.3207015,
+      "conservative_realizable_GB_per_rank_x2": 0.16035075,
+      "predicted_cycle_ms_gain_pct": [
+        0.5281947641442758
+      ],
+      "predicted_cycle_rate_gain_pct": [
+        0.5309994755718916
+      ],
+      "predicted_exceeds_1pct_gate": false
+    },
+    "dense": {
+      "resident_source_bytes": 115015680,
+      "resident_nvfp4_bytes": 63701016,
+      "padding_bytes": 0,
+      "extra_workspace_bytes": 384,
+      "freed_bytes": 51314280,
+      "read_source_bytes_per_cycle": 115015680,
+      "read_nvfp4_bytes_per_cycle": 63701016,
+      "bandwidth_saved_ms_x2": 0.10061698823529412,
+      "trace_saved_ms_x2": 0.11934609802767762,
+      "added_split_calls_per_cycle": 2,
+      "split_launch_allowance_ms": 0.012987012987012988,
+      "predicted_saved_ms": 0.10635908504066463,
+      "freed_GB_per_rank": 0.05131428,
+      "conservative_realizable_GB_per_rank_x2": 0.02565714,
+      "predicted_cycle_ms_gain_pct": [
+        0.14181211338755284
+      ],
+      "predicted_cycle_rate_gain_pct": [
+        0.1420135057413452
+      ],
+      "predicted_exceeds_1pct_gate": false
+    },
+    "indexer": {
+      "resident_source_bytes": 393609216,
+      "resident_nvfp4_bytes": 110702844,
+      "padding_bytes": 2322432,
+      "extra_workspace_bytes": 12096,
+      "freed_bytes": 280571844,
+      "read_source_bytes_per_cycle": 393609216,
+      "read_nvfp4_bytes_per_cycle": 113025276,
+      "bandwidth_saved_ms_x2": 0.5547183764705882,
+      "trace_saved_ms_x2": 0.65,
+      "added_split_calls_per_cycle": 21,
+      "split_launch_allowance_ms": 0.13636363636363638,
+      "predicted_saved_ms": 0.5136363636363637,
+      "freed_GB_per_rank": 0.280571844,
+      "conservative_realizable_GB_per_rank_x2": 0.140285922,
+      "predicted_cycle_ms_gain_pct": [
+        0.6848484848484849
+      ],
+      "predicted_cycle_rate_gain_pct": [
+        0.6895710014035439
+      ],
+      "predicted_exceeds_1pct_gate": false
+    },
+    "mtp": {
+      "resident_source_bytes": 2482427008,
+      "resident_nvfp4_bytes": 1394273312,
+      "freed_bytes": 1088152928,
+      "extra_workspace_allowance_bytes": 768,
+      "read_source_bytes_per_cycle": 360265984.0,
+      "read_nvfp4_bytes_per_cycle": 202342695.8746479,
+      "bandwidth_saved_ms_x2": 0.3096535061281414,
+      "trace_saved_ms_x2_range": [
+        0.13,
+        0.41
+      ],
+      "predicted_saved_ms_range": [
+        0.11701298701298701,
+        0.397012987012987
+      ],
+      "split_launch_allowance_ms": 0.012987012987012988,
+      "assumptions": "K2 prior: two MTP passes, distinct expert unions17.6+8; K-stop and acceptance change this; UK/UV BF16 unchanged; three routed Marlin GEMMs instead of two",
+      "freed_GB_per_rank": 1.088152928,
+      "conservative_realizable_GB_per_rank_x2": 0.544076464,
+      "predicted_cycle_ms_gain_pct": [
+        0.156017316017316,
+        0.5293506493506492
+      ],
+      "predicted_cycle_rate_gain_pct": [
+        0.1562611104077405,
+        0.5321676824332489
+      ],
+      "predicted_exceeds_1pct_gate": false
+    }
+  },
+  "attention_incremental_gain": 0,
+  "conversion": {
+    "elements": {
+      "shared": 2831155200,
+      "dense": 452984832,
+      "indexer": 196804608,
+      "mtp": 9866444800
+    },
+    "total_elements": 13347389440,
+    "nvfp4_payload_bytes_before_headers": 7507906560,
+    "source_shards": 81,
+    "quantization_rate_elements_per_s": [
+      10000000,
+      40000000
+    ],
+    "estimated_total_minutes": [
+      10,
+      35
+    ],
+    "reserve_minutes": 45
+  },
+  "caveat": "Trace priors from nvfp4w PROBE.md; split allowance borrowed from attention, not measured for these groups. Memory savings are not discounted physical tensor bytes; x2 realizable column is a conservative credit only. DRAM/L2/reloads/activation/KV/TP/graph/transient costs unmeasured."
+}

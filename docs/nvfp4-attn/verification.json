@@ -1,0 +1,67 @@
+{
+  "time": "2026-10-06T10:43:18.923762+02:00",
+  "scope": "Mac only, offline local checkpoint subset",
+  "branch": "perf/nvfp4-attn",
+  "base": "84a38e06f16ee09e0521a653851fe574bbf57fae",
+  "kernel": "pinned Marlin NVFP4 W4A16; BF16 activations; FP32 reduction; separate fused A globals",
+  "tests": {
+    "nvfp4_cpu": "27/27 PASS (24 attention + 3 quality)",
+    "recipe_cpu": "24/24 PASS",
+    "fast_loader": "324 tensors byte-identical; eager/stock/EP wiring PASS",
+    "metrics": "recorded-baseline self-test PASS",
+    "syntax": "compileall and bash -n PASS",
+    "default_dry": "all 4 model vectors match saved control; no SSH/state access",
+    "enabled_dry": "read-only sidecar mount + selector on all 4 ranks",
+    "shape_dispatch": "120 calls of pinned FP4 dispatch, M1..16 and prefill32..4096; CPU/meta, not CUDA",
+    "actual_pinned_loading": "CT parameter creation, column/row TP and replicated fused A status PASS"
+  },
+  "real_weights": {
+    "available_attention_matrices": 9,
+    "elements_bit_exact": 296484864,
+    "stage": "FP32 QDQ before simulator INT8 re-encoding",
+    "original_shard_hashes_unchanged": true,
+    "receipt": "mac-real-samples.json",
+    "full_conversion": false
+  },
+  "pending": [
+    "complete offline checkpoint conversion on each Spark",
+    "native sm121 FP4 GEMM kernel check",
+    "two boots with FP4x KV: cycle/committed and quality gates",
+    "larger KV memory/context admission"
+  ],
+  "actions": {
+    "ssh": 0,
+    "fleet": 0,
+    "endpoints": 0,
+    "gpu": 0,
+    "push": 0,
+    "weight_downloads": 0,
+    "original_checkpoint_writes": 0
+  },
+  "source_sha256": {
+    "overlay/overlay/glm_nvfp4_format.py": "0effd80c90aa357c9ba05b40313818320b0a024ed01280455e838f6aceb1e444",
+    "overlay/overlay/nvfp4_source_pins.json": "404c8a8ce4a34064a0b3ae633339a2eed630f7d5bcc9c117a0c0a7f2271c69cf",
+    "overlay/overlay/glm_nvfp4_attn.py": "7c28f08bbca87382763f6164186e0db9fa631a7fe7835f5b8a1c74065177269c",
+    "scripts/convert_attn_nvfp4.py": "32adadc1d331aaefc1d83db8f8af889f85048fc2aa34c6269e2de0ea0add321f",
+    "scripts/nvfp4_attn_cost.py": "28ad1e8512d95ff2128f11d384aa0e0343c463029b96648ae61a968cee1318ef",
+    "tests/fixtures/nvfp4_wsim_reference.py": "1804028c3a1881648358b2e4835def88492b601650b8cd923afcb68f2075236f",
+    "bench/gate_metrics.py": "27bffad0be00f6200e1e606c7b737abcdac6290e5ec69fa7116cb7ecad2e5280",
+    "bench/attn_nvfp4_gemm.py": "e0bf46e9dddc85dd9d7bf73ea94c016a12c5d433a448db579f606eacdd02ad17",
+    "bench/nvfp4_attn_cycles.py": "bd0af2e8b30b9e4b5f4c0c0840f6de2b254d8f971e8c0953e4a66e705b3dfcab",
+    "bench/nvfp4_quality.py": "814cbe944a887c26a0dda9af1b1c07767575afb86d31570fe85366c235cbba5b",
+    "overlay/overlay/glm_fast_load.py": "0d855e77fa3b4eaeb8d64c5ec851bebf879eeb191b78887037652d1d7c7947b9",
+    "overlay/bringup/sitecustomize.py": "8ec9c7450cc07bdc613fba88821b16825ff4e65159719c0eb4870f7492713da6",
+    "overlay/overlay/sitecustomize.py": "598ff612d92e3be2d070f41d97a74408aa2701c69b848354f0d1504144794739",
+    "scripts/cluster.py": "4b1ccf54785b6fb118f49a9f8e52f951552c56ed7b8f998559a42ebd81b8580e",
+    "start.sh": "c0bd74012c8518f1eb20c41b9c1f15e2788d1f0d8245208d81dd9500190b56d3"
+  },
+  "commands": [
+    "GLM_IMAGE_SRC=<pinned-local-source> <cached-python> -m unittest discover -s tests -p test_nvfp4*.py",
+    "GLM_IMAGE_SRC=<pinned-local-source> <cached-python> -m unittest discover -s tests -p test_recipe.py",
+    "GLM_IMAGE_SRC=<pinned-local-source> <cached-python> tests/test_glm_fast_load.py",
+    "python3 bench/gate_metrics.py --self-test",
+    "python3 scripts/compare_dry.py",
+    "bash -n start.sh",
+    "git diff --check"
+  ]
+}

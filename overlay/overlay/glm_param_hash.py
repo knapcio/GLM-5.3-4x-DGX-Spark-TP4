@@ -45,7 +45,9 @@ WORKER = 'vllm.v1.worker.gpu_worker'
 LABEL_RE = re.compile(r'[A-Za-z0-9_.-]{1,64}')
 KV_NAME_RE = re.compile(r'(^|\.)(kv_cache|k_cache|v_cache|kv_caches)$')
 ENV_KEYS = ('GLM_MTP_ONLY_LOAD', 'GLM_TARGET_SKIP_MTP', 'GLM_FAST_LOAD', 'GLM_FAST_LOAD_VERIFY',
-            'GLM_MTP_FIX', 'GLM_FULL_MLA', 'GLM_DIRTY_L2', 'GLM_INDEXER_SHORTCUT', 'GLM_PARAM_HASH')
+            'GLM_MTP_FIX', 'GLM_FULL_MLA', 'GLM_DIRTY_L2', 'GLM_INDEXER_SHORTCUT', 'GLM_PARAM_HASH',
+            'GLM_LOADER', 'GLM_COALESCED_BATCH_MB', 'GLM_COALESCED_OWNED_MB',
+            'GLM_COALESCED_THREADS', 'GLM_COALESCED_DIRECT')
 DEFAULTS = dict(chunk_mb=32, segment_mb=256, threads=6, max_seconds=120.0, mem_floor_gib=7.0,
                 attrs=True, out_dir='/cache/param-hash')
 STATE = {}          # label -> run state (plan, results, timings)

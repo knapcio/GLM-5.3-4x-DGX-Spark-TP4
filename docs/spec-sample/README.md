@@ -15,8 +15,8 @@ on import. Source drift and unsupported proposer/rejection modes stop startup.
 Accepted token mass is `min(p(x), q(x))`; independently sampling the normalized
 residual `max(p-q, 0)` supplies the remaining target mass. The conditional seed
 salt separates residual noise from draft noise. Kernel distributions and token
-identity still require GPU qualification. The composed K-stop integration is present; serving distributions still require
-independent qualification. The release keeps this experiment off.
+identity still require GPU qualification. Combining this option with a separate
+draft early-stop overlay requires independent integration and qualification.
 
 Validation scripts:
 

@@ -14,20 +14,13 @@ that checkpoint is not included or used by the launcher.
 The referenced container, system libraries and GPU toolchain retain their own terms.
 `../NOTICE` records attribution and the limits of the inherited source grants.
 
-## External display-carveout tool and recipe references
+`ajclark-Apache-2.0.txt` and `ajclark-NOTICE.txt` retain the original terms and
+attribution for the modified coalesced loader port from Allan Clark / ajclark
+at `f0b64af5ac6028624e5ae255d998faa1e0a9324a`. Its source provenance and local
+changes are recorded in `../docs/ajclark-loader-provenance.json` and
+`../docs/coalesced-loader.md`.
 
-[kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram)
-is an external AGPL-3.0 tool used unmodified at the pinned commit. It is not vendored;
-`scripts/dispram.sh` retains upstream `LICENSE`, `LICENSE-GPL` and
-`BUNDLING-EXCEPTION` when staging the external installation. Consult those
-pinned upstream terms for the daemon/library boundary. The local recipe licence
-does not relicense them. The separately authored copy guard and its build/test
-scripts in `overlay/guard/` carry Apache-2.0 SPDX headers; the licence text is
-included in `Apache-2.0.txt`.
-
-[Ash Hart / ashhart, TensorFold](https://github.com/ashhart/TensorFold): MIT;
-[Jay Leaton, GLM TensorFold Spark recipe](https://github.com/jayleaton/glm53-tensorfold-spark):
-Apache-2.0. They are ideas/measurement references; no source is vendored from
-either, so no copied-source licence text is claimed here. Matt Mastracci's
-contribution is ideas only. vLLM and Red Hat DSpark retain their existing
-component/model terms. See `../CREDITS.md` for all preserved attribution.
+Mia (MiaAI-Lab) is credited for the FP4 KV idea only. Its source licence is unverified; no code was copied.
+External [kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram)
+is used unmodified under its AGPL-3.0 terms and is fetched separately. No lender code or binary is bundled.
+NVFP4 sidecars are model derivatives generated locally from the pinned Tech2wild/tonyd2wild checkpoint; its Z.ai model licence continues to apply.

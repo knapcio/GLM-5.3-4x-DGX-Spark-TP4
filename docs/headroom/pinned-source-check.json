@@ -1,0 +1,133 @@
+{
+  "scope": "component source hash checks, curated from existing local extracts; not a container/image execution",
+  "files": {
+    "vllm.v1.core.kv_cache_utils": {
+      "sha256": "624ea7b0244972cb6c53044588912dfea54f3d6a91661cbc423af27e3b5c4b86",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.core.kv_cache_coordinator": {
+      "sha256": "f640b5c42f6bc718926329a8f8b48a0fd0c8c8f24368af4e4b9ec8d13f68432f",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.core.kv_cache_manager": {
+      "sha256": "9747090b01f758487ac7488fb0721c7cfe5507e8aeb55f4ea3795349bfff0968",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.core.single_type_kv_cache_manager": {
+      "sha256": "41043976d1d5e38e0465c8004fc04e01f35f66b39a40099c62d79b3756337d00",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.core.block_pool": {
+      "sha256": "ddee56dccb2208411b3a035918e917ce8f56a9858471e9ca12b420d5d79bc69c",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.kv_cache_interface": {
+      "sha256": "54a761dd60907945c8f3bfc450b1264033013b83b204320581961f887b03e5b0",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu.spec_decode.dflash.speculator": {
+      "sha256": "bd7f4c63d1196cb53bee0a81339aa5651e36938fc38b73c4ce89d978e0176a87",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu.model_runner": {
+      "sha256": "f84255d75435e84f44972d3fd25e53447f9d4d2edd8bff4f8c19dfb793448415",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu.input_batch": {
+      "sha256": "3929c92e42ae90e4410bb4537dcbdcd171a662e44afc1189a9a3e19037a84410",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.core.sched.scheduler": {
+      "sha256": "4c38a32c7405eb95eb9dd3b3d04cbfe5d0cb4ebc0b18efbaa4adc68c7a9bca5a",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.request": {
+      "sha256": "0287844f70eeaeb077d714e833a4b449a15e045a6516f8530182e357a5bec82f",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.kv_cache_spec_registry": {
+      "sha256": "16b3f6458538910f72cdac48554c20432c7ac0e5122e91c8a6219a1ec25f44fe",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu.spec_decode.dflash.cudagraph": {
+      "sha256": "556acfbce5ef2310a738d254d0029f2976846fa51f37332d1fb07a140b8ac017",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.models.qwen3_dflash": {
+      "sha256": "89c0d80c60d1fcde839a088e0a997a233e656d1e296c5505b5f2631478ddbfa5",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.models.qwen3_dspark": {
+      "sha256": "3857e0242ed5a14bdd9097e9483cc8afc9728dfa243a96f0dd70b1b68743309b",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu_worker": {
+      "sha256": "b2e580d74e7259ff2cbc82dabf38a43409ea5584d143880436583d9fc1ceedf1",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.attention.backends.mla.flashinfer_mla_sparse_sm90": {
+      "sha256": "4449ea25921dcae1ec7988581ff26a6ff5a9e5d6d4a0ac4a68a0017ea108f136",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.model_loader.weight_utils": {
+      "sha256": "b42ff2bd9301c4034592598f86a03df7d60a9fc7e13576054deb44bce9ceccf7",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.model_loader.default_loader": {
+      "sha256": "9c9d54b1b650bf5affc924ebb8b8c73711e187ae7486cadd9f737bb1279cc7b8",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.v1.worker.gpu_model_runner": {
+      "sha256": "5be64e11d25f9802a1970089e9203ae4b18977b340471a6d0761f0274b54c4b6",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.models.deepseek_mtp": {
+      "sha256": "88521bcf3bfec6c773998dbefe30448504640907a4ac98f4e822d0ed38e2436f",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.model_executor.models.utils": {
+      "sha256": "a93f50ddf56cac4992dcb7699da48cf70207c8fb0e533beea8818c8f48b1e2d8",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.models.deepseek_v2": {
+      "sha256": "58d8916458de7c6f73b40bfef9d2f57bdd6fa0fb79be9e269331af6e66149fe2",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    "vllm.model_executor.layers.mla": {
+      "sha256": "936b06c4671d52fce52ae85bb24b986db17855f32740bf55b226053fc385c4b4",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.v1.worker.gpu.spec_decode.speculator": {
+      "sha256": "325dca3bb1aee7f3ce237f913e301f3008d765525ebf650ea4b88f195692471e",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.v1.worker.gpu.sample.gumbel": {
+      "sha256": "8d04f3068a8dc22de69ec7ec6ab4f4192b8d45b5c3e253dcb7817eaf6c1314cd",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.v1.worker.gpu.sample.states": {
+      "sha256": "4e3671f93695ba5a48fad7d2d13beb231ac8741034904ed5a15d9f7b9b86662e",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.v1.worker.gpu.sample.sampler": {
+      "sha256": "76070739447fc9f7563ef164ef80c0777208d1ea07dec3a6f6d2a0755188d7ae",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    },
+    "vllm.v1.worker.gpu.buffer_utils": {
+      "sha256": "51d37bde4f2f17d5aa9354faf35269ca1adde0eb16e73ae0d8b9860353ce57b7",
+      "source_root": "/srv/campaign/diagnostics/glm-inboot/image-src"
+    }
+  },
+  "extra_test_dependencies": [
+    {
+      "path": "vllm/v1/engine/core.py",
+      "sha256": "86b8f3b3826504549ef8bea2e7fbf7553728339803abcb3e7d051d146963ff9c",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    },
+    {
+      "path": "vllm/v1/executor/multiproc_executor.py",
+      "sha256": "06677fe9991e312a2aa7e7bf92deff2e202224cbcf68b8fb4766f653d2f8b227",
+      "source_root": "/srv/campaign/diagnostics/glm53-full-20260929/window3/image-src"
+    }
+  ]
+}

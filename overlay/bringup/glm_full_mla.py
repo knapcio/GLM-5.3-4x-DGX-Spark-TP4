@@ -27,6 +27,10 @@ def install(mod):
     if getattr(cls.forward_mqa, '_glm_full_mla', False):
         return
     from glm_full_mla_kernel import sparse_mla
+    from glm_fp4_kv import active
+    packed = active()
+    if packed:
+        from glm_fp4_mla_kernel import sparse_mla
 
     def forward(self, q, cache, md, layer):
         import torch
@@ -45,15 +49,36 @@ def install(mod):
             BLOCK_SIZE=md.block_size, NUM_TOPK_TOKENS=self.topk_indices_buffer.shape[1],
             return_valid_counts=True)
         fp8 = self.kv_cache_dtype in ('fp8', 'fp8_e4m3')
-        if fp8:
+        if fp8 and not packed:
             cache = cache.view(torch.float8_e4m3fn)
-        ks = float(layer._k_scale_float or 1.0) if fp8 else 1.0
+        ks = float(layer._k_scale_float or 1.0) if fp8 and not packed else 1.0
+        if packed and getattr(md, 'num_prefills', 0) and t > md.num_decode_tokens:
+            from glm_fp4_mla_prefill import prefill_mla
+            nd = md.num_decode_tokens
+            if not 0 <= nd <= t:
+                raise RuntimeError('FP4x mixed prefill token bounds drift')
+            if not nd:
+                return prefill_mla(qn, qr, cache, slots, self.scale), None
+            out = torch.empty_like(qn, memory_format=torch.contiguous_format)
+            # Preserve release decode geometry even when a prefill shares the
+            # batch. The union arena is consumed only by the prefill suffix.
+            if os.environ.get('GLM_MLA_SPLIT_K', '0') != '0' and t <= int(os.environ.get('GLM_MLA_SPLIT_MAX_ROWS', '36')):
+                from glm_fp4_mla_split_kernel import sparse_mla as decode_mla
+            else:
+                decode_mla = sparse_mla
+            out[:nd].copy_(decode_mla(qn[:nd], qr[:nd], cache, slots[:nd], self.scale, ks))
+            out[nd:].copy_(prefill_mla(qn[nd:], qr[nd:], cache, slots[nd:], self.scale))
+            return out, None
         if os.environ.get('GLM_MLA_SPLIT_K','0') != '0' and t <= int(os.environ.get('GLM_MLA_SPLIT_MAX_ROWS','36')):
-            from glm_full_mla_split_kernel import sparse_mla as split_mla
+            if packed:
+                from glm_fp4_mla_split_kernel import sparse_mla as split_mla
+            else:
+                from glm_full_mla_split_kernel import sparse_mla as split_mla
             return split_mla(qn,qr,cache,slots,self.scale,ks), None
         return sparse_mla(qn, qr, cache, slots, self.scale, ks), None
 
     forward._glm_full_mla = True
+    forward._glm_kv_format = "fp4x" if packed else "fp8"
     cls.forward_mqa = forward
     sys.stderr.write('glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled\n')
 

@@ -1,5 +1,15 @@
 GLM-5.3 on four DGX Sparks
 
+The opt-in overlay/overlay/glm_coalesced_load.py is a modified port of
+Allan Clark / ajclark's runtime/nvme_loader/spark_nvme/{coalesced,streaming}.py
+at f0b64af5ac6028624e5ae255d998faa1e0a9324a:
+https://github.com/ajclark/GLM-5.3-DCP4-DFlash2-NVMe-KV-Offload-4x-DGX-Spark
+Copyright 2026 Allan Clark. Licensed under Apache-2.0.
+The original NOTICE is retained verbatim in LICENSES/ajclark-NOTICE.txt,
+and the license in LICENSES/ajclark-Apache-2.0.txt. Local changes by knapcio:
+stock-order range packing, MTP/EP integration, hard budgets, baseline-relative
+storage guard with destination-write credit, bounded Mac test reads and this recipe's source-pinned wiring.
+
 Repository-authored recipe scripts and documentation: MIT, see LICENSE.
 Apache-2.0-labelled runtime adapters and kernels retain that licence, see
 LICENSES/Apache-2.0.txt. No model weights or container images are distributed.
@@ -44,7 +54,7 @@ diagnosis and the fix are the recipe author's own work.
 The staged glue-lite adapter is Apache-2.0-labelled local code. It wraps pinned
 vLLM functions after import (GateLinear, fused_marlin_moe, the MLA wrapper and the
 sparse index conversion), adds no kernel and vendors no source.
-The native MTP K-stop overlay (overlay/kstop) is Apache-2.0-labelled
+The staged native MTP K-stop overlay (overlay/kstop) is Apache-2.0-labelled
 local code that transforms pinned vLLM sources at import and keeps their SPDX
 attribution; its one Triton remap kernel is local campaign code. The DeepSeek
 verify-cap mechanism is credited as an idea; no DeepSeek model or code is included.
@@ -56,15 +66,13 @@ in external images retain their respective licences. This notice is not a
 complete inventory or relicensing of an external image. See CREDITS.md for
 pinned source links and provenance.
 
-kindling dispramd and librmlist are referenced at
-5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e in kindling-spark-os:
-https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram
-The AGPL-3.0 tool is fetched and built externally, used unmodified and not vendored.
-Its upstream LICENSE, LICENSE-GPL and BUNDLING-EXCEPTION are retained in that
-installation. Local integration does not replace those terms.
+FP4x KV storage is original Apache-2.0-labelled local code. The dc5ad9e
+probe reference is retained verbatim as a numerical test oracle. Packed
+sparse readers extend the local sparse split-layout design credited above;
+no external FP4 cache implementation is vendored. Existing vLLM, Triton,
+NVIDIA and model licences are unchanged.
 
-Ash Hart (ashhart) / TensorFold: MIT, credited for execution/speculation evidence
-and ideas. Jay Leaton's GLM TensorFold Spark recipe: Apache-2.0, credited for
-recipe ideas/evidence. No source from either project is copied here. Matt
-Mastracci is credited for sparse-MLA ideas only. All existing authors and
-component notices remain applicable; see CREDITS.md and LICENSES/README.md.
+Mia (MiaAI-Lab): FP4 KV idea only. Licence unverified; no code copied.
+kindling dispramd: external unmodified AGPL-3.0 tool, not bundled or relicensed.
+https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram
+NVFP4 sidecar converters retain NVIDIA Marlin/vLLM attribution; checkpoint credit remains Tech2wild/tonyd2wild and Z.ai.

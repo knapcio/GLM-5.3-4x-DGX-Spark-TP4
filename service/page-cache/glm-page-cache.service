@@ -1,0 +1,16 @@
+[Unit]
+Description=Conditional GLM serving page-cache experiment
+ConditionPathExists=/run/glm-kv-headroom/enabled
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/sbin/glm-page-cache-policy.py flush
+TimeoutStartSec=30
+Nice=10
+MemoryMax=64M
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/run/glm-kv-headroom /proc/sys/vm/drop_caches

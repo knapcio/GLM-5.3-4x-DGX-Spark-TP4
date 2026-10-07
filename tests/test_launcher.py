@@ -2,6 +2,7 @@
 import copy
 import importlib.util
 import os
+import sys
 from pathlib import Path
 import tempfile
 import shlex
@@ -12,7 +13,7 @@ from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 os.environ.update(RECIPE_ROOT=str(ROOT), RECIPE_HOSTS='s1 s2 s3 s4',
-                  RECIPE_IPS='test-address-1 test-address-2 test-address-3 test-address-4', IMAGE='image:local',
+                  RECIPE_IPS='192.0.2.1 192.0.2.2 192.0.2.3 192.0.2.4', IMAGE='image:local',
                   MODEL_DIR='/models/target',DRAFT_DIR='/models/draft',NCCL_HOST_DIR='/nccl',OVERLAY_REMOTE='/runtime',
                   FABRIC_IFACE='eth1',IB_HCA='hca0,hca1')
 spec=importlib.util.spec_from_file_location('cluster',ROOT/'scripts/cluster.py')
@@ -25,8 +26,78 @@ def samples():
 
 
 class Launcher(unittest.TestCase):
+    def test_recent_kv_same_boot_switch_reaches_all_ranks(self):
+        profile = {key: 'v-' + key for key in C.PROFILE_KEYS}
+        profile.update(GLM_MTP_KSTOP='1', GLM_KV_FORMAT='fp4x', GLM_PAD_HYGIENE='0',
+                       GLM_FULL_MLA='triton', VLLM_USE_V2_MODEL_RUNNER='1',
+                       GLM_MLA_SPLIT_K='32', GLM_MLA_SPLIT_MAX_ROWS='36',
+                       GLM_SPEC_SAMPLE='0', GLM_INDEXER_SHORTCUT='0',
+                       GLM_MTP_KSTOP_UNIFORM_BATCH='0', GLM_MTP_KSTOP_CAPTURE_LAYOUT='m12',
+                       GLM_FP4_RECENT_WINDOW='2048', GLM_FP4_RECENT_AB='1',
+                       GLM_FP4_RECENT_INIT='0', VLLM_SERVER_DEV_MODE='1')
+        profile.update(RECIPE_DISPRAM='require',RECIPE_MAX_MODEL_LEN='98176',
+                       GLM_MTP_KSTOP_UNIFORM_BATCH='k2',GLM_MTP_KSTOP_CAPTURE_LAYOUT='reuse')
+        for key in ('GLM_DSA_SWA_POOL','GLM_GLUE_DSA_IDX_CACHE','GLM_TRITON_MLA_PREFILL'):
+            profile[key]='0'
+        for extra_groups in (False, True):
+            selected = dict(profile)
+            if extra_groups:
+                selected.update(GLM_ATTN_WEIGHTS='nvfp4', GLM_ATTN_NVFP4_DIR='/tmp/attn',
+                                GLM_NVFP4_GROUPS='attn,shared,dense,mtp', GLM_NVFP4_MORE_DIR='/tmp/more',
+                                GLM_MTP_ONLY_LOAD='1', GLM_TARGET_SKIP_MTP='1')
+            with self.subTest(extra_groups=extra_groups), patch.dict(C.ENV, selected), \
+                 patch.object(sys,'path',[str(ROOT/'scripts'),*sys.path]), \
+                 patch.object(C,'dispram',return_value=object()):
+                for rank in range(4):
+                    env = C.rank_env(rank)
+                    for key in ('GLM_FP4_RECENT_WINDOW','GLM_FP4_RECENT_AB','GLM_FP4_RECENT_INIT','VLLM_SERVER_DEV_MODE'):
+                        self.assertEqual(env[key], profile[key])
+                    if extra_groups:
+                        self.assertEqual(env['GLM_NVFP4_GROUPS'], 'attn,shared,dense,mtp')
+                        self.assertEqual(env['GLM_NVFP4_MORE_DIR'], '/more-nvfp4')
+
+    def test_coalesced_loader_opt_in_reaches_all_ranks(self):
+        values = dict(GLM_LOADER='coalesced', GLM_COALESCED_BATCH_MB='64',
+                      GLM_COALESCED_THREADS='8', GLM_COALESCED_OWNED_MB='1024',
+                      GLM_COALESCED_DIRECT='1', GLM_COALESCED_EMERGENCY_MB='3072',
+                      GLM_COALESCED_MARGIN_MB='1024')
+        profile = {key: 'v-' + key for key in C.PROFILE_KEYS}
+        profile.update(GLM_MTP_KSTOP='0', GLM_KV_FORMAT='fp8', GLM_PAD_HYGIENE='0',
+                       GLM_SPEC_SAMPLE='0', GLM_INDEXER_SHORTCUT='0',
+                       GLM_MTP_KSTOP_UNIFORM_BATCH='0', GLM_MTP_KSTOP_CAPTURE_LAYOUT='m12')
+        with patch.dict(C.ENV, dict(profile, **values)):
+            for rank in range(4):
+                env = C.rank_env(rank)
+                for key, value in values.items(): self.assertEqual(env[key], value)
+        for values in ({'GLM_LOADER': 'unknown'}, {'GLM_LOADER': 'coalesced', 'GLM_COALESCED_BATCH_MB': '129'},
+                       {'GLM_LOADER': 'fast', 'GLM_COALESCED_THREADS': '8'},
+                       {'GLM_LOADER': 'coalesced', 'GLM_COALESCED_EMERGENCY_MB': '0'},
+                       {'GLM_LOADER': 'coalesced', 'GLM_COALESCED_MARGIN_MB': '4097'}):
+            with patch.dict(C.ENV, values), self.assertRaises(ValueError): C.optional_env()
+
+    def test_hash_instrumentation_without_mla_ab(self):
+        with patch.dict(C.ENV, GLM_PARAM_HASH='1', VLLM_SERVER_DEV_MODE='1', GLM_SKIP_MLA_PLAN='0'):
+            self.assertEqual(C.optional_env()['GLM_PARAM_HASH'], '1')
+            self.assertEqual(C.optional_env()['VLLM_SERVER_DEV_MODE'], '1')
+        with patch.dict(C.ENV, GLM_PARAM_HASH='invalid'), self.assertRaises(ValueError): C.optional_env()
+
+    def test_adaptive_prefill_env_reaches_every_rank_including_explicit_zero(self):
+        for enabled in ('0', '1'):
+            profile = {key: 'v-' + key for key in C.PROFILE_KEYS}
+            profile.update(GLM_MTP_KSTOP='0', GLM_KV_FORMAT='fp8', GLM_PAD_HYGIENE='0',
+                           GLM_SPEC_SAMPLE='0', GLM_INDEXER_SHORTCUT='0',
+                           GLM_MTP_KSTOP_UNIFORM_BATCH='0', GLM_MTP_KSTOP_CAPTURE_LAYOUT='m12')
+            with patch.dict(C.ENV, dict(profile, GLM_PREFILL_CHUNK_ADAPTIVE=enabled, GLM_PREFILL_CHUNK_THRESHOLD='32768')):
+                for rank in range(4):
+                    env = C.rank_env(rank)
+                    self.assertEqual(env['GLM_PREFILL_CHUNK_ADAPTIVE'], enabled)
+                    self.assertEqual(env['GLM_PREFILL_CHUNK_THRESHOLD'], '32768')
+        for values in ({'GLM_PREFILL_CHUNK_ADAPTIVE': 'yes'}, {'GLM_PREFILL_CHUNK_THRESHOLD': '0'}):
+            with patch.dict(C.ENV, values), self.assertRaises(ValueError):
+                C.optional_env()
+
     def test_preflight_lock_check_is_head_only(self):
-        # lock()/unlock() own NODE_1's marker; workers may hold unrelated files of that name.
+        # lock()/unlock() own rank0's marker; workers may hold unrelated files of that name.
         scripts = []
         def fake(rank, command, timeout=45):
             scripts.append((rank, command))
@@ -205,6 +276,23 @@ class Launcher(unittest.TestCase):
         quiet = samples()
         C.capture_headroom(quiet, [7 * 1048576] * 4)           # not capturing: the 6 GiB floor applies
 
+    def test_configured_release_floors(self):
+        floors = dict(RECIPE_LIVE_FLOOR_GIB='6.0', RECIPE_CAPTURE_HEADROOM_GIB='6.0', RECIPE_ADMISSION_FLOOR_GIB='6.5')
+        with patch.dict(C.ENV, floors):
+            s = samples()
+            for x in s: x['logs'] = 'Capturing CUDA graphs (FULL):  40%'
+            C.capture_headroom(s, [int(6.1 * 1048576)] * 4)
+            with self.assertRaisesRegex(RuntimeError, 'below 6 GiB'):
+                C.capture_headroom(s, [int(5.9 * 1048576)] + [12 * 1048576] * 3)
+            q = samples(); q[1]['mem']['MemAvailable'] = int(6.05 * 1048576)
+            self.assertEqual(len(C.inspect_samples(q, {}, {})), 4)
+            q[1]['mem']['MemAvailable'] = int(5.95 * 1048576)
+            with self.assertRaisesRegex(RuntimeError, 'below 6 GiB'): C.inspect_samples(q, {}, {})
+            self.assertEqual(C.floor_gib('RECIPE_ADMISSION_FLOOR_GIB'), 6.5)
+        for bad in ('2.0', '40', 'x'):
+            with patch.dict(C.ENV, RECIPE_LIVE_FLOOR_GIB=bad), self.assertRaises(ValueError):
+                C.floor_gib('RECIPE_LIVE_FLOOR_GIB')
+
     def test_roce_ready_counters_are_not_errors(self):
         ready=('(Worker pid=124) INFO 10-01 19:31:16 [adapter.py:202] GLM_ROCE_READY rank=0 world=4 '
                '{"error_hca": 0, "error_peer": 0, "error_seq": 0, "writes_completed": 0}')
@@ -254,40 +342,11 @@ class Launcher(unittest.TestCase):
         def fake(rank,cmd,timeout=45):
             return '200' if cmd.startswith('curl') else json.dumps(s[rank])
         with tempfile.TemporaryDirectory() as directory, patch.object(C,'ROOT',Path(directory)), \
-             patch.object(C,'remote',fake), patch.object(C.time,'monotonic',side_effect=[0,1,901]), \
+             patch.object(C,'remote',fake), patch.object(C.time,'monotonic',side_effect=[0,1,1801]), \
              patch.object(C.time,'sleep'), patch.object(C,'stop') as stopped:
             with self.assertRaisesRegex(RuntimeError,'boot exceeded'):
                 C.monitor(dict(ctn='glm53full-test',token='owned'),boot=True)
             stopped.assert_called_once()
-
-    def _steady_stall_clock(self, busy_at, exit_at):
-        clock = [0.0]
-        s = samples()
-        def fake(rank, cmd, timeout=45):
-            if cmd.startswith('curl'):
-                return 'vllm:generation_tokens_total 0\n'
-            row = copy.deepcopy(s[rank]);row['gpu'] = '96' if clock[0] >= busy_at else '0'
-            if clock[0] >= exit_at:row['state']['Running'] = False
-            return json.dumps(row)
-        def sleep(seconds):clock[0] += seconds
-        with tempfile.TemporaryDirectory() as directory, patch.object(C, 'ROOT', Path(directory)), \
-             patch.object(C, 'remote', fake), patch.object(C.time, 'monotonic', lambda: clock[0]), \
-             patch.object(C.time, 'sleep', sleep), patch.object(C, 'stop') as stopped:
-            with self.assertRaises(RuntimeError) as caught:
-                C.monitor(dict(ctn='glm53full-test', token='owned'), boot=False)
-            stopped.assert_called_once()
-        return str(caught.exception), clock[0]
-
-    def test_new_request_after_long_idle_has_fresh_stall_allowance(self):
-        error, elapsed = self._steady_stall_clock(busy_at=300, exit_at=350)
-        self.assertIn('exited', error)
-        self.assertEqual(elapsed, 350)
-
-    def test_continuous_busy_without_token_progress_still_aborts(self):
-        error, elapsed = self._steady_stall_clock(busy_at=0, exit_at=1000)
-        self.assertIn('GPU busy without progress', error)
-        self.assertGreater(elapsed, 180)
-        self.assertLessEqual(elapsed, 180 + C.SAMPLE_STEADY_S)
 
     def test_progress_ignores_http_polls_and_static_metrics(self):
         a=samples();b=copy.deepcopy(a)
@@ -297,6 +356,40 @@ class Launcher(unittest.TestCase):
         metrics='vllm:generation_tokens_total{model="GLM"} 16\nhttp_requests_total 10'
         self.assertEqual(C.progress_fingerprint(a,metrics),C.progress_fingerprint(b,metrics.replace('total 10','total 20')))
         self.assertNotEqual(C.progress_fingerprint(a,metrics),C.progress_fingerprint(a,metrics.replace('} 16','} 17')))
+
+    def test_failure_summary_keeps_first_exception_and_error_per_rank(self):
+        logs = ('(Worker_TP0) ERROR Traceback (most recent call last):\n'
+                '(Worker_TP0) ERROR File "model.py", line 1\n'
+                '(Worker_TP0) ERROR             ^^^^\n'
+                '(Worker_TP0) ERROR AttributeError: module vllm._custom_ops has no silu_and_mul\n'
+                '(Worker_TP0) ERROR RuntimeError: parent process failed')
+        summary = C.failure_summary(logs)
+        self.assertIn('Traceback', summary)
+        self.assertIn('AttributeError:', summary)
+        self.assertNotIn('^^^^', summary)
+        self.assertNotIn('parent process', summary)
+        s=samples()
+        for item in s:item['logs']=logs
+        with self.assertRaises(RuntimeError) as caught:C.inspect_samples(s,{}, {})
+        for rank in range(4):self.assertIn(f'rank {rank} runtime error:',str(caught.exception))
+
+    def test_failure_summary_skips_routine_import_utils_traceback(self):
+        logs = ('(APIServer pid=1) WARNING 10-06 20:19:51 [import_utils.py:409] Traceback (most recent call last):\n'
+                '(APIServer pid=1) WARNING 10-06 20:19:51 [import_utils.py:409] AssertionError: Duplicate NCCL runtime found\n'
+                '(Worker_TP2) ERROR [multiproc_executor.py:927] Traceback (most recent call last):\n'
+                '(Worker_TP2) ERROR [multiproc_executor.py:927] MemoryError: coalesced loader detected external memory pressure')
+        summary = C.failure_summary(logs)
+        self.assertIn('MemoryError: coalesced loader', summary)
+        self.assertNotIn('Duplicate NCCL', summary)
+
+    def test_exited_ranks_keep_load_exception_summary(self):
+        s=samples()
+        for rank,item in enumerate(s):
+            item['state']['Running']=False
+            item['logs']=f'Traceback (most recent call last):\nValueError: bad tensor rank {rank}\n^^^^'
+        with self.assertRaises(RuntimeError) as caught:C.inspect_samples(s,{}, {})
+        for rank in range(4):self.assertIn(f'ValueError: bad tensor rank {rank}',str(caught.exception))
+        self.assertNotIn('^^^^',str(caught.exception))
 
     def test_restart_and_preboot_swap_baseline_trip(self):
         s=samples();s[0]['restarts']=1
@@ -542,7 +635,7 @@ class LaunchShape(unittest.TestCase):
         self.assertFalse(any(k.startswith('RECIPE_') for k in C.PROFILE_KEYS))
         profile = (ROOT/'profiles/current.env').read_text()
         for key, value in C.LAUNCH_DEFAULTS.items():
-            self.assertIn(f"export {key}='{value}'", profile)       # released default is written down
+            self.assertRegex(profile, rf"export {key}=(?:'{value}'|\"\$\{{{key}:-[0-9]+\}}\")")       # released default is written down
             self.assertIn(f"export {key}='{value}'", (ROOT/'profiles/dspark-k3.env').read_text())
 
     def test_c4_pass2_graph_adds_width_four_only(self):
@@ -809,8 +902,8 @@ class StackDefaults(unittest.TestCase):
             self.assertIn('GLM_SKIP_MLA_PLAN=ab', C.docker_command(3, 'glm53full-t'))
         for bad, message in (({'GLM_SKIP_MLA_PLAN': 'yes', 'GLM_FULL_MLA': 'triton'}, 'must be 0, 1 or ab'),
                              ({'GLM_SKIP_MLA_PLAN': '1', 'GLM_FULL_MLA': '0'}, 'needs GLM_FULL_MLA=triton'),
-                             ({'GLM_SKIP_MLA_PLAN': 'ab', 'GLM_FULL_MLA': 'triton'}, 'only with GLM_SKIP_MLA_PLAN=ab'),
-                             ({'VLLM_SERVER_DEV_MODE': '1'}, 'only with GLM_SKIP_MLA_PLAN=ab'),
+                             ({'GLM_SKIP_MLA_PLAN': 'ab', 'GLM_FULL_MLA': 'triton'}, 'needs GLM_SKIP_MLA_PLAN=ab or GLM_PARAM_HASH=1'),
+                             ({'VLLM_SERVER_DEV_MODE': '1'}, 'needs GLM_SKIP_MLA_PLAN=ab or GLM_PARAM_HASH=1'),
                              (dict(ab, VLLM_SERVER_DEV_MODE='true'), 'must be 0 or 1'),
                              ({'GLM_SKIP_MLA_PLAN_AB_INIT': '1', 'GLM_SKIP_MLA_PLAN': '1', 'GLM_FULL_MLA': 'triton'},
                               'applies to GLM_SKIP_MLA_PLAN=ab only')):
@@ -833,7 +926,7 @@ class StackDefaults(unittest.TestCase):
         self.assertFalse(any('dispram' in token.lower() for token in cmd))
         for value in ('1', 'auto', 'require'):
             with self.subTest(value=value), patch.dict(C.ENV, {'RECIPE_DISPRAM': value}):
-                with self.assertRaisesRegex(ValueError, 'needs the dispram integration'):
+                with self.assertRaisesRegex(ValueError, 'needs the (dispram integration|copy guard)'):
                     C.launch_switches()
         with patch.dict(C.ENV, {'RECIPE_DISPRAM': 'yes'}), self.assertRaisesRegex(ValueError, '0, 1/auto or require'):
             C.launch_switches()

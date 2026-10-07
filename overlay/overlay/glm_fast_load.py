@@ -36,7 +36,15 @@ _CHUNK = 64 << 20
 
 
 def enabled() -> bool:
-    return os.environ.get("GLM_FAST_LOAD", "0").strip().lower() in ("1", "on", "true")
+    return loader_mode() != 'off'
+
+
+def loader_mode(env=None):
+    env = os.environ if env is None else env
+    mode = env.get('GLM_LOADER', '').strip()
+    if mode not in ('', 'fast', 'coalesced'):
+        raise ValueError('GLM_LOADER must be fast or coalesced (unset preserves GLM_FAST_LOAD)')
+    return mode or ('fast' if env.get('GLM_FAST_LOAD', '0').strip().lower() in ('1', 'on', 'true') else 'off')
 
 
 def _env_int(name, default):
@@ -341,6 +349,10 @@ def release(stats, label, wait_s=None):
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
+            if hasattr(stats, 'coalesced'):
+                # Temporary owning batches are CUDA allocations on unified GB10
+                # memory. Return cached blocks before dispram/KV profiling.
+                torch.cuda.empty_cache()
     except Exception:
         pass
     _empty_host_cache()
@@ -386,7 +398,8 @@ _load_count = [0]
 def _make_wrapper(orig, wu):
     def safetensors_weights_iterator(hf_weights_files, use_tqdm_on_load, safetensors_load_strategy=None,
                                      local_expert_ids=None, **kwargs):
-        if safetensors_load_strategy not in (None, "lazy"):
+        if (safetensors_load_strategy not in (None, "lazy") or
+                (os.environ.get('GLM_ATTN_WEIGHTS', 'int8') == 'nvfp4' and loader_mode() == 'off')):
             ctx = glm_mtp_select.active()
             if ctx is None:
                 yield from orig(hf_weights_files, use_tqdm_on_load, safetensors_load_strategy,
@@ -413,7 +426,7 @@ def _make_wrapper(orig, wu):
             return safe_open(path, framework="pt")
 
         def progress(fs):
-            return wu.tqdm(fs, desc="Loading safetensors checkpoint shards (glm-fast-load)",
+            return wu.tqdm(fs, desc="Loading safetensors checkpoint shards (glm-%s-load)" % loader_mode(),
                            disable=not wu.enable_tqdm(use_tqdm_on_load), bar_format=wu._BAR_FORMAT)
 
         _load_count[0] += 1
@@ -424,8 +437,61 @@ def _make_wrapper(orig, wu):
             return wu.should_skip_weight(n, local_expert_ids)
 
         def run(selected, skip):
-            return fast_safetensors_iterator(selected, keys_of, open_stock, skip=skip,
-                                             progress=progress, stats=stats)
+            if loader_mode() == 'coalesced':
+                from glm_coalesced_load import coalesced_safetensors_iterator
+                import glm_loader_guard
+                scope = glm_loader_guard.active() or glm_loader_guard.LoadScope()
+                if scope.fallback:
+                    yield from fast_safetensors_iterator(selected, keys_of, open_stock,
+                                                         skip=skip, progress=progress, stats=stats)
+                    return
+                candidate = coalesced_safetensors_iterator(selected, keys_of, open_stock,
+                                                           skip=skip, progress=progress, stats=stats)
+                first, error, empty = None, None, False
+                try:
+                    try:
+                        first = next(candidate)
+                    except StopIteration:
+                        empty = True
+                    except Exception as exc:
+                        error = exc
+                    # Every rank selects the same backend before any native write.
+                    use_candidate = scope.team.ready(error is None)
+                    if not use_candidate:
+                        if scope.placed or scope.destination.committed:
+                            raise RuntimeError('coalesced abort after destination placement') from error
+                        candidate.close()
+                        first = None
+                        reason = str(error or 'peer refusal')
+                        if error is not None:
+                            error.__traceback__ = None
+                        error = None
+                        # Drop failed batches/caches before ordinary fast allocation.
+                        import gc
+                        gc.collect()
+                        import torch
+                        if torch.cuda.is_available():
+                            torch.cuda.synchronize()
+                            torch.cuda.empty_cache()
+                        _empty_host_cache()
+                        _log(f'coalesced aborted before placement; falling back to fast: {reason}')
+                        stats.coalesced_fallback = reason
+                        scope.fallback = True  # the remainder of this model load uses fast too
+                        for item in fast_safetensors_iterator(selected, keys_of, open_stock,
+                                                              skip=skip, progress=progress, stats=stats):
+                            scope.placed = True
+                            yield item
+                        return
+                    if not empty:
+                        scope.placed = True  # conservative: first handoff may place a tensor
+                        yield first
+                        first = None
+                        yield from candidate
+                finally:
+                    candidate.close()
+                return
+            yield from fast_safetensors_iterator(selected, keys_of, open_stock, skip=skip,
+                                                 progress=progress, stats=stats)
 
         ctx = glm_mtp_select.active()
         try:
@@ -452,12 +518,21 @@ def _check_source(module):
 def _patch_weight_utils(module):
     _check_source(module)
     orig = getattr(module, "safetensors_weights_iterator", None)
-    if orig is None or getattr(orig, "_glm_fast_load", False):
+    if orig is None:
+        return
+    if getattr(orig, "_glm_fast_load", False):
+        if os.environ.get('GLM_ATTN_WEIGHTS', 'int8') == 'nvfp4' and not getattr(orig, '_glm_nvfp4_attn', False):
+            import glm_nvfp4_attn
+            module.safetensors_weights_iterator = glm_nvfp4_attn.wrap_iterator(orig)
         return
     for needed in ("_natural_sort_key", "tqdm", "enable_tqdm", "_BAR_FORMAT", "should_skip_weight"):
         if not hasattr(module, needed):
             raise RuntimeError(f"glm-fast-load: vllm weight_utils has no {needed}; engine drifted, refusing")
-    module.safetensors_weights_iterator = _make_wrapper(orig, module)
+    iterator = _make_wrapper(orig, module)
+    if os.environ.get('GLM_ATTN_WEIGHTS', 'int8') == 'nvfp4':
+        import glm_nvfp4_attn
+        iterator = glm_nvfp4_attn.wrap_iterator(iterator)
+    module.safetensors_weights_iterator = iterator
     _log("armed (weight_utils.safetensors_weights_iterator wrapped)")
 
 
@@ -472,6 +547,9 @@ def _patch_default_loader(module):
     if any(f != "0" for f in glm_mtp_select.flags()) and not getattr(cls.load_weights, "_glm_mtp_select", False):
         cls.load_weights = glm_mtp_select.wrap_load_weights(cls.load_weights)
         _log("MTP shard selection armed (GLM_MTP_ONLY_LOAD=%s GLM_TARGET_SKIP_MTP=%s)" % glm_mtp_select.flags())
+    if not getattr(cls.load_weights, '_glm_loader_guard', False):
+        from glm_loader_guard import wrap_load_weights
+        cls.load_weights = wrap_load_weights(cls.load_weights)
 
 
 _TARGETS = {
@@ -485,6 +563,9 @@ def register():
     import importlib.util
 
     glm_mtp_select.flags()  # reject a malformed selection flag at startup
+    if loader_mode() == 'coalesced':
+        from glm_coalesced_load import options
+        options()  # fail before loading any model on malformed or excessive budgets
 
     class _Hook(importlib.abc.MetaPathFinder):
         _glm_fast_load = True

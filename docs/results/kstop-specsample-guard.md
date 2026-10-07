@@ -99,7 +99,7 @@ Round-2 Mac checks against the stock extraction (2026-10-03):
 - Before/after check: copied the final harness into a temporary checkout layout
   and substituted the actual d03fb47 runtime. It fails first-t0 with guard
   agreement=False and slots 0/1/0/2. The final runtime passes the same harness.
-  Receipts: /srv/release-artifacts
+  Receipts: /srv/projects/kstop-specsample-guard-receipts/round2/.
 - 16 simulated TP4 scenarios PASS. Execute pinned SamplingStates initialization,
   add_request and staged writes with CPU-backed UVA storage. Deliberately give
   workers different RNG draw histories for unused T=0 seeds and a negative T>0
@@ -134,10 +134,10 @@ Use the isolated checkout as the host working directory. Requires cached pinned
 ARM64 image and an empty local Colima queue. Output stays under Projects.
 
 ```sh
-cd /srv/release-artifacts
+cd /srv/projects/glm53-full-ksspec
 set -o pipefail
 IMAGE=ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
-OUT=/srv/release-artifacts
+OUT=/srv/projects/kstop-specsample-guard-receipts
 [[ $(uname -s) == Darwin && $(docker context show) == colima ]] || exit 2
 running=$(docker ps -q) || exit 2
 [[ -z $running ]] || exit 2
@@ -160,8 +160,8 @@ refuse collectively, while the fixed T=0/T>0 cases must pass.
 The full existing offline matrix now includes this four-rank regression:
 
 ```sh
-cd /srv/release-artifacts
+cd /srv/projects/glm53-full-ksspec
 ./tests/run_kstop_compat_cpu.sh \
-  /srv/release-artifacts \
-  /srv/release-artifacts
+  /srv/campaign/diagnostics/glm53-full-20260929/day3 \
+  /srv/projects/kstop-specsample-guard-receipts/full-suite
 ```

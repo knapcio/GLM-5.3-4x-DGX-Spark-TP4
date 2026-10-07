@@ -1,7 +1,7 @@
 """Task set for the DS-V4.1-Flash quality gate. Auto-scored, no LLM judge.
 
 Every task is (id, category, thinking, max_tokens, prompt, checker). A checker takes the
-response content and returns (ok: bool, reason: str). Checkers must be deterministic and
+assistant's content and returns (ok: bool, reason: str). Checkers must be deterministic and
 must not depend on wording -- only on what the prompt actually demands.
 """
 import json, re, subprocess, sys, tempfile, os
@@ -189,8 +189,8 @@ _CODE += [
      "assert rotate90([[1,2],[3,4]]) == [[3,1],[4,2]]\nassert rotate90([]) == []\n"
      "assert rotate90([[1,2,3],[4,5,6],[7,8,9]]) == [[7,4,1],[8,5,2],[9,6,3]]"),
     ("valid_ipv4", "valid_ipv4(s)", "returns True iff the string is a valid dotted-quad IPv4 address with no leading zeros and each octet in 0-255",
-     "assert valid_ipv4('" + ".".join(('192', '168', '0', '1')) + "') is True\nassert valid_ipv4('" + ".".join(('256', '1', '1', '1')) + "') is False\n"
-     "assert valid_ipv4('" + ".".join(('01', '2', '3', '4')) + "') is False\nassert valid_ipv4('1.2.3') is False"),
+     "assert valid_ipv4('192.0.2.9') is True\nassert valid_ipv4('256.1.1.1') is False\n"
+     "assert valid_ipv4('01.2.3.4') is False\nassert valid_ipv4('1.2.3') is False"),
     ("parse_query", "parse_query(qs)", "parses a URL query string into a dict; repeated keys collect into a list in order; a key with no '=' maps to the empty string",
      "assert parse_query('a=1&b=2') == {'a':'1','b':'2'}\n"
      "assert parse_query('a=1&a=2') == {'a':['1','2']}\nassert parse_query('') == {}\nassert parse_query('flag') == {'flag':''}"),

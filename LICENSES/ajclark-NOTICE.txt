@@ -1,0 +1,28 @@
+GLM-5.3 DCP4 + DFlash2 + NVMe KV tier on 4x NVIDIA DGX Spark
+Copyright 2026 Allan Clark
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This repository contains modified copies of files from the following
+projects, each under the Apache License, Version 2.0:
+
+- vLLM (https://github.com/vllm-project/vllm), commit ab666069, as built into
+  the community DGX Spark image `vllm-glm52-b12x`. The files under
+  `baseline/vllm/` are unmodified copies from that build; the files under
+  `overlay/vllm/` are the same files with this repository's changes, and
+  `patches/*.patch` are the diffs between the two.
+- glm-5.2-gb10 (https://github.com/CosmicRaisins/glm-5.2-gb10), the sm12x
+  Triton sparse-MLA kernel overlays for GB10. Three baseline files,
+  `v1/attention/backends/mla/flashmla_sparse.py`,
+  `model_executor/layers/sparse_attn_indexer.py` and
+  `v1/attention/ops/deepseek_v4_ops/b12x_sparse_helpers.py`, are that
+  project's overlays rather than the vLLM originals, because that is what
+  the image runs. The kernels themselves are not included here; keep `~/glm-triton/`
+  from that project in place, as the launcher expects.
+
+The launcher `launch-glm53big-dcp.sh` is derived from the serving recipe in
+tonyd2wild/GLM-5.3-Int4-Int8Mix-TP4-4x-DGX-Spark
+(https://github.com/tonyd2wild/GLM-5.3-Int4-Int8Mix-TP4-4x-DGX-Spark),
+which also provides the container image and the Int4-Int8Mix quantization
+this work runs on. DFlash2 is by its respective authors; this repository
+only changes how its drafter's KV cache is placed under context parallelism.

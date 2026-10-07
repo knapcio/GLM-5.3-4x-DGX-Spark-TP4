@@ -1,5 +1,20 @@
 # File inventory
 
+Coalesced-loader additions (default off):
+
+- `LICENSES/ajclark-Apache-2.0.txt`
+- `LICENSES/ajclark-NOTICE.txt`
+- `docs/ajclark-loader-provenance.json`
+- `docs/coalesced-loader.md`
+- `docs/coalesced-loader-fleet-plan.md`
+- `docs/results/coalesced-loader-offline.md`
+- `docs/results/coalesced-loader-tests.txt`
+- `overlay/overlay/glm_coalesced_load.py`
+- `scripts/loader_memwatch.py`
+- `tests/test_coalesced_load.py`
+- `tests/test_coalesced_nvfp4.py`
+- `tests/gpu/coalesced_transport.py`
+
 - `.dockerignore`
 - `.env.example`
 - `.gitignore`
@@ -11,13 +26,7 @@
 - `LICENSES/MIT-sparkDash.txt`
 - `LICENSES/README.md`
 - `NOTICE`
-- `overlay/guard/build_guard.sh`
-- `overlay/guard/dispram_copy_guard.c`
-- `overlay/guard/test_guard.sh`
-- `overlay/guard/SHA256SUMS`
 - `README.md`
-- `bench/long_retrieval_v2.py`
-- `bench/decode_context.py`
 - `bench/qeval.py`
 - `bench/qeval_tasks.py`
 - `bench/release/panel.json`
@@ -28,9 +37,6 @@
 - `docs/history.md`
 - `docs/install.md`
 - `docs/results/best-launch.json`
-- `docs/results/w4-R-summary.json`
-- `docs/results/w4-R-long64k.json`
-- `docs/results/w4-R-apc.json`
 - `docs/results/boot-fast-cpu-tests.txt`
 - `docs/results/boot-fast-profile.json`
 - `docs/results/boot-fast-real-shards.json`

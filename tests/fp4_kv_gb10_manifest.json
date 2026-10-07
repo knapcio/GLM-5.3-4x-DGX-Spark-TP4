@@ -1,0 +1,4051 @@
+{
+  "triton": [
+    {
+      "name": "fp8-partial-s8-t1",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t1",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t1",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t1",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t3",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t3",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t3",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t3",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t6",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t6",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t6",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t6",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t12",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t12",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t12",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t12",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t16",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t16",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t16",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t16",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-prefill2048",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1048576,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t1",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t1",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t1",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t1",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 512,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t3",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t3",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t3",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t3",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1536,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t6",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t6",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t6",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t6",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 3072,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t12",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t12",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t12",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t12",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 6144,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t16",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t16",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t16",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t16",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 8192,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-prefill2048",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1048576,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-pack-t1",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_pack_store",
+      "signature": {
+        "X": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "SCALE": "*fp32"
+      },
+      "constants": {
+        "XS": 512,
+        "RS": 64,
+        "KS": 368,
+        "T": 1,
+        "N": 100672
+      },
+      "aligned": [
+        "X",
+        "R",
+        "KV",
+        "SLOTS",
+        "SCALE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false,
+        "debug": true
+      }
+    },
+    {
+      "name": "fp4x-qdq-t1",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_qdq",
+      "signature": {
+        "X": "*bf16",
+        "O": "*bf16"
+      },
+      "constants": {
+        "XS": 512,
+        "T": 1
+      },
+      "aligned": [
+        "X",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-pack-t16",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_pack_store",
+      "signature": {
+        "X": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "SCALE": "*fp32"
+      },
+      "constants": {
+        "XS": 512,
+        "RS": 64,
+        "KS": 368,
+        "T": 16,
+        "N": 100672
+      },
+      "aligned": [
+        "X",
+        "R",
+        "KV",
+        "SLOTS",
+        "SCALE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false,
+        "debug": true
+      }
+    },
+    {
+      "name": "fp4x-qdq-t16",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_qdq",
+      "signature": {
+        "X": "*bf16",
+        "O": "*bf16"
+      },
+      "constants": {
+        "XS": 512,
+        "T": 16
+      },
+      "aligned": [
+        "X",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-pack-t2048",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_pack_store",
+      "signature": {
+        "X": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "SCALE": "*fp32"
+      },
+      "constants": {
+        "XS": 512,
+        "RS": 64,
+        "KS": 368,
+        "T": 2048,
+        "N": 100672
+      },
+      "aligned": [
+        "X",
+        "R",
+        "KV",
+        "SLOTS",
+        "SCALE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false,
+        "debug": true
+      }
+    },
+    {
+      "name": "fp4x-qdq-t2048",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_qdq",
+      "signature": {
+        "X": "*bf16",
+        "O": "*bf16"
+      },
+      "constants": {
+        "XS": 512,
+        "T": 2048
+      },
+      "aligned": [
+        "X",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-pack-t4096",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_pack_store",
+      "signature": {
+        "X": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "SCALE": "*fp32"
+      },
+      "constants": {
+        "XS": 512,
+        "RS": 64,
+        "KS": 368,
+        "T": 4096,
+        "N": 100672
+      },
+      "aligned": [
+        "X",
+        "R",
+        "KV",
+        "SLOTS",
+        "SCALE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false,
+        "debug": true
+      }
+    },
+    {
+      "name": "fp4x-qdq-t4096",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_qdq",
+      "signature": {
+        "X": "*bf16",
+        "O": "*bf16"
+      },
+      "constants": {
+        "XS": 512,
+        "T": 4096
+      },
+      "aligned": [
+        "X",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-gather-start0",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_gather",
+      "signature": {
+        "KV": "*u8",
+        "O": "*bf16",
+        "BT": "*i32",
+        "CU": "*i32",
+        "TS": "*i32",
+        "START": "*i32"
+      },
+      "constants": {
+        "BS": 64,
+        "BTS": 1573,
+        "OS": 576,
+        "N": 100672,
+        "T": 2048,
+        "HAS_START": false,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "O",
+        "BT",
+        "CU",
+        "TS",
+        "START"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-gather-start1",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_gather",
+      "signature": {
+        "KV": "*u8",
+        "O": "*bf16",
+        "BT": "*i32",
+        "CU": "*i32",
+        "TS": "*i32",
+        "START": "*i32"
+      },
+      "constants": {
+        "BS": 64,
+        "BTS": 1573,
+        "OS": 576,
+        "N": 100672,
+        "T": 2048,
+        "HAS_START": true,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "O",
+        "BT",
+        "CU",
+        "TS",
+        "START"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-reduce-s8",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_reduce",
+      "signature": {
+        "A": "*fp32",
+        "MD": "*fp32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "OS": 8192,
+        "SPLITS": 8,
+        "BD": 64
+      },
+      "aligned": [
+        "A",
+        "MD",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      }
+    },
+    {
+      "name": "fp4x-reduce-s16",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_reduce",
+      "signature": {
+        "A": "*fp32",
+        "MD": "*fp32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "OS": 8192,
+        "SPLITS": 16,
+        "BD": 64
+      },
+      "aligned": [
+        "A",
+        "MD",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      }
+    },
+    {
+      "name": "fp4x-reduce-s32",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_reduce",
+      "signature": {
+        "A": "*fp32",
+        "MD": "*fp32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "OS": 8192,
+        "SPLITS": 32,
+        "BD": 64
+      },
+      "aligned": [
+        "A",
+        "MD",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      }
+    },
+    {
+      "name": "fp4x-reduce-discard32",
+      "file": "overlay/bringup/glm_dirty_l2_kernel.py",
+      "function": "_mla_reduce_discard",
+      "signature": {
+        "A": "*fp32",
+        "MD": "*fp32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "OS": 8192,
+        "SPLITS": 32,
+        "BD": 64,
+        "NT": 128
+      },
+      "aligned": [
+        "A",
+        "MD",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t2",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t4",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s8-t8",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t2",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t4",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s16-t8",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t2",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t4",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-partial-s32-t8",
+      "file": "overlay/bringup/glm_full_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t2",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t4",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp8-unsplit-t8",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*fp8e4nv",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 66496,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": true,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t2",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t4",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s8-t8",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 8,
+        "SEG": 256
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t2",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t4",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s16-t8",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 16,
+        "SEG": 128
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t2",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t4",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-partial-s32-t8",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-partial-s32-t1",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t2",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1024,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t4",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 2048,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-unsplit-t8",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 4096,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-unsplit-t1",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-partial-s32-t3",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-unsplit-t3",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-partial-s32-t6",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-unsplit-t6",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-partial-s32-t12",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-unsplit-t12",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-partial-s32-t16",
+      "file": "overlay/bringup/glm_fp4_mla_split_kernel.py",
+      "function": "_mla_partial",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "A": "*fp32",
+        "MD": "*fp32"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16,
+        "SPLITS": 32,
+        "SEG": 64
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "A",
+        "MD"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-unsplit-t16",
+      "file": "overlay/bringup/glm_fp4_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 8192,
+        "QS1": 512,
+        "RS0": 1024,
+        "RS1": 64,
+        "KS": 368,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 256,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-pack",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_pack_store",
+      "signature": {
+        "X": "*bf16",
+        "R": "*bf16",
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "SCALE": "*fp32"
+      },
+      "constants": {
+        "XS": 512,
+        "RS": 64,
+        "KS": 368,
+        "T": 128,
+        "N": 256
+      },
+      "aligned": [
+        "X",
+        "R",
+        "KV",
+        "SLOTS",
+        "SCALE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false,
+        "debug": true
+      }
+    },
+    {
+      "name": "micro-fp4x-gather",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_gather",
+      "signature": {
+        "KV": "*u8",
+        "O": "*bf16",
+        "BT": "*i32",
+        "CU": "*i32",
+        "TS": "*i32",
+        "START": "*i32"
+      },
+      "constants": {
+        "BS": 64,
+        "BTS": 4,
+        "OS": 576,
+        "N": 256,
+        "T": 128,
+        "HAS_START": true,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "O",
+        "BT",
+        "CU",
+        "TS",
+        "START"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "micro-fp4x-read",
+      "file": "overlay/bringup/glm_fp4_kv_kernel.py",
+      "function": "_read_rows",
+      "signature": {
+        "KV": "*u8",
+        "SLOTS": "*i64",
+        "O": "*bf16"
+      },
+      "constants": {
+        "N": 256,
+        "T": 128,
+        "OS": 576,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "SLOTS",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-index-tile-gather",
+      "file": "overlay/bringup/glm_fp4_prefill_kernel.py",
+      "function": "_gather_index_tile",
+      "signature": {
+        "KV": "*u8",
+        "BT": "*i32",
+        "CU": "*i32",
+        "K": "*fp8e4nv",
+        "S": "*fp32",
+        "OFFSET": "i32"
+      },
+      "constants": {
+        "BS": 64,
+        "PS": 8448,
+        "BTS": 1573,
+        "REQS": 4,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "BT",
+        "CU",
+        "K",
+        "S"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-index-tile-bounds",
+      "file": "overlay/bringup/glm_fp4_prefill_kernel.py",
+      "function": "_tile_bounds",
+      "signature": {
+        "KS": "*i32",
+        "KE": "*i32",
+        "S": "*i32",
+        "E": "*i32",
+        "QOFF": "i32",
+        "ROWS": "i32",
+        "OFFSET": "i32"
+      },
+      "constants": {
+        "QT": 64,
+        "KT": 4096
+      },
+      "aligned": [
+        "KS",
+        "KE",
+        "S",
+        "E"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-index-tile-finish",
+      "file": "overlay/bringup/glm_fp4_prefill_kernel.py",
+      "function": "_finish_indices",
+      "signature": {
+        "V": "*fp32",
+        "IDS": "*i64",
+        "KS": "*i32",
+        "OUT": "*i32",
+        "QOFF": "i32",
+        "ROWS": "i32"
+      },
+      "constants": {
+        "OS": 2048,
+        "TOPK": 2048,
+        "BN": 256
+      },
+      "aligned": [
+        "V",
+        "IDS",
+        "KS",
+        "OUT"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-index-prefill-bounds",
+      "file": "overlay/bringup/glm_fp4_prefill_kernel.py",
+      "function": "_index_prefill_bounds",
+      "signature": {
+        "QSL": "*i32",
+        "SEQ": "*i32",
+        "CU": "*i32",
+        "KS": "*i32",
+        "KE": "*i32",
+        "QSTART": "i32",
+        "QSTOP": "i32"
+      },
+      "constants": {
+        "BN": 128
+      },
+      "aligned": [
+        "QSL",
+        "SEQ",
+        "CU",
+        "KS",
+        "KE"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-index-query-prepare-h64",
+      "file": "overlay/bringup/glm_fp4_prefill_kernel.py",
+      "function": "_prepare_index_queries",
+      "signature": {
+        "Q": "*fp8e4nv",
+        "W": "*fp32",
+        "KS": "*i32",
+        "KE": "*i32",
+        "BQ": "*fp8e4nv",
+        "BW": "*fp32",
+        "S": "*i32",
+        "E": "*i32",
+        "BEGIN": "i32",
+        "QOFF": "i32",
+        "ROWS": "i32"
+      },
+      "constants": {
+        "H": 64,
+        "DH": 8192
+      },
+      "aligned": [
+        "Q",
+        "W",
+        "KS",
+        "KE",
+        "BQ",
+        "BW",
+        "S",
+        "E"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "fp4x-prefill-union-mark",
+      "file": "overlay/bringup/glm_fp4_mla_prefill.py",
+      "function": "_mark_selected",
+      "signature": {
+        "IDX": "*i32",
+        "SELECTED": "*i32"
+      },
+      "constants": {
+        "IS": 2048,
+        "W": 2048,
+        "N": 100672,
+        "BC": 256
+      },
+      "aligned": [
+        "IDX",
+        "SELECTED"
+      ],
+      "options": {
+        "num_warps": 4
+      }
+    },
+    {
+      "name": "fp4x-prefill-union-expand",
+      "file": "overlay/bringup/glm_fp4_mla_prefill.py",
+      "function": "_expand_selected",
+      "signature": {
+        "KV": "*u8",
+        "SELECTED": "*i32",
+        "OUT": "*bf16"
+      },
+      "constants": {
+        "N": 100672,
+        "BN": 16
+      },
+      "aligned": [
+        "KV",
+        "SELECTED",
+        "OUT"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": false
+      }
+    },
+    {
+      "name": "bf16-union-unsplit-prefill2048",
+      "file": "overlay/bringup/glm_full_mla_kernel.py",
+      "function": "_mla",
+      "signature": {
+        "Q": "*bf16",
+        "R": "*bf16",
+        "KV": "*bf16",
+        "IDX": "*i32",
+        "O": "*bf16"
+      },
+      "constants": {
+        "QS0": 512,
+        "QS1": 1048576,
+        "RS0": 4096,
+        "RS1": 256,
+        "KS": 576,
+        "IS": 2048,
+        "OS0": 8192,
+        "H": 16,
+        "W": 2048,
+        "P": 64,
+        "N": 100672,
+        "SCALE": 0.09016844005556021,
+        "CKV_SCALE": 1.0,
+        "FP8": false,
+        "BN": 16
+      },
+      "aligned": [
+        "Q",
+        "R",
+        "KV",
+        "IDX",
+        "O"
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_fp_fusion": true
+      }
+    }
+  ]
+}

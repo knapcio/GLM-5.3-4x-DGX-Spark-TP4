@@ -1,0 +1,39 @@
+--- a/window/cand2.py
++++ b/window/cand2.py
+@@ -176,6 +176,16 @@
+ 
+ def p_preboot():
+     phase('preboot')
++    # CPU-only Mac gate before fleet access or lock handoff (default on).
++    if BOOT_PREFLIGHT:
++        command=[sys.executable,str(PREFLIGHT_ROOT/'scripts/boot_preflight.py'),
++                 '--root',str(PREFLIGHT_ROOT),'--dry',str(RUN/'dry-cand.txt'),
++                 '--out',str(OUT/'boot-preflight.json'),'--budget','120']
++        if PREFLIGHT_HEADERS:command+=['--headers',str(PREFLIGHT_HEADERS)]
++        if PREFLIGHT_IMAGE:command+=['--image',PREFLIGHT_IMAGE]
++        subprocess.run(command,check=True,timeout=125)
++    else:
++        save('boot-preflight.json',dict(ok=None,status='SKIPPED',reason='explicit --no-boot-preflight'))
+     fleet_idle()
+     if ssh(0, f'test -e {RR}/{SPARK_CLONE}/state/deployment.json && echo yes || echo no') != 'no':
+         raise RuntimeError('deployment state exists in the rank0 clone')
+@@ -514,12 +524,18 @@
+ 
+ 
+ def main():
+-    global ARM, BOOT, CTN, OUT
++    global ARM, BOOT, CTN, OUT, BOOT_PREFLIGHT, PREFLIGHT_ROOT, PREFLIGHT_HEADERS, PREFLIGHT_IMAGE
+     ap = argparse.ArgumentParser()
+     ap.add_argument('arm', choices=list(WSIM))
+     ap.add_argument('--from', dest='frm', default=None)
+     ap.add_argument('--only', default=None)
++    ap.add_argument('--boot-preflight',action=argparse.BooleanOptionalAction,default=True)
++    ap.add_argument('--preflight-root',type=Path,default=REPO_ARM)
++    ap.add_argument('--preflight-headers',type=Path)
++    ap.add_argument('--preflight-image')
+     a = ap.parse_args()
++    BOOT_PREFLIGHT=a.boot_preflight;PREFLIGHT_ROOT=a.preflight_root
++    PREFLIGHT_HEADERS=a.preflight_headers;PREFLIGHT_IMAGE=a.preflight_image
+     ARM = a.arm
+     BOOT = CTN = f'glm53full-cand2-w1435-{ARM}'
+     OUT = RUN / ARM

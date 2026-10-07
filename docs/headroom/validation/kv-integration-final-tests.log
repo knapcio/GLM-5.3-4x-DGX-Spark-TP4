@@ -1,0 +1,8 @@
+FP4x KV ARMED ABI=fp4x_v1_e2m1_s16_e4m3_pow2_r64; target+MTP; E4M3 index retained
+glm-full-mla: ARMED triton H16 D512 R0|64; capture enabled
+FP4x pinned: fp4_chain_fixture
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.005s
+
+OK

@@ -1,118 +1,149 @@
-# Full GLM-5.3 on 4× NVIDIA DGX Spark
+# Full GLM-5.3 on 4x NVIDIA DGX Spark
 
 Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) (753B), tensor parallel across four DGX Sparks,
-with native MTP speculative decoding, prefix caching and 64K context. Measured 2026-10-03,
-GPU clocks capped at 2200 MHz. Raw results: [`docs/results/w4-v2-summary.json`](docs/results/w4-v2-summary.json).
+with native MTP speculative decoding, FP4x KV, NVFP4 weight sidecars and **262,144-token context**.
+The ranks implement one shared **264,640-token KV pool (4,135 blocks)**; four simultaneous maximum-context
+requests do not fit. The ordinary KV head is 6,318,718,976 bytes per rank, plus the display carveout.
+The recent-FP8 bank is disabled by default. Measured October 6–7, 2026: boot H below, except qeval on boot A
+with identical per-rank parameter and buffer hashes. [Gate result](GATE-RESULT.md).
 
 ## sparkDash (thinking off)
 
-Decode tok/s, aggregate **[per stream]**. 256 output tokens, temperature 0.
+Decode tok/s, aggregate **[per stream]**, 256 output tokens, temperature 0, boot H.
+Cells are medians: c1 five runs, c2/c4 three runs, c8 two runs. All requests completed without failures.
 
-| Prompt type | c1 | c2 | c3 | c4 | c8\* |
-|---|---:|---:|---:|---:|---:|
-| prose | **32.7** | 44.9 [22.9] | 53.4 [17.9] | 62.4 [16.2] | 62.0 [16.2] |
-| code | 37.9 | 47.3 [24.0] | — | 67.8 [17.1] | 61.8 [16.4] |
-| structured | 42.1 | 50.4 [26.0] | — | 80.7 [21.2] | 82.4 [21.9] |
-| json | 38.6 | 49.9 [25.6] | — | 77.2 [19.9] | 74.4 [19.5] |
+| Prompt type | c1 | c2 | c4 | c8* |
+|---|---:|---:|---:|---:|
+| prose | **35.00** | 47.85 [23.92] | 62.76 [16.23] | 61.38 [16.01] |
+| code | 41.96 | 49.39 [25.61] | 67.45 [17.70] | 61.92 [16.73] |
+| structured | 45.36 | 54.93 [28.47] | 88.35 [23.26] | 82.11 [21.85] |
+| json | 41.72 | 53.77 [27.15] | 75.23 [19.33] | 71.74 [19.06] |
 
-\* Four serving slots: at c8 four requests decode and the rest queue.
+*Four serving slots: at c8 four requests decode and the rest queue. Per-stream decode is measured during
+active generation; aggregate includes the batch wall time. sparkDash repeats one prompt across concurrent streams;
+the separate memory stress uses four distinct prompts.
 
 ### Prefill
 
-| Input | 4K | 8K | 16K | 32K | 64K |
-|---|---:|---:|---:|---:|---:|
-| cold prefill tok/s | 948 | 903 | 879 | 854 | 801 |
-| time to first token (s) | 4.4 | 9.1 | 18.7 | 38.4 | 81.9 |
+Cold sparkDash prompts, boot H, median of three:
 
-A repeated prompt is served from the prefix cache: 2K-token prompt TTFT 2.6 s → 0.5 s,
-8K replay at 16,100 tok/s.
-
-### Decode vs context length
-
-Prose, c1, 512 output tokens, median of three. This uses a different prompt from the
-sparkDash table, so compare within the table.
-
-| Context | 0 | 16K | 30K | 60K |
+| Input | 4K | 8K | 16K | 32K |
 |---|---:|---:|---:|---:|
-| decode tok/s | 29.3 | 28.9 | 29.0 | 28.2 |
-| change vs 0 | — | −1.5 % | −1.2 % | −3.7 % |
+| cold prefill tok/s | 973 | 930 | 880 | 864 |
+| time to first token (s) | 4.24 | 8.85 | 18.66 | 37.95 |
+
+Long retrieval prompts, boot H, first cold request at each length (a different workload from sparkDash):
+
+| Needle target | Actual input tokens | Cold TTFT (s) |
+|---|---:|---:|
+| 16K | 16,154 | 25.6 |
+| 128K | 127,814 | 169.1 |
+| 250K | 249,837 | 382.8 |
+
+Adaptive chunks select 2048 below 16,384 total prompt tokens, otherwise 4096, including prefix-cache hits.
+Prefix caching remains on; cold prompts and warm replay are reported separately.
 
 ## RigMark 1.0.0 (thinking on, effort low)
 
+Boot H, c1 decode medians of five; all workload gates passed.
+
 | Workload | c1 decode tok/s | range |
 |---|---:|---|
-| prose | **25.4** | 24.7–26.5 |
-| code | 36.4 | 35.7–36.7 |
-| structured | 41.3 | 41.1–41.5 |
+| prose | **28.42** | 27.86–29.16 |
+| code | 39.02 | 38.60–39.71 |
+| structured | 44.41 | 41.68–44.90 |
 
-Concurrency, 256 output tokens, aggregate end-to-end tok/s **[per-stream decode]**:
+Concurrency, code workload, aggregate end-to-end tok/s **[per-stream decode]**, boot H:
 
-| Workload | c1 | c2 | c4 | c8\* |
-|---|---:|---:|---:|---:|
-| prose | 23.9 [26.3] | 35.3 [19.4] | 50.3 [13.7] | 49.5 [13.5] |
-| code | 32.8 [35.6] | 45.7 [24.8] | 75.8 [20.3] | 65.2 [17.6] |
-| structured | 35.1 [41.2] | 53.4 [30.5] | 81.6 [23.0] | 93.2 [26.5] |
+| Workload | c1 | c2 | c4 |
+|---|---:|---:|---:|
+| code | 33.06 [35.29] | 44.94 [24.45] | 64.93 [17.63] |
 
-## Quality
+| Prefill | Boot H tok/s |
+|---|---:|
+| 8K cold | 881 |
+| 8K warm replay | 15,679 |
 
-| Check | Result |
+## Quality and capacity
+
+| Check | Qualified 262,144 result |
 |---|---|
-| qeval (75 tasks, 3 runs) | 71 / 72 / 72, mean 71.7 (threshold 70.55) |
-| 64K long-context retrieval ([`bench/long_retrieval_v2.py`](bench/long_retrieval_v2.py)) | PASS: 9/10 at 16K and at 63K, twice; all registry values correct |
-| prefix cache repeat | PASS: identical answer, 2,048 cached tokens |
+| qeval, 75 tasks, x3 (A) | 73 / 71 / 71; **mean 71.67 passed tasks** (threshold 70.553); no truncations or request failures |
+| Needle 16K (H), twice | 8/10 / 8/10; PASS |
+| Needle 128K (H), twice | 9/10 / 9/10; PASS |
+| Needle 250K (H), twice | 9/10 / 9/10; PASS |
+| Memory stress (H) | c4 4x(65,024 prompt +1024 output), single 261,120+1024 PASS; rank-0 minimum **6.69 GiB**, swap 0, preemptions 0 |
+| Prefix cache (H) | APC repeat hit 64,896/65,024 prompt tokens; cache retained through stress |
+| Mixed-load soak (H) | 40.9 min, 59 requests, 0 errors, 0 preemptions; rank-0 minimum 6.28 GiB, quiet drift -0.127 GiB |
 
-The probe hides latest-revision records, aliases and an operator fix in long synthetic text
-and asks for short answers. Details: [validation](docs/validation.md).
+qeval was run on boot A, not repeated on H: the code and weight formats are identical and per-rank parameter
+and buffer digests match. Primary scores were 54 / 51 / 51. Recurring failures were `code_word_wrap`,
+`code_camel_to_snake` and `math_m9` (two of three runs each); all failures are retained in the receipts.
+Every needle response had all seven registry fields correct and finished with `stop`.
+The retrieval probe checks latest revisions, aliases and an operator fix embedded in synthetic public text.
+These are operational screens. The 50 tok/s prose-c1 goal and multi-day stability remain unqualified.
+[Portable receipt summary](docs/results/release-1006-summary.json).
+
+## Memory safety
+
+The qualified floors are **5.5 GiB live**, **6.0 GiB stress criterion**, **6.0 GiB capture**,
+**6.5 GiB admission for 60 s**, and **7.5 GiB before capture**, on every rank.
+H's sampled rank-0 admission minimum was 6.66 GiB; c4/single stress minima were 6.71/6.69 GiB.
+
+A bounded, unpinned ballast test on H found **no observed harm down to 3.5 GiB under load**:
+rank 0 reached 3.50 GiB minimum at a 3.56 GiB quiet level. Paired prose/code cycle ratios were 1.011/0.990,
+c1 TTFT 1.013, c4 wall 0.955 and 120K TTFT 1.000 relative to the unballasted baseline; preemptions were 0
+and PSI some total was 2.6 ms. Rank 1 at a 3.57 GiB quiet level briefly reached 3.22 GiB, with paired cycle
+ratios 1.001/0.981 and 0 preemptions. The ballast's temporary 2.8 GiB watch floor was restored to 5.5 GiB.
+The live floor adds 2.0 GiB to the lowest tested harmless quiet level; 3.5 GiB is evidence, not a serving floor.
 
 ## What is in the stack
 
-Weights: [Tech2wild/GLM-5.3-Int4-Int8Mix](https://huggingface.co/Tech2wild/GLM-5.3-Int4-Int8Mix/tree/206507bbb047d8223964a0414cd83230c59428f9)
-(revision `206507bb`), unchanged, with the checkpoint's own MTP layer.
+Base checkpoint: [Tech2wild/GLM-5.3-Int4-Int8Mix](https://huggingface.co/Tech2wild/GLM-5.3-Int4-Int8Mix/tree/206507bbb047d8223964a0414cd83230c59428f9),
+revision `206507bbb047d8223964a0414cd83230c59428f9`. Its files remain unchanged; conversion writes separate sidecars.
 
 | Piece | What it does | Switch | Credit |
 |---|---|---|---|
-| Native MTP with K-stop | At c1 a confidence stop drafts 1–3 tokens per step; batches draft 2 | `GLM_MTP_KSTOP=1` | Z.ai; vLLM; SpecDec++ and DISCO authors (ideas); DeepSeek verify-cap idea; TensorFold results from keys/@u1tra_instinct |
-| Display carveout as KV | Uses the 2 GiB display reservation as KV cache: 66,112-token context | `RECIPE_DISPRAM=require` | kindling dispramd (unmodified external AGPL-3.0 tool); NVIDIA; vLLM |
-| Prefix caching | Reuses KV of repeated prompt prefixes | `--enable-prefix-caching` | vLLM |
-| Short-context DSA | Skips the sparse indexer while every token is selected anyway | `GLM_INDEXER_SHORTCUT=1` | Guess-Verify-Refine authors (idea); DeepSeek DSA; vLLM |
-| Pad hygiene | Padded rows in CUDA graphs no longer pull extra MoE experts (c3 +20 %) | `GLM_PAD_HYGIENE=1` | vLLM MoE/graph contributors |
-| c2 graph reuse | Two concurrent requests replay an exact-size graph | `GLM_MTP_KSTOP_CAPTURE_LAYOUT=reuse` | vLLM V2 graph manager contributors |
-| Full-model sparse MLA | Triton MLA that fits GB10 shared memory | `GLM_FULL_MLA=triton` | CosmicRaisins; Matt Mastracci (ideas only); Triton |
-| Dirty-L2 discard | Drops consumed MLA partials from L2 | `GLM_DIRTY_L2=discard` | NVIDIA PTX; Triton |
-| Switched RoCE | TP collectives over RDMA on both rails | `GLM_ROCE_ALLREDUCE=1` | b12x/RoCEnante; Luke Alonso; Jason Cook; tonyd2wild; rhys101 |
-| Fast load | Boot to healthy in ~285 s | `GLM_FAST_LOAD=1` | Willian-Zhang's GB10 copy-cost report; vLLM |
-| Spec-sample (off) | Experimental probabilistic drafts for T>0 | `GLM_SPEC_SAMPLE=0`, [details](docs/spec-sample/README.md) | Leviathan et al.; Chen et al.; vLLM |
-| Red Hat DSpark (alternative) | Separate opt-in drafter profile, not measured above | `RECIPE_PROFILE=dspark-k3` | Red Hat DSpark / Speculators; vLLM |
+| Native MTP with K-stop | Confidence stop at c1; K2 batches; graphs [1,4,12,16] | `GLM_MTP_KSTOP=1` | Z.ai; vLLM; SpecDec++/DISCO ideas; DeepSeek verify-cap idea; keys/@u1tra_instinct TensorFold results |
+| Display carveout KV | 6,318,718,976 B ordinary head plus 2046 MiB external carveout | `RECIPE_DISPRAM=require` | [kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram), external unmodified AGPL-3.0; NVIDIA; vLLM |
+| FP4x latent KV | Packed latent rows; RoPE and index keys remain FP8 | `GLM_KV_FORMAT=fp4x` | Mia (MiaAI-Lab), FP4 KV idea only, no code copied; knapcio implementation; NVIDIA/Triton/vLLM |
+| Adaptive prefill | 2048/4096 chunk budget selected from total prompt context | `GLM_PREFILL_CHUNK_ADAPTIVE=1` | vLLM scheduler contributors; knapcio |
+| NVFP4 sidecars | 385 attention +225 shared +6 dense +776 MTP matrices, Marlin W4A16 | `GLM_ATTN_WEIGHTS=nvfp4`, `GLM_NVFP4_GROUPS=attn,shared,dense,mtp` | NVIDIA Marlin; vLLM quantization contributors; Tech2wild/tonyd2wild checkpoint; Z.ai; knapcio converters |
+| Prefix caching | Reuses full KV blocks of repeated prefixes | `--enable-prefix-caching` | vLLM |
+| Short-context DSA | All-selected short contexts skip unnecessary indexer work | `GLM_INDEXER_SHORTCUT=1` | Guess-Verify-Refine idea; DeepSeek DSA; vLLM |
+| Pad hygiene and c2 reuse | Padded rows reuse live experts; c2 replays existing exact graph | `GLM_PAD_HYGIENE=1`, `GLM_MTP_KSTOP_CAPTURE_LAYOUT=reuse` | vLLM MoE/graph contributors; knapcio |
+| Sparse MLA and dirty L2 | GB10-compatible split32 MLA; discard consumed partials | `GLM_FULL_MLA=triton`, `GLM_DIRTY_L2=discard` | CosmicRaisins; Matt Mastracci ideas; NVIDIA PTX; Triton |
+| Switched RoCE | RDMA TP collectives on both rails | `GLM_ROCE_ALLREDUCE=1` | b12x/RoCEnante; Luke Alonso; Jason Cook; tonyd2wild; rhys101 |
+| Fast loading and shard selection | Bounded copies; MTP reads its five shards | `GLM_FAST_LOAD=1`, `GLM_MTP_ONLY_LOAD=1` | Willian-Zhang; vLLM; knapcio |
+| CPU boot preflight | Cached-header check, default on only with a cache; warns and continues on failure | `RECIPE_BOOT_PREFLIGHT=1` | vLLM constructors/loader hooks; knapcio |
+| Coalesced loader, opt-in | Bounded staging and destination-write memory credit | `GLM_LOADER=coalesced` (default fast) | Allan Clark / ajclark, Apache-2.0 modified port; original NOTICE retained |
+| Recent-FP8 bank, opt-in | Reservation only when explicitly requested, default zero | `GLM_FP4_RECENT_WINDOW=0` | NVIDIA FP8; vLLM; knapcio |
 
-Ash Hart / ashhart and TensorFold retain MIT credit; Jay Leaton's Spark recipe retains
-Apache-2.0 credit. See [CREDITS](CREDITS.md), [NOTICE](NOTICE),
-[licence boundaries](LICENSES/README.md) and [runtime details](docs/runtime.md).
+[CREDITS](CREDITS.md), [NOTICE](NOTICE), [licence boundaries](LICENSES/README.md).
+No weights, dispramd binary, or container image is distributed here.
 
 ## Install and run
 
-Needs four DGX Sparks on a switched RoCE fabric, the pinned ARM64 image and the weights on
-every node. [Installation](docs/install.md) covers the pinned dispramd setup;
-[service and recovery](service/README.md) covers the persistent units.
+Four ARM64 DGX Sparks, switched ConnectX-7 fabric configured with NVIDIA Sync, management LAN/Tailscale,
+the pinned v11 ARM64 image, local checkpoint and sidecars on every rank, and NCCL 2.30.7 are required.
+[Installation](docs/install.md), [sidecar conversion commands, hashes and timing](docs/NVFP4-SIDECARS.md),
+[service and recovery](service/README.md).
 
 ```bash
-cp .env.example .env          # set your addresses and paths
+cp .env.example .env          # fill four hosts, fabric addresses, image IDs, paths and NCCL hashes
 bash overlay/guard/build_guard.sh
-DRY=1 ./start.sh serve        # print the launch without starting
+DRY=1 ./start.sh serve
 ./start.sh preflight
 ./start.sh serve
 ./start.sh stop
 ```
 
-Reasoning effort `low`, `high` or `max`; thinking off is
-`chat_template_kwargs: {"enable_thinking": false}`. Tool parser `glm47`, reasoning parser `glm45`.
+Keep management recovery access working. The watchdog uses the 5.5 GiB live floor above, sustained swap/error guards,
+a 600 s busy-without-progress allowance with idle reset, and an 1800 s boot deadline.
+No public router port forwarding is needed.
+Thinking off uses `chat_template_kwargs: {"enable_thinking": false}`; RigMark uses effort low.
+Tool parser `glm47`, reasoning parser `glm45`. The [changelog](CHANGELOG.md) describes the changes against the
+current public recipe; [GATE-RESULT.md](GATE-RESULT.md) records the completed qualification.
 
-Benchmarks:
-
-```bash
-SPARKDASH_API="$DASH_API" python3 bench/sparkdash.py full 66112
-python3 bench/qeval.py run my-run --url "$CHAT_COMPLETIONS_URL"
-python3 bench/long_retrieval_v2.py --execute --endpoint "$SERVING_URL" \
-  --tokenizer-dir "$TOKENIZER_DIR" --out "$LONG_PROBE_RECEIPTS"
-```
-
-Earlier versions and their numbers: [history](docs/history.md).
+The default is the fast loader (`GLM_LOADER=fast`). The ajclark Apache-2.0 coalesced loader port is
+**opt-in**, not default: boot B refused at load on rank 2 because of external memory pressure.

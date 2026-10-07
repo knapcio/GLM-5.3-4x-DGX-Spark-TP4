@@ -10,7 +10,8 @@ def install(mod):
   import torch
   d=dict(phase='pre-capture',pid=os.getpid(),mem_kB=mem,torch_allocated_B=torch.cuda.memory_allocated(),torch_reserved_B=torch.cuda.memory_reserved(),wall_epoch=time.time())
   sys.stderr.write('glm-window-memory: '+json.dumps(d)+'\n');sys.stderr.flush()
-  if mem['MemAvailable']<10*1048576:raise RuntimeError('window-memory pre-capture below 10 GiB')
+  floor=float(os.environ.get('GLM_PRECAPTURE_FLOOR_GIB','10'))  # release profile 7.5; unset = earlier 10
+  if mem['MemAvailable']<floor*1048576:raise RuntimeError('window-memory pre-capture below %g GiB'%floor)
   start=time.monotonic();z=orig(self,*a,**kw)
   sys.stderr.write('glm-window-memory: '+json.dumps(dict(phase='capture-finished',wall_s=time.monotonic()-start,torch_allocated_B=torch.cuda.memory_allocated(),torch_reserved_B=torch.cuda.memory_reserved()))+'\n')
   return z

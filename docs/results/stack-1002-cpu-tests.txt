@@ -74,10 +74,10 @@ s3 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_id
 s4 JIT PREP sampling /cache/x.so
 s4 JIT PREP batch_mla_attention_dtype_q_bf16_dtype_kv_e4m3_dtype_o_bf16_dtype_idx_i32_head_dim_ckv_512_head_dim_kpe_64_profiler_False /cache/y.so
 JIT PREP PASS
-s4
-s3
-s2
-s1
+s4 
+s3 
+s2 
+s1 
 Watchdog active in foreground; use another terminal for status and benchmarks. Ctrl-C stops the deployment.
 ok
 test_ssh_failure_retains_lock (__main__.Launcher.test_ssh_failure_retains_lock) ... ok

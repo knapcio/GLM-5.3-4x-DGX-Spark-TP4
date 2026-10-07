@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import glm_adaptive_chunk
 
 MOD = 'vllm.v1.core.sched.scheduler'
 PIN = '4c38a32c7405eb95eb9dd3b3d04cbfe5d0cb4ebc0b18efbaa4adc68c7a9bca5a'
@@ -43,6 +44,11 @@ def apply(scheduler, control):
 def install(module):
     if hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest() != PIN:
         raise RuntimeError('prefill scheduler source drift')
+    adaptive = glm_adaptive_chunk.install(module)
+    if adaptive:
+        _, threshold = glm_adaptive_chunk.settings(os.environ)
+        print('GLM_PREFILL_CHUNK_ADAPTIVE armed: small=2048 large=4096 threshold=%d; fixed capacity=4096' % threshold,
+              file=sys.stderr, flush=True)
     original = module.Scheduler.schedule
 
     @functools.wraps(original)
@@ -53,7 +59,8 @@ def install(module):
         if apply(self, control):
             print('GLM_W2_PREFILL ' + json.dumps(control, sort_keys=True), file=sys.stderr, flush=True)
         result = original(self, *args, **kwargs)
-        if result.total_num_scheduled_tokens > control['chunk']:
+        cap = 4096 if adaptive and control['chunk'] >= 2048 else control['chunk']
+        if result.total_num_scheduled_tokens > cap:
             raise RuntimeError('prefill scheduler cap receipt failed')
         return result
 

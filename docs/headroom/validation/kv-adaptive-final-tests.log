@@ -1,0 +1,8 @@
+.........GLM_PREFILL_CHUNK_ADAPTIVE armed: small=2048 large=4096 threshold=16384; fixed capacity=4096
+GLM_W2_PREFILL {"chunk": 2048, "schema": 1, "sequence": 1}
+GLM_W2_PREFILL {"chunk": 2048, "schema": 1, "sequence": 1}
+.....
+----------------------------------------------------------------------
+Ran 14 tests in 0.034s
+
+OK

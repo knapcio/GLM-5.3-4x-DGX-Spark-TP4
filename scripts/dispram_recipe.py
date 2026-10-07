@@ -24,7 +24,7 @@ import shlex
 import subprocess
 import time
 
-HOME = '/srv/glm-dispram'
+HOME = '/srv/glm/dispram'
 
 
 def mode(env):

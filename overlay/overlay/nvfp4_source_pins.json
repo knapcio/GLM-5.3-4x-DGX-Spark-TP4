@@ -1,0 +1,15 @@
+{
+  "vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors": "180d2579f7031dfa67f00c9980187705ba0429c4a16678defe59c4a6116d1d5a",
+  "vllm.model_executor.layers.quantization.compressed_tensors.schemes.compressed_tensors_w4a4_nvfp4": "17c515ce7d5f3e8464ce70674f542facff430c083c1fd6a52831b322c14e737c",
+  "vllm.model_executor.kernels.linear.nvfp4.marlin": "6dd9892f215049f24bd6479cca32463a6256baba5957b3ed549e35f210502e06",
+  "vllm.model_executor.kernels.linear": "a387cdb277b0056c9cd160d5629f06f610f42b1f19a8fabe44c1db2098159824",
+  "vllm.model_executor.layers.quantization.utils.marlin_utils_fp4": "a7c61d4f67b5d23c4236645ffc0f6f1fe6f8ef2577e83229c479b311c1cddd8b",
+  "vllm.model_executor.layers.quantization.utils.marlin_utils": "6f91cbf2b0ae276abd4b57b80b20f260307f9df3e24d40ee2b0abf76f4c7f100",
+  "vllm.model_executor.layers.quantization.utils.quant_utils": "b8cd5aa5aacaa7658b5f5a51d5b9766df80832904281b24e429d03ee0f9eb0ad",
+  "vllm.model_executor.parameter": "ff6054fbd19ec932c548d562c6f4cc4506383b71cbe411fcfd554c8b1d87b510",
+  "vllm.model_executor.models.deepseek_v2": "58d8916458de7c6f73b40bfef9d2f57bdd6fa0fb79be9e269331af6e66149fe2",
+  "vllm._custom_ops": "5ca3b8955ff2dca446813057e6678065a44ec283d73db4a9d8fd24328cb4ed07",
+  "vllm.model_executor.layers.linear": "fc4e96ba5e36895513b801b99e746e2b07959d402e36d56aae7d8ad3f124cfe7",
+  "vllm.model_executor.layers.attention.mla_attention": "a309ca752b01e85360b268fba56245b816ff245340e9e361166ee96b99d93a94",
+  "vllm.model_executor.kernels.linear.nvfp4.cutlass": "a0e5e3c25c19c351aa5c8a25346a6c01f1618745bbb2ace4e2f9d8a9200d7146"
+}

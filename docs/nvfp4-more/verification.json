@@ -1,0 +1,68 @@
+{
+  "scope": "Mac-only verification; no SSH/fleet/push/network/GPU/model qualification",
+  "base_commit": "3316eb4",
+  "branch": "perf/nvfp4-more",
+  "tests": {
+    "nvfp4": {
+      "expected_tests": 38,
+      "passed": true,
+      "log_sha256": "63163a4c63d4f41e8b67c1e122fc7de2157d27cd784b4101e621d2f0fecbedfc",
+      "tail": "e1aecd36cb546d28a92b7fb4097e80b7dd8e0591989b76203a4d35577\n..SHA256SUMS sha256=c81cae1f2e9dbc3f32dc86b94f3f43b1d675503cd94209d4d80b1aa5d9a1689c\n........glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)\nglm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)\n..glm-nvfp4-attn: loaded 2 logical attention matrices; Marlin W4A16; MTP INT8\n.............glm-nvfp4-more: loaded {\"dense\": 1, \"indexer\": 2, \"shared\": 1}; target; real Marlin W4A16\nglm-nvfp4-more: loaded {\"mtp\": 3}; draft; real Marlin W4A16\n.............\n----------------------------------------------------------------------\nRan 38 tests in 4.029s\n\nOK\n"
+    },
+    "recipe": {
+      "expected_tests": 24,
+      "passed": true,
+      "log_sha256": "5768b4ab88a669e3fbd7c6fbc9b31458bb8efe905e2306dcb25c5ec88ef70588",
+      "tail": "........................\n----------------------------------------------------------------------\nRan 24 tests in 0.608s\n\nOK\nSOURCE PINS PASS: 7 files (compat_source_pins.json)\nSHA256 PASS: example/model, 1 files\n"
+    },
+    "coalesced": {
+      "expected_tests": 12,
+      "passed": true,
+      "log_sha256": "c615e85da44d2b44f8c7920789ae66d0022bfc3610adb8ca2b4ce33d01557fcc",
+      "tail": " 1791288233.278123, \"tensors\": 3142, \"threads\": 4, \"upload_enqueue_seconds\": 0.0009947973303496838, \"upload_wait_seconds\": 0.0, \"uploads\": 68}\nglm-fast-load: load 1 (3 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp9l7bq44u): 3142 eager + 0 mmap tensors, 0.0 GiB in 0.1 s (0.06 GiB/s), 0 slabs, peak 0 live, verified 0, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB\n.\n----------------------------------------------------------------------\nRan 12 tests in 1.076s\n\nOK\nhash-EQUAL synthetic rank0: 3142 tensors\nhash-EQUAL synthetic rank1: 3142 tensors\nhash-EQUAL synthetic rank2: 3142 tensors\nhash-EQUAL synthetic rank3: 3142 tensors\n"
+    },
+    "fast_loader": {
+      "expected_tests": null,
+      "passed": true,
+      "log_sha256": "d9590869a36e9e1a921857e3c2648fbb788c173edb7af4849a6b5712ea914b20",
+      "tail": "ensors, 0.0 GiB in 0.0 s (0.30 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB\nglm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)\nglm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp61pdoeq0): 207 eager + 9 mmap tensors, 0.0 GiB in 0.0 s (0.24 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB\nglm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp61pdoeq0): last slab released after 0.5 s\nOK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified\nOK: wiring\n"
+    }
+  },
+  "static_checks": {
+    "py_compile": true,
+    "bash_n": true,
+    "git_diff_check": true
+  },
+  "extra_source_pins_checked": 9,
+  "reference_sha256": "1804028c3a1881648358b2e4835def88492b601650b8cd923afcb68f2075236f",
+  "sample_audit": {
+    "passed": true,
+    "source_unchanged": true,
+    "elements": 551878656,
+    "counts": {
+      "shared": 3,
+      "indexer": 3,
+      "dense": 3,
+      "mtp": 14
+    },
+    "receipt_sha256": "efe34dffa2ff7883ebf3153a135c45dea29954f40687f63e9341881edb68e515"
+  },
+  "indexer_screen": {
+    "mean_topk_overlap": 0.93927001953125,
+    "synthetic_activations": true,
+    "receipt_sha256": "e31373fa28fcec783ec31ebe9c3e5d650637dade6cfcb37f3450d2b2a04aaa7e"
+  },
+  "dry_default": {
+    "passed": true,
+    "comparison": "integration3316eb4; fixed CTN; only checkout mount/root path normalized; fake SSH exits99"
+  },
+  "unmeasured": [
+    "CUDA native Marlin execution",
+    "full extra-group all-matrix reference audit",
+    "runtime top-k score/index overlap",
+    "full model qeval/needle/RigMark",
+    "draft acceptance",
+    "cycle-ms gains",
+    "real transient/graph/allocator memory"
+  ]
+}

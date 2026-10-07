@@ -1,0 +1,839 @@
+{
+  "scope": "OFFLINE ONLY; capacity is not admission",
+  "steps": [
+    {
+      "extra_GiB": 0,
+      "ordinary_bytes": 1073741824,
+      "max_model_len": 98176,
+      "layout": {
+        "format": "fp4x",
+        "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+        "mla_row_bytes": 368,
+        "index_row_bytes": 132,
+        "block_bytes": 2046464,
+        "kv_bytes": 1073741824,
+        "blocks": 1573,
+        "tokens": 100672,
+        "aligned_bytes": 3219093504,
+        "max_model_len": "100288",
+        "requires_no_ll128": false,
+        "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+      },
+      "c4_mode": "literal",
+      "c4_total_tokens_per_request": 98176,
+      "c4_prompt_tokens": 97152,
+      "decode_tokens": 1024,
+      "c4_required_blocks": 6141,
+      "c4_resident_possible": false,
+      "qualifies_requested_worst_case": false,
+      "conservative_sim": {
+        "format": "fp4x",
+        "max_model_len": 98176,
+        "layout": {
+          "format": "fp4x",
+          "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+          "mla_row_bytes": 368,
+          "index_row_bytes": 132,
+          "block_bytes": 2046464,
+          "kv_bytes": 1073741824,
+          "blocks": 1573,
+          "tokens": 100672,
+          "aligned_bytes": 3219093504,
+          "max_model_len": "100288",
+          "requires_no_ll128": false,
+          "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+        },
+        "required_blocks": 1536,
+        "sim_source_sha256": "a3e079eace8423a0ef3505f69cf3095e1743300d89a86b7474126b3f262a312f",
+        "memory_source_sha256": "b90dd9d454491d4de354a5ebc234c52590894abb4698e2eb4a42c03ac88f8a56",
+        "graph_layout": {
+          "capture_sizes": [
+            1,
+            4,
+            12,
+            16
+          ],
+          "slots": 4,
+          "roles": {
+            "target": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "first_mtp": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "later_mtp": [
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                4,
+                4,
+                1
+              ]
+            ]
+          },
+          "total": 18,
+          "rows": 123
+        },
+        "bank_rule": {
+          "used": 2.0,
+          "family": 2.0,
+          "descriptor": 1.54,
+          "binding": "family"
+        },
+        "per_lever_bytes": {
+          "apc": 64424509.44,
+          "fp4_split_scratch": 37896192,
+          "tiled_prefill_bank": 137889024,
+          "prefill_logits_tile": 268435456,
+          "index_gather_growth": 0,
+          "decode_logits_growth": 4617216,
+          "block_table_growth": 809616,
+          "extra_warm_allowance": 67108864
+        },
+        "exact_head_rounding_debit_GiB": 0.0016717910766601562,
+        "rank0_point_GiB": 6.81984882291626,
+        "rank0_lower_GiB": 6.715947150552978,
+        "per_rank_lower_GiB": [
+          6.715947150552978,
+          9.581260370676677,
+          9.664958767486572,
+          9.377076933583577
+        ],
+        "passes_8_5": false,
+        "passes_live_8_0": false,
+        "per_rank_steady_lower_GiB": [
+          8.704992910552978,
+          10.054243704010009,
+          10.110777517486571,
+          9.843668600250243
+        ],
+        "long_prefill_transient_bytes": [
+          2135721622.3618662,
+          507861987.05493224,
+          478694237.79839987,
+          500998987.2298663
+        ],
+        "calibration_sha256": "bb09115063133f4952c6eff4890d4abe85bbd931a55488d6a27c6fb36d8285aa",
+        "prefill_policy": "observed loss retained; zero speculative savings credit for tiled fix",
+        "reasons": [
+          "sim lower including long-prefill transient below 8.5 GiB",
+          "projected prefill lower below 8.0 GiB live floor"
+        ],
+        "scope": "SIM ONLY: byte bounds plus calibrated v4 anchor; recheck on final package and all warmed graphs",
+        "unmeasured_terms": [
+          "FP4 split scratch plus fixed four-slot prefill bank/256 MiB logits; 64 MiB warm allowance",
+          "Fixed-path residual not measured; retain boot B loss including allocator/API/sampler uncertainty",
+          "50K boot B prefix is an owner estimate, not a logged exact token counter",
+          "GPU register/shared usage, graph replay peak and fixed-path new-max prefill peak not measured"
+        ]
+      }
+    },
+    {
+      "extra_GiB": 1,
+      "ordinary_bytes": 2147483648,
+      "max_model_len": 131712,
+      "layout": {
+        "format": "fp4x",
+        "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+        "mla_row_bytes": 368,
+        "index_row_bytes": 132,
+        "block_bytes": 2046464,
+        "kv_bytes": 2147483648,
+        "blocks": 2097,
+        "tokens": 134208,
+        "aligned_bytes": 4291440640,
+        "max_model_len": "133824",
+        "requires_no_ll128": false,
+        "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+      },
+      "c4_mode": "literal",
+      "c4_total_tokens_per_request": 131712,
+      "c4_prompt_tokens": 130688,
+      "decode_tokens": 1024,
+      "c4_required_blocks": 8237,
+      "c4_resident_possible": false,
+      "qualifies_requested_worst_case": false,
+      "conservative_sim": {
+        "format": "fp4x",
+        "max_model_len": 131712,
+        "layout": {
+          "format": "fp4x",
+          "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+          "mla_row_bytes": 368,
+          "index_row_bytes": 132,
+          "block_bytes": 2046464,
+          "kv_bytes": 2147483648,
+          "blocks": 2097,
+          "tokens": 134208,
+          "aligned_bytes": 4291440640,
+          "max_model_len": "133824",
+          "requires_no_ll128": false,
+          "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+        },
+        "required_blocks": 2060,
+        "sim_source_sha256": "a3e079eace8423a0ef3505f69cf3095e1743300d89a86b7474126b3f262a312f",
+        "memory_source_sha256": "b90dd9d454491d4de354a5ebc234c52590894abb4698e2eb4a42c03ac88f8a56",
+        "graph_layout": {
+          "capture_sizes": [
+            1,
+            4,
+            12,
+            16
+          ],
+          "slots": 4,
+          "roles": {
+            "target": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "first_mtp": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "later_mtp": [
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                4,
+                4,
+                1
+              ]
+            ]
+          },
+          "total": 18,
+          "rows": 123
+        },
+        "bank_rule": {
+          "used": 2.0,
+          "family": 2.0,
+          "descriptor": 1.54,
+          "binding": "family"
+        },
+        "per_lever_bytes": {
+          "apc": 64424509.44,
+          "fp4_split_scratch": 37896192,
+          "tiled_prefill_bank": 176656640,
+          "prefill_logits_tile": 268435456,
+          "index_gather_growth": 0,
+          "decode_logits_growth": 9446400,
+          "block_table_growth": 1656400,
+          "extra_warm_allowance": 67108864
+        },
+        "exact_head_rounding_debit_GiB": 1.0016717910766602,
+        "rank0_point_GiB": 5.099018149840241,
+        "rank0_lower_GiB": 4.995116477476959,
+        "per_rank_lower_GiB": [
+          4.995116477476959,
+          8.37830239093399,
+          8.471279954410551,
+          8.176302287174224
+        ],
+        "passes_8_5": false,
+        "passes_live_8_0": false,
+        "per_rank_steady_lower_GiB": [
+          7.6636015974769585,
+          9.01285239093399,
+          9.069386204410552,
+          8.802277287174224
+        ],
+        "long_prefill_transient_bytes": [
+          2865264080.0656586,
+          681342874.4191985,
+          642211695.8207998,
+          672135538.2783995
+        ],
+        "calibration_sha256": "bb09115063133f4952c6eff4890d4abe85bbd931a55488d6a27c6fb36d8285aa",
+        "prefill_policy": "observed loss retained; zero speculative savings credit for tiled fix",
+        "reasons": [
+          "sim lower including long-prefill transient below 8.5 GiB",
+          "projected prefill lower below 8.0 GiB live floor"
+        ],
+        "scope": "SIM ONLY: byte bounds plus calibrated v4 anchor; recheck on final package and all warmed graphs",
+        "unmeasured_terms": [
+          "FP4 split scratch plus fixed four-slot prefill bank/256 MiB logits; 64 MiB warm allowance",
+          "Fixed-path residual not measured; retain boot B loss including allocator/API/sampler uncertainty",
+          "50K boot B prefix is an owner estimate, not a logged exact token counter",
+          "GPU register/shared usage, graph replay peak and fixed-path new-max prefill peak not measured"
+        ]
+      }
+    },
+    {
+      "extra_GiB": 2,
+      "ordinary_bytes": 3221225472,
+      "max_model_len": 165312,
+      "layout": {
+        "format": "fp4x",
+        "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+        "mla_row_bytes": 368,
+        "index_row_bytes": 132,
+        "block_bytes": 2046464,
+        "kv_bytes": 3221225472,
+        "blocks": 2622,
+        "tokens": 167808,
+        "aligned_bytes": 5365828608,
+        "max_model_len": "167424",
+        "requires_no_ll128": false,
+        "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+      },
+      "c4_mode": "literal",
+      "c4_total_tokens_per_request": 165312,
+      "c4_prompt_tokens": 164288,
+      "decode_tokens": 1024,
+      "c4_required_blocks": 10337,
+      "c4_resident_possible": false,
+      "qualifies_requested_worst_case": false,
+      "conservative_sim": {
+        "format": "fp4x",
+        "max_model_len": 165312,
+        "layout": {
+          "format": "fp4x",
+          "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+          "mla_row_bytes": 368,
+          "index_row_bytes": 132,
+          "block_bytes": 2046464,
+          "kv_bytes": 3221225472,
+          "blocks": 2622,
+          "tokens": 167808,
+          "aligned_bytes": 5365828608,
+          "max_model_len": "167424",
+          "requires_no_ll128": false,
+          "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+        },
+        "required_blocks": 2585,
+        "sim_source_sha256": "a3e079eace8423a0ef3505f69cf3095e1743300d89a86b7474126b3f262a312f",
+        "memory_source_sha256": "b90dd9d454491d4de354a5ebc234c52590894abb4698e2eb4a42c03ac88f8a56",
+        "graph_layout": {
+          "capture_sizes": [
+            1,
+            4,
+            12,
+            16
+          ],
+          "slots": 4,
+          "roles": {
+            "target": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "first_mtp": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "later_mtp": [
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                4,
+                4,
+                1
+              ]
+            ]
+          },
+          "total": 18,
+          "rows": 123
+        },
+        "bank_rule": {
+          "used": 2.0,
+          "family": 2.0,
+          "descriptor": 1.54,
+          "binding": "family"
+        },
+        "per_lever_bytes": {
+          "apc": 64424509.44,
+          "fp4_split_scratch": 37896192,
+          "tiled_prefill_bank": 215498240,
+          "prefill_logits_tile": 268435456,
+          "index_gather_growth": 0,
+          "decode_logits_growth": 14284800,
+          "block_table_growth": 2504800,
+          "extra_warm_allowance": 67108864
+        },
+        "exact_head_rounding_debit_GiB": 2.00167179107666,
+        "rank0_point_GiB": 3.376811845708733,
+        "rank0_lower_GiB": 3.272910173345451,
+        "per_rank_lower_GiB": [
+          3.272910173345451,
+          7.1749570868024835,
+          7.277231525279045,
+          6.975144483042717
+        ],
+        "passes_8_5": false,
+        "passes_live_8_0": false,
+        "per_rank_steady_lower_GiB": [
+          6.622131293345451,
+          7.971382086802482,
+          8.027915900279044,
+          7.760806983042716
+        ],
+        "long_prefill_transient_bytes": [
+          3596198794.3681226,
+          855154832.1791981,
+          806041210.0607998,
+          843598685.7983994
+        ],
+        "calibration_sha256": "bb09115063133f4952c6eff4890d4abe85bbd931a55488d6a27c6fb36d8285aa",
+        "prefill_policy": "observed loss retained; zero speculative savings credit for tiled fix",
+        "reasons": [
+          "sim lower including long-prefill transient below 8.5 GiB",
+          "projected prefill lower below 8.0 GiB live floor"
+        ],
+        "scope": "SIM ONLY: byte bounds plus calibrated v4 anchor; recheck on final package and all warmed graphs",
+        "unmeasured_terms": [
+          "FP4 split scratch plus fixed four-slot prefill bank/256 MiB logits; 64 MiB warm allowance",
+          "Fixed-path residual not measured; retain boot B loss including allocator/API/sampler uncertainty",
+          "50K boot B prefix is an owner estimate, not a logged exact token counter",
+          "GPU register/shared usage, graph replay peak and fixed-path new-max prefill peak not measured"
+        ]
+      }
+    },
+    {
+      "extra_GiB": 3,
+      "ordinary_bytes": 4294967296,
+      "max_model_len": 198912,
+      "layout": {
+        "format": "fp4x",
+        "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+        "mla_row_bytes": 368,
+        "index_row_bytes": 132,
+        "block_bytes": 2046464,
+        "kv_bytes": 4294967296,
+        "blocks": 3147,
+        "tokens": 201408,
+        "aligned_bytes": 6440227840,
+        "max_model_len": "201024",
+        "requires_no_ll128": false,
+        "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+      },
+      "c4_mode": "literal",
+      "c4_total_tokens_per_request": 198912,
+      "c4_prompt_tokens": 197888,
+      "decode_tokens": 1024,
+      "c4_required_blocks": 12437,
+      "c4_resident_possible": false,
+      "qualifies_requested_worst_case": false,
+      "conservative_sim": {
+        "format": "fp4x",
+        "max_model_len": 198912,
+        "layout": {
+          "format": "fp4x",
+          "abi": "fp4x_v1_e2m1_s16_e4m3_pow2_r64",
+          "mla_row_bytes": 368,
+          "index_row_bytes": 132,
+          "block_bytes": 2046464,
+          "kv_bytes": 4294967296,
+          "blocks": 3147,
+          "tokens": 201408,
+          "aligned_bytes": 6440227840,
+          "max_model_len": "201024",
+          "requires_no_ll128": false,
+          "status": "FP4x staged; exact-layout sim >=8.5 GiB and fleet qualification required"
+        },
+        "required_blocks": 3110,
+        "sim_source_sha256": "a3e079eace8423a0ef3505f69cf3095e1743300d89a86b7474126b3f262a312f",
+        "memory_source_sha256": "b90dd9d454491d4de354a5ebc234c52590894abb4698e2eb4a42c03ac88f8a56",
+        "graph_layout": {
+          "capture_sizes": [
+            1,
+            4,
+            12,
+            16
+          ],
+          "slots": 4,
+          "roles": {
+            "target": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "first_mtp": [
+              [
+                2,
+                1,
+                2
+              ],
+              [
+                3,
+                1,
+                3
+              ],
+              [
+                4,
+                1,
+                4
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                6,
+                2,
+                3
+              ],
+              [
+                12,
+                3,
+                4
+              ],
+              [
+                12,
+                4,
+                3
+              ],
+              [
+                16,
+                4,
+                4
+              ]
+            ],
+            "later_mtp": [
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                4,
+                4,
+                1
+              ]
+            ]
+          },
+          "total": 18,
+          "rows": 123
+        },
+        "bank_rule": {
+          "used": 2.0,
+          "family": 2.0,
+          "descriptor": 1.54,
+          "binding": "family"
+        },
+        "per_lever_bytes": {
+          "apc": 64424509.44,
+          "fp4_split_scratch": 37896192,
+          "tiled_prefill_bank": 254339840,
+          "prefill_logits_tile": 268435456,
+          "index_gather_growth": 0,
+          "decode_logits_growth": 19123200,
+          "block_table_growth": 3353200,
+          "extra_warm_allowance": 67108864
+        },
+        "exact_head_rounding_debit_GiB": 3.00167179107666,
+        "rank0_point_GiB": 1.654605541577225,
+        "rank0_lower_GiB": 1.550703869213943,
+        "per_rank_lower_GiB": [
+          1.550703869213943,
+          5.971611782670976,
+          6.083183096147537,
+          5.773986678911209
+        ],
+        "passes_8_5": false,
+        "passes_live_8_0": false,
+        "per_rank_steady_lower_GiB": [
+          5.580660989213943,
+          6.929911782670974,
+          6.9864455961475365,
+          6.719336678911208
+        ],
+        "long_prefill_transient_bytes": [
+          4327133508.670587,
+          1028966789.9391978,
+          969870724.3007997,
+          1015061833.3183993
+        ],
+        "calibration_sha256": "bb09115063133f4952c6eff4890d4abe85bbd931a55488d6a27c6fb36d8285aa",
+        "prefill_policy": "observed loss retained; zero speculative savings credit for tiled fix",
+        "reasons": [
+          "sim lower including long-prefill transient below 8.5 GiB",
+          "projected prefill lower below 8.0 GiB live floor"
+        ],
+        "scope": "SIM ONLY: byte bounds plus calibrated v4 anchor; recheck on final package and all warmed graphs",
+        "unmeasured_terms": [
+          "FP4 split scratch plus fixed four-slot prefill bank/256 MiB logits; 64 MiB warm allowance",
+          "Fixed-path residual not measured; retain boot B loss including allocator/API/sampler uncertainty",
+          "50K boot B prefix is an owner estimate, not a logged exact token counter",
+          "GPU register/shared usage, graph replay peak and fixed-path new-max prefill peak not measured"
+        ]
+      }
+    }
+  ],
+  "rule": "all rank sim lower >=8.5 GiB; page-cache credit=0; live rank0>=8.0, any rank>=6.0",
+  "literal_c4": "4 independent max contexts require about 4x aggregate KV; queue/preemption cannot qualify"
+}

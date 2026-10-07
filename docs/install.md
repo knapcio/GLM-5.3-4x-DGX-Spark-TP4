@@ -1,4 +1,4 @@
-# stack-1003 installation
+# Installation
 
 Prepare four DGX Sparks with Docker/NVIDIA Container Toolkit, an existing switched
 RoCE fabric and complete full-model weights at identical operator-selected paths.
@@ -83,13 +83,15 @@ dynamic CUDA runtime copy and memset paths; its source documents the interceptio
 limits. GPU positive-control evidence remains in the dispram qualification.
 
 Configure the private `.env` values shown in [runtime](runtime.md), including
-`RECIPE_DISPRAM=require`, `RECIPE_MAX_MODEL_LEN=66112`, short DSA on,
+`RECIPE_DISPRAM=require`, `GLM_KV_FORMAT=fp4x`, `RECIPE_MAX_MODEL_LEN=98176`, short DSA on,
 uniform K2, c2 reuse and descriptor-scoped pad hygiene v2 on.
-The example selects these switches; the primary v2 gate passed.
-Keep spec-sample off. Then perform preflight, guarded boot and the
-[release gate](validation-release-RUN.md) before publishing filled measurements.
+The example selects these switches; boot g supplies the FP4x qualification receipts.
+Keep spec-sample off. The offline draft does not perform node setup or start a server.
+See [FP4 KV qualification](fp4-kv.md) for the measured results and their limits.
+To select FP8 in this same profile, set `GLM_KV_FORMAT=fp8` and
+`RECIPE_MAX_MODEL_LEN=66112`; drain and restart the serving processes.
 
-W4 used the narrowly scoped `DISPRAM_ALLOW_RM_ALLOC_OOM=1` lender setting
+The qualified layout used the narrowly scoped `DISPRAM_ALLOW_RM_ALLOC_OOM=1` lender setting
 described in [runtime](runtime.md#display-carveout-kv). Use it consistently in
 the private `.env` and manual `watch`, `preborrow`, `postcheck` and `verified-free`
 checks. It does not suppress unrelated GPU faults.

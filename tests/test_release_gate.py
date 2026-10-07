@@ -6,6 +6,7 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import sys
 import tempfile
 import unittest
@@ -20,7 +21,7 @@ G = importlib.util.module_from_spec(spec); spec.loader.exec_module(G)
 
 def fixture(c=1):
     config = dict(port=8095, modelId='GLM-5.3', concurrencies=[c], maxTokens=256, promptType='prose')
-    posted = dict(benchId='fresh-123', startedAt=100, sparkId='configured-node')
+    posted = dict(benchId='fresh-123', startedAt=100, sparkId='rank0')
     job = {**posted, 'completedAt': 200, 'status':'completed', 'error':None, 'config':config,
            'progress':dict(completedLevels=1,totalLevels=1),
            'results':[dict(concurrency=c, streamsOk=c, streamsFailed=0, totalCompletionTokens=c*256,
@@ -46,7 +47,7 @@ class Evidence(unittest.TestCase):
     def test_stream_identity_tokens_reasoning_and_job_pins(self):
         job, posted, config = fixture(16)
         self.assertEqual(P.validate_job(job,posted,config),[])
-        changes = [('benchId','stale'),('sparkId','other-node'),('status','failed'),('completedAt',float('nan'))]
+        changes = [('benchId','stale'),('sparkId','rank1'),('status','failed'),('completedAt',float('nan'))]
         for key,value in changes:
             d=copy.deepcopy(job);d[key]=value
             self.assertTrue(P.validate_job(d,posted,config))
@@ -112,12 +113,13 @@ class Evidence(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             cfg=Path(tmp)/'config';cfg.write_text('IMAGE=mutable:tag\n')
             with self.assertRaises(ValueError):G.read_config(ROOT,cfg)
-            cfg.write_text('IMAGES=('+' '.join(['sha256:'+'1'*64]*4)+')\nTOKEN=never-save-this\n')
+            cfg.write_text('HOSTS=(rank0 rank1 rank2 rank3)\nIPS=(192.0.2.1 192.0.2.2 192.0.2.3 192.0.2.4)\nFABRIC_IFACE=enp1s0f0np0\nIMAGES=('+' '.join(['sha256:'+'1'*64]*4)+')\nTOKEN=never-save-this\n')
             result=G.read_config(ROOT,cfg)
             self.assertEqual(len(result['RECIPE_IMAGES'].split()),4)
             self.assertNotIn('TOKEN',result)
             self.assertEqual(result['FABRIC_IFACE'],'enp1s0f0np0')
 
+    @unittest.skipUnless(shutil.which("git"), "git absent in runtime image; clone boundary tested on workstation")
     def test_clone_excludes_untracked_state_and_env(self):
         with tempfile.TemporaryDirectory() as tmp:
             src=Path(tmp)/'src';src.mkdir()

@@ -1,0 +1,122 @@
+[
+  {
+    "extra_GiB": 0,
+    "blocks": 1573,
+    "max_model_len": 98176,
+    "rank_heads": [
+      1073741824,
+      1073741824,
+      1073741824,
+      1073741824
+    ],
+    "prefill_envs": [
+      [],
+      [],
+      [],
+      []
+    ],
+    "dry_sha256": "dfe4ba36e13cf21b9d03d992c31e3e5646761b05626c0871ac32e97bb2d43acd",
+    "guard_sha256": "331581e7cebb6d855e3087a8388fbc9827a4ce65c4047fd7a0c39466c9f44a14",
+    "package_sha256": "9f4f9bcc12f864a14f387617bacd4bb33d1f297c16f16bec85ac5bf918e1c413",
+    "scope": "Mac DRY only, not fleet qualification"
+  },
+  {
+    "extra_GiB": 1,
+    "blocks": 2097,
+    "max_model_len": 131712,
+    "rank_heads": [
+      2147483648,
+      2147483648,
+      2147483648,
+      2147483648
+    ],
+    "prefill_envs": [
+      [
+        "GLM_FP4_MAX_MODEL_LEN=131712",
+        "GLM_FP4_POOL_BLOCKS=2097"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=131712",
+        "GLM_FP4_POOL_BLOCKS=2097"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=131712",
+        "GLM_FP4_POOL_BLOCKS=2097"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=131712",
+        "GLM_FP4_POOL_BLOCKS=2097"
+      ]
+    ],
+    "dry_sha256": "b161618f83d632438f8287f8f78cfa936f8f01ae286f8a1785c61112e68764eb",
+    "guard_sha256": "331581e7cebb6d855e3087a8388fbc9827a4ce65c4047fd7a0c39466c9f44a14",
+    "package_sha256": "be7f6034bb806c022d347033c37eaa17a64bf4241ee3ef5be552cee4d277db12",
+    "scope": "Mac DRY only, not fleet qualification"
+  },
+  {
+    "extra_GiB": 2,
+    "blocks": 2622,
+    "max_model_len": 165312,
+    "rank_heads": [
+      3221225472,
+      3221225472,
+      3221225472,
+      3221225472
+    ],
+    "prefill_envs": [
+      [
+        "GLM_FP4_MAX_MODEL_LEN=165312",
+        "GLM_FP4_POOL_BLOCKS=2622"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=165312",
+        "GLM_FP4_POOL_BLOCKS=2622"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=165312",
+        "GLM_FP4_POOL_BLOCKS=2622"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=165312",
+        "GLM_FP4_POOL_BLOCKS=2622"
+      ]
+    ],
+    "dry_sha256": "94c4605e16534fa3aa50deec283073b7ff90de6a1d3ff6f163438a385c446325",
+    "guard_sha256": "331581e7cebb6d855e3087a8388fbc9827a4ce65c4047fd7a0c39466c9f44a14",
+    "package_sha256": "f01f967c79aff24b01bc09219e901052695a9a15b6f043d36817f4d2c25a7b6f",
+    "scope": "Mac DRY only, not fleet qualification"
+  },
+  {
+    "extra_GiB": 3,
+    "blocks": 3147,
+    "max_model_len": 198912,
+    "rank_heads": [
+      4294967296,
+      4294967296,
+      4294967296,
+      4294967296
+    ],
+    "prefill_envs": [
+      [
+        "GLM_FP4_MAX_MODEL_LEN=198912",
+        "GLM_FP4_POOL_BLOCKS=3147"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=198912",
+        "GLM_FP4_POOL_BLOCKS=3147"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=198912",
+        "GLM_FP4_POOL_BLOCKS=3147"
+      ],
+      [
+        "GLM_FP4_MAX_MODEL_LEN=198912",
+        "GLM_FP4_POOL_BLOCKS=3147"
+      ]
+    ],
+    "dry_sha256": "47b0bb81be159e5ce001e6264719a0093a643c224a02e9b8828f4a476fb542cb",
+    "guard_sha256": "331581e7cebb6d855e3087a8388fbc9827a4ce65c4047fd7a0c39466c9f44a14",
+    "package_sha256": "101fd053d795556801437a077e7379a8742dae876a6a96c162fd9f3265cd9bc2",
+    "scope": "Mac DRY only, not fleet qualification"
+  }
+]

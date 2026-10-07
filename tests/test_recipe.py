@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'overlay/bringup'), str(ROOT/'overlay/swa-pool')]
@@ -90,8 +91,8 @@ class Recipe(unittest.TestCase):
             shim = Path(d)/'ssh'
             shim.write_text('#!/bin/sh\nexit 99\n');shim.chmod(0o755)
             before = (ROOT/'state').exists()
-            subprocess.run([str(ROOT/'start.sh'), 'serve'], check=True, stdout=subprocess.DEVNULL,
-                           env=dict(os.environ, DRY='1', PATH=d+':'+os.environ['PATH']))
+            with patch.dict(os.environ, PATH=d+':'+os.environ['PATH']):
+                compare_dry.compare()
             self.assertEqual((ROOT/'state').exists(), before)
 
     def test_mla_inert_and_bad_mode(self):
@@ -336,7 +337,7 @@ class Recipe(unittest.TestCase):
         for key,value in (('GLM_MTP_KSTOP','1'),('GLM_MTP_KSTOP_UNIFORM_BATCH','k2')):
             self.assertIn(f"export {key}='{value}'", current)
             self.assertIn(f"export {key}='0'", dspark)
-        self.assertIn("export GLM_INDEXER_SHORTCUT='0'", current)
+        self.assertIn("export GLM_INDEXER_SHORTCUT='1'", current)
 
     def test_all_python_parses(self):
         for path in ROOT.rglob('*.py'):

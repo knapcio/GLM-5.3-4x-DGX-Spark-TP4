@@ -1,8 +1,8 @@
 # Pad hygiene v2
 
-2026-10-03. Implementation `0f243832dbaa45b6d659a1a076ec85bac13e1a8a`,
-based on `2538edfc307c8cf5f871491d6d6107968c457cf5`.
-Serving qualification and selected defaults are recorded in the release README.
+2026-10-03, Europe/Warsaw. Offline Mac work on `perf/pad-hygiene-v2`,
+base `release/stack-1003` / `2538edfc307c8cf5f871491d6d6107968c457cf5`,
+worktree `/srv/projects/glm53-full-padv2`.
 
 `GLM_PAD_HYGIENE=1` now includes the existing remap only in captured descriptors
 that can receive fewer live tokens than their captured size. The analyzer reads
@@ -56,13 +56,26 @@ changing replay tails at one stable source address, both draft preparation hooks
 flag-off field guards, named guard digests and live expert IDs/weights/output bit
 identity using the pinned modular Marlin hook with CPU expert substitutes.
 
-## CPU checks
+## Mac checks
 
-The pinned ARM64 CPU compatibility suite passed, including real four-rank Gloo,
-collective refusal for divergent flags and all 16 padding-off/on pairs with exact
-T=0 token-ID equality. These checks exercise native control flow with substituted
-GPU arithmetic. CUDA performance and serving quality require the separate GPU
-gate; see the release README for its result.
+Cached wheels only (torch 2.13.0); no installs or downloads. Source extraction:
+`/srv/campaign/diagnostics/glm53-full-20260929/day3/apc-prep/source`.
+Receipts and reproduction scripts: `tests/results/padv2/` in this worktree.
+
+- Padding 14 PASS; composition 14 PASS; pure K-stop 12 PASS; all K-stop 29 PASS
+  with single-rank transport substitutes (not real Gloo).
+- Recipe 24 PASS; launcher 55 PASS; release gate 18 PASS; short-DSA Mac subset
+  6 PASS; spec-sample 6 PASS; conditional distribution 1 PASS (FP32/BF16).
+- Persistent cache 10 PASS; kernel CPU 1 PASS; dirty-L2 12 run / 4 image-dependent
+  skips; glue-lite 35 run / 1 image-dependent skip; parameter hash 17 run / 2 skips.
+- Source pins 30 PASS (23 main + 7 compatibility); all composed transforms compile
+  and reject drift. All 16 frozen campaign adapters compile.
+- Four-rank DRY comparison PASS for padding 0 and 1. Python/shell syntax and
+  `git diff --check` PASS.
+
+These are CPU/source results. Actual CUDA graph replay, Marlin GPU arithmetic,
+real four-rank Gloo, full paired T=0 matrix and GPU timing remain for coordinator
+or GPU execution. No Docker, SSH, fleet, push or network operation was executed.
 
 ## Old c1 kernel cost estimate
 
@@ -85,18 +98,42 @@ The user-supplied boot medians (31.4 vs 32.6 / 32.9 tokens/s) correspond to
 That is the observed whole-run difference, not isolated remap cost or a controlled
 A/B measurement; it cannot establish that the removed launches explain all of it.
 
-## Reproduce the CPU compatibility suite
+## Exact coordinator command
 
-The campaign control-flow fixture is external to this repository. Provide its
-`day3` directory (containing `mtp-kstop`) as `GLM_CAMPAIGN_DAY`, then run:
+Run `bash /srv/projects/glm53-full-padv2/tests/run_pad_hygiene_v2_coordinator.sh`.
+Host workdir and all host mounts are under `/srv/projects`. The container
+workdir `/pkg` is the read-only bind of the requested worktree. This uses the
+locally cached pinned ARM64 image, no network or GPU, and produces the real CPU
+compatibility suite, Gloo guards and all 16 paired T=0 matrix receipts.
+It was prepared but not executed during this task.
 
 ```bash
-GLM_CAMPAIGN_DAY=/path/to/day3 bash tests/run_pad_hygiene_v2_coordinator.sh
+#!/usr/bin/env bash
+set -euo pipefail
+task_repo=/srv/projects/glm53-full-padv2
+task_day=/srv/campaign/diagnostics/glm53-full-20260929/day3
+task_out=$task_repo/tests/results/padv2/coordinator
+task_image=ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
+cd "$task_repo"
+[[ $(uname -s) == Darwin && $(docker context show) == colima ]]
+task_running=$(docker ps -q)
+[[ -z $task_running ]] || { echo 'docker ps must be empty' >&2; exit 2; }
+docker image inspect "$task_image" --format '{{.Id}} {{.Architecture}}'
+mkdir -p "$task_out"
+docker run --pull never --network none --rm --platform linux/arm64 --cpus 2 --memory 8g \
+  -e CUDA_VISIBLE_DEVICES= -e NVIDIA_VISIBLE_DEVICES=void -e OMP_NUM_THREADS=2 \
+  -e MKL_NUM_THREADS=2 -e OPENBLAS_NUM_THREADS=2 -e PYTHONDONTWRITEBYTECODE=1 \
+  -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e TRITON_CACHE_DIR=/tmp/triton \
+  --workdir /pkg \
+  --mount "type=bind,src=$task_repo,dst=/pkg,readonly" \
+  --mount "type=bind,src=$task_day,dst=/campaign/day3,readonly" \
+  --mount "type=bind,src=$task_out,dst=/results" --entrypoint /usr/bin/nice \
+  "$task_image" -n 10 python3 -B /pkg/tests/kstop_compat_cpu_suite.py \
+  > "$task_out/suite.txt" 2>&1
+cat "$task_out/PASS.json"
 ```
 
-The helper resolves the repository relative to itself, requires no other running
-Docker containers and uses the locally cached digest-pinned ARM64 image with no
-network or GPU. It writes `tests/results/padv2/coordinator/PASS.json` and all
-16 matrix receipts. Without the external fixture, use `tests/run_cpu_tests.sh`
-for the bundled source/descriptor tests; that command does not claim the full
-campaign matrix.
+Successful execution must produce `tests/results/padv2/coordinator/PASS.json`,
+all 16 matrix receipts, exact token-ID equality for each padding off/on pair,
+and collective refusal for divergent padding flags. It does not measure CUDA
+or serving performance.

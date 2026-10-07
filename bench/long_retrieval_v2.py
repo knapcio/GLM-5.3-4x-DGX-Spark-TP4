@@ -13,14 +13,16 @@ import time
 from datetime import datetime
 from urllib.parse import urlsplit
 
-TARGETS = (16384, 63488)
+import os
+# Targets are configurable with NEEDLE_TARGETS; defaults match the qualified 98K layout.
+TARGETS = tuple(int(x) for x in os.environ.get('NEEDLE_TARGETS', '16384,63488,96128').split(','))
 REGISTRY_FIELDS = tuple(f"r{i}" for i in range(1, 8))
 FIELDS = REGISTRY_FIELDS + ("alias_result", "corrected_operator", "matching_count")
 CHAT_KWARGS = {"enable_thinking": False, "reasoning_effort": "low"}
 MAX_TOKENS = 1024
-PASS_RULE = ("For EACH paired repeat (1 and 2): 63K score >= 16K score - 1 "
-             "and all seven 63K registry fields correct. Both pairs must pass. "
-             "All four responses must complete with finish_reason=stop; "
+PASS_RULE = ("For EACH paired repeat (1 and 2), EACH long length (63K and max-2K): "
+             "score >= 16K score - 1 and all seven registry fields correct. "
+             "All six responses must complete with finish_reason=stop; "
              "transport/protocol failures produce ERROR, never PASS.")
 
 
@@ -217,16 +219,21 @@ def grade(content, expected):
 
 
 def verdict(runs):
-    if len(runs) != 4 or any(run.get("error") for run in runs):
-        return {"status": "ERROR", "rule": PASS_RULE, "reason": "four successful transports required"}
+    expected = {(target,repeat) for target in TARGETS for repeat in (1,2)}
+    identities = [(r.get("target_input_tokens"),r.get("repeat")) for r in runs]
+    if (len(runs) != len(expected) or set(identities) != expected
+            or any(run.get("error") for run in runs)):
+        return {"status": "ERROR", "rule": PASS_RULE, "reason": "six distinct successful transports required"}
     pairs = []
     for repeat in (1, 2):
         control = next(r for r in runs if r["target_input_tokens"] == TARGETS[0] and r["repeat"] == repeat)
-        long = next(r for r in runs if r["target_input_tokens"] == TARGETS[1] and r["repeat"] == repeat)
-        passed = (control["finish_reason"] == long["finish_reason"] == "stop" and
-                  long["grade"]["score"] >= control["grade"]["score"]-1 and long["grade"]["registry_all_correct"])
-        pairs.append({"repeat": repeat, "control_score": control["grade"]["score_over_n"],
-                      "long_score": long["grade"]["score_over_n"], "passed": passed})
+        for target in TARGETS[1:]:
+            long = next(r for r in runs if r["target_input_tokens"] == target and r["repeat"] == repeat)
+            passed = (control["finish_reason"] == long["finish_reason"] == "stop" and
+                      long["grade"]["score"] >= control["grade"]["score"]-1 and long["grade"]["registry_all_correct"])
+            pairs.append({"repeat": repeat, "target_input_tokens": target,
+                          "control_score": control["grade"]["score_over_n"],
+                          "long_score": long["grade"]["score_over_n"], "passed": passed})
     return {"status": "PASS" if all(p["passed"] for p in pairs) else "FAIL", "rule": PASS_RULE, "pairs": pairs}
 
 
@@ -259,7 +266,7 @@ def self_check(expected):
 
 
 def prefill_timeout(tokens):
-    return tokens / 800 * 1.5 + 30
+    return tokens / 300 * 1.5 + 30  # Conservative long-prefill timeout, including startup overhead.
 
 
 def execute(endpoint, receipt):

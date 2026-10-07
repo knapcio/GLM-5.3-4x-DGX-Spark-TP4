@@ -19,7 +19,7 @@ Select an existing service account with Docker and system journal access. Render
 The wrapper directory, launcher `DISPRAM_HOME`, unit environment and lock-helper
 run directory must agree. Review the rendered units and sudo rule before install.
 
-For the W4 layout, also add `Environment=DISPRAM_ALLOW_RM_ALLOC_OOM=1` to the
+For the qualified layout, also add `Environment=DISPRAM_ALLOW_RM_ALLOC_OOM=1` to the
 rendered lender's `[Service]` section. This is the exact handled allocation-line
 exception documented in [runtime](../docs/runtime.md#display-carveout-kv).
 Use `export DISPRAM_ALLOW_RM_ALLOC_OOM=1` for manual wrapper commands, and set

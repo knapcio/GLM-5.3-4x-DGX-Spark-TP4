@@ -1,0 +1,47 @@
+{
+  "repo": "ajclark/GLM-5.3-DCP4-DFlash2-NVMe-KV-Offload-4x-DGX-Spark",
+  "commit": "f0b64af5ac6028624e5ae255d998faa1e0a9324a",
+  "transport": "github_fetch (shell DNS unavailable)",
+  "files": {
+    "LICENSE": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "bytes": 11357
+    },
+    "NOTICE": {
+      "sha256": "edf5d9bb8457c2d8a1053ae8c20955998e5d98155fd30e70c217e3cbbaed0b14",
+      "git_blob_sha1": "7ee253eee13c0bfb40120b7ca05e6915988404c3",
+      "bytes": 1569
+    },
+    "README.md": {
+      "sha256": "fe2d5e8295e86b6cf0ac92750ea7729adace04b1dc98d41813b7849e95287f13",
+      "git_blob_sha1": "6b91db8b5004fa02ba8359e2fc6b65dc5152db0e",
+      "bytes": 5322
+    },
+    "runtime/nvme_loader/README.md": {
+      "sha256": "ec11b46f455fbacd3c37088101db73c4512c92f22b93e53227b24c69ee510644",
+      "git_blob_sha1": "5a6c680ddd4197d8ed8e92948214d1c7a9473de7",
+      "bytes": 11796
+    },
+    "runtime/nvme_loader/spark_nvme/coalesced.py": {
+      "sha256": "7f3325d448d26c761504110b200a2ac7cdb0be4d7e8c56108763c9cedb5b1460",
+      "git_blob_sha1": "5e96636eb7ed727f3f56383ad23ab186d5e52392",
+      "bytes": 12986
+    },
+    "runtime/nvme_loader/spark_nvme/streaming.py": {
+      "sha256": "a2ccbb3adcd110f43abc5721d54a9625da5a3b7da3b56881325c500d5ecea48d",
+      "git_blob_sha1": "5831101af2d4cd76e998ba1f0d7c226e3192d86a",
+      "bytes": 14491
+    },
+    "runtime/nvme_loader/spark_nvme/transport.py": {
+      "sha256": "08033894db7823489c20c3ae63c52c77ec4cb9230b2090a5374bb5fb589bd688",
+      "git_blob_sha1": "cba708eac174539530d1561dea8db43bbd107651",
+      "bytes": 4826
+    },
+    "runtime/nvme_loader/spark_nvme/loader.py": {
+      "sha256": "e00d229f81b1edd88de23bde1271d17e6ceab76d2226db8c27114f7d6e805b5e",
+      "git_blob_sha1": "f616d90ec0c335dc12f5a82531372f2b3e6de1cd",
+      "bytes": 16937
+    }
+  }
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check GLM page cache every minute (local root manager)
+
+[Timer]
+OnBootSec=120
+OnUnitInactiveSec=60
+AccuracySec=1
+Unit=glm-page-cache.service
+
+[Install]
+WantedBy=timers.target

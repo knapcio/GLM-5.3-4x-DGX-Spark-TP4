@@ -4,6 +4,11 @@ import importlib.util
 import os
 import sys
 try:
+    if os.environ.get('GLM_ATTN_WEIGHTS', 'int8') not in ('int8', 'nvfp4'):
+        raise ValueError('GLM_ATTN_WEIGHTS must be int8 or nvfp4')
+    if os.environ.get('GLM_ATTN_WEIGHTS', 'int8') == 'nvfp4':
+        import glm_nvfp4_attn
+        glm_nvfp4_attn.register()
     if os.environ.get('GLM_PARAM_HASH', '0') != '0':
         import glm_param_hash
         glm_param_hash.register()
@@ -12,7 +17,7 @@ try:
         spec = importlib.util.spec_from_file_location('_glm_pool_startup', tail)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-    elif os.environ.get('GLM_FAST_LOAD') == '1':
+    elif os.environ.get('GLM_FAST_LOAD') == '1' or os.environ.get('GLM_LOADER'):
         import glm_fast_load
         glm_fast_load.register()
     if os.environ.get('GLM_SPEC_SAMPLE', '0') != '0':
@@ -24,6 +29,12 @@ try:
     if os.environ.get('GLM_FULL_MLA', '0') != '0':
         import glm_full_mla
         glm_full_mla.register()
+    if "GLM_KV_FORMAT" in os.environ:
+        import glm_fp4_kv
+        glm_fp4_kv.register()
+    if os.environ.get('GLM_FP4_RECENT_WINDOW', '0') != '0':
+        import glm_recent_kv
+        glm_recent_kv.register()
     if os.environ.get('GLM_FULL_MLA') == 'triton':
         import glm_window_memory
         glm_window_memory.register()

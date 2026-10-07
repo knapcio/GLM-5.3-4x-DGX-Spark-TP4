@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shlex
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DIAG = {'GLM_W4_TAIL', 'GLM_W6_GRAPH_RECEIPTS'}
@@ -31,7 +32,19 @@ def clean_args(args):
 
 def compare():
     run_env = dict(os.environ, DRY='1', CTN='glm53full-dry-verification')
-    rendered = subprocess.check_output([str(ROOT/'start.sh'), 'serve'], env=run_env, text=True)
+    # Historical comparison uses a synthetic explicit configuration, never site defaults.
+    saved = json.loads((ROOT/'docs/results/best-launch.json').read_text())
+    config = "HOSTS=(rank0 rank1 rank2 rank3)\nIPS=("+' '.join(r['env']['VLLM_HOST_IP'] for r in saved['ranks'])+")\n"
+    config += "FABRIC_IFACE=enp1s0f0np0\nIB_HCA=rocep1s0f0,roceP2p1s0f0\n"
+    config += "MODEL_DIR=/srv/model\nDRAFT_DIR=/srv/draft\nNCCL_HOST_DIR=/srv/nccl\nOVERLAY_REMOTE=/srv/runtime\n"
+    config += "RECIPE_DISPRAM=0\nGLM_KV_FORMAT=fp8\nRECIPE_MAX_MODEL_LEN=32768\nRECIPE_KV_HEAD_BYTES=1073741824\n"
+    config += "GLM_ATTN_WEIGHTS=int8\nGLM_NVFP4_GROUPS=attn\nGLM_LOADER=\nGLM_FP4_RECENT_WINDOW=0\n"
+    config += "NCCL_SHA256="+"0"*64+"\n"
+    config += "GLM_PAD_HYGIENE="+run_env.get('GLM_PAD_HYGIENE', '0')+"\nGLM_INDEXER_SHORTCUT=0\n"
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.env') as fixture:
+        fixture.write(config); fixture.flush()
+        rendered = subprocess.check_output([str(ROOT/'start.sh'), 'serve'],
+                      env=dict(run_env, RECIPE_CONFIG=fixture.name), text=True)
     actual = {}
     for line in rendered.splitlines():
         if not line.startswith('docker run ') or line.startswith('docker run --rm '):
@@ -75,16 +88,13 @@ def compare():
         expected['env']['GLM_MTP_KSTOP_UNIFORM_BATCH'] = 'k2'
         expected['env']['GLM_PAD_HYGIENE'] = run_env.get('GLM_PAD_HYGIENE', '0')
         expected['env']['GLM_MTP_KSTOP_CAPTURE_LAYOUT'] = run_env.get('GLM_MTP_KSTOP_CAPTURE_LAYOUT', 'reuse')
+        # Release 2026-10-06: the in-process pre-capture floor became a profile key (earlier fixed at 10 GiB).
+        expected['env']['GLM_PRECAPTURE_FLOOR_GIB'] = run_env.get('GLM_PRECAPTURE_FLOOR_GIB', '7.5')
         expected['args'][i] = json.dumps({**json.loads(expected['args'][i]),
                                        'cudagraph_capture_sizes': [1, 4, 12, 16],
                                        'max_cudagraph_capture_size': 16})
         expected['args'][expected['args'].index('--kv-cache-memory-bytes')+1] = shape['kv_cache_memory_bytes']
         expected['args'][expected['args'].index('--max-model-len')+1] = shape['max_model_len']
-        # Frozen stack-1003 selection from the measured v2 launch, not the render under test.
-        release = json.loads((ROOT/'docs/results/stack-1003-profile.json').read_text())
-        expected['env'].update(release['changed_env'])
-        for key, value in release['changed_arguments'].items():
-            expected['args'][expected['args'].index(key)+1] = value
         expected['args'][expected['args'].index('--node-rank')+1] = str(rank['rank'])
         if rank['rank']:
             expected['args'].insert(expected['args'].index('--enable-prefix-caching'), '--headless')
@@ -134,7 +144,7 @@ Host source paths and unique names differ; /model, /draft, /overlay and /cache
 container paths retain their meanings. The three startup entry files contain
 only used hooks. Inactive diagnostic branches were removed from the MLA adapter;
 the split32 and larger-row unsplit kernel bodies preserve deployed arithmetic.
-The pre-capture 10 GiB floor remains; per-load phase logging is omitted.
+The pre-capture floor is the profile key GLM_PRECAPTURE_FLOOR_GIB (7.5 GiB; earlier fixed 10 GiB); per-load phase logging is omitted.
 
 ## Environment / argument diff
 

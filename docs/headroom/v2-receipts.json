@@ -1,0 +1,26 @@
+{
+  "scope": "offline frozen receipts; pre-capture snapshots are not under-load PSS measurements",
+  "sources_sha256": {
+    "hold-post-warm.json": "62f5a75cdb0e5cc391fc2252a0ce6e8b203a6f398aae8d392ef6fc0f2503a3b7",
+    "memwatch-serve.log": "ea90742e0ee814e7a564c67df4a5eeebd5b5543dc3bcce9647d3ba7f7ced54c0"
+  },
+  "snapshots": [],
+  "holds_and_minima": [
+    {
+      "source": "hold-post-warm.json",
+      "min_GiB": [
+        9.159,
+        10.469,
+        10.569,
+        10.486
+      ],
+      "swap_max_KiB": [
+        0,
+        0,
+        85700,
+        94108
+      ],
+      "samples": 30
+    }
+  ]
+}

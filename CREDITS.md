@@ -1,6 +1,14 @@
 # Credits
 
-- **Z.ai**: GLM-5.3 and the checkpoint's native multi-token prediction (MTP) layer; the current recipe uses confidence-stop K1–3 at c1 and uniform K2 batches without a separate drafter checkpoint. [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3).
+- **Allan Clark / ajclark**: coalesced original-checkpoint reader, two event-fenced pinned tiles,
+  owning CUDA batches, producer queue and storage-lifetime budgets, ported from
+  [GLM-5.3-DCP4-DFlash2-NVMe-KV-Offload-4x-DGX-Spark](https://github.com/ajclark/GLM-5.3-DCP4-DFlash2-NVMe-KV-Offload-4x-DGX-Spark/tree/f0b64af5ac6028624e5ae255d998faa1e0a9324a/runtime/nvme_loader).
+  Apache-2.0; original license and NOTICE retained in `LICENSES/ajclark-*`.
+  The modified port preserves stock ordering and local MTP selection, packs disjoint page ranges,
+  caps transient storage and enforces the recipe's memory floor. **tonyd2wild**: upstream serving
+  recipe and the `dcp/` attribution trail used to locate this implementation. Checkpoint terms remain separate.
+
+- **Z.ai**: GLM-5.3 and the checkpoint's native multi-token prediction (MTP) layer; the current recipe reuses that layer at K2 without a separate drafter checkpoint. [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3).
 - **keys / @u1tra_instinct**: TensorFold results that pointed this campaign toward native MTP. **Ash Hart and TensorFold contributors**, and the [GLM TensorFold Spark recipe](https://github.com/jayleaton/glm53-tensorfold-spark): measured speculation and execution evidence that informed the investigation. [TensorFold](https://github.com/ashhart/TensorFold). No TensorFold kernel is copied by the MTP mapping fix.
 - **vLLM contributors**: native MTP loading, shared target embedding/head, index compaction/reset, greedy drafting and standard rejection sampling. The source-pinned local packed-module fix supplies the fused QKV/gate-up/indexer mapping required by the existing compressed-tensors checkpoint; it does not change weights or kernel arithmetic.
 - **Guess-Verify-Refine authors**: the short-sequence DSA case, where a context no longer than top-k selects
@@ -64,11 +72,9 @@
   [Pinned kernel](https://github.com/CosmicRaisins/glm-5.2-gb10/blob/8a41f551f0b8097b7e9659a3e4dfe58aa0a51f86/kernels/sm12x_sparse_mla_attn.py),
   [change record](https://github.com/CosmicRaisins/glm-5.2-gb10/blob/8a41f551f0b8097b7e9659a3e4dfe58aa0a51f86/CHANGES.md).
   Upstream is Apache-2.0.
-- **Matt Mastracci (mmastrac; ideas only)**: sparse-MLA prefill design discussions and the Triton sparse-gather/softmax
+- **Matt Mastracci (mmastrac)**: sparse-MLA prefill design discussions and the Triton sparse-gather/softmax
   approach developed in the Flash recipe lineage. The full-model adapter adds RoPE and capture-safe split-K;
   no KDA, FlashKDA, convolution-split or other unrelated Flash optimization is enabled here.
-  Also suggested evaluating dispram for the larger context layout; the dispramd
-  implementation remains credited to kindling below.
   [GLM recipe](https://github.com/mmastrac/glm-5.3-flash-4x-gx10),
   [vLLM sparse-MLA discussion](https://github.com/vllm-project/vllm/pull/58454).
 - **Luke Alonso (@lukealonso), Jason Cook (@original-el8), Local Inference Lab**: b12x/RoCEnante
@@ -102,22 +108,22 @@ This repository does not claim a blanket relicense of either project or of exter
 
 - **knapcio campaign day2/w2; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
 
-- **kindling / kindling dispramd contributors**: the display-carveout lender and
-  rmlist library, [pinned source](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram).
-  Used **unmodified**, fetched/built externally by `scripts/dispram.sh`; neither
-  daemon nor library source is vendored. The upstream AGPL-3.0 tool and its GPL/bundling
-  notices remain with the external installation. Local socket/VMM integration,
-  service wrappers and the required copy guard are separate work.
-- **Ash Hart / ashhart and TensorFold contributors**: [TensorFold](https://github.com/ashhart/TensorFold),
-  MIT. **Jay Leaton**: [GLM TensorFold Spark recipe](https://github.com/jayleaton/glm53-tensorfold-spark),
-  Apache-2.0. Execution/speculation results and recipe ideas informed this work;
-  no TensorFold kernel or Jay Leaton source is copied or vendored here.
-- **vLLM V2 graph/MoE contributors**: composed short-DSA/native K-stop capture
-  integration, c2 layout reuse and graph-tail route handling rely on those
-  interfaces. Request-keyed guards, dispatch policy, pad hygiene and their checks
-  are local integration work. **vLLM KV/VMM contributors; NVIDIA**: the local
-  display-carveout adapter builds on the pinned KV allocator and mapping interfaces.
+- **FP4x KV storage**: knapcio's original dc5ad9e E2M1/block-E4M3/power-of-two-row
+  encoder, packed ABI, fused writer/readers and CPU tests. NVIDIA and Triton contributors:
+  datatype conversions/compiler; vLLM contributors: MLA/MTP cache dispatch, paged indexer,
+  specs, prefix hashing and graph lifecycle. The packed sparse readers retain the local
+  split-layout design credited to CosmicRaisins and Matt Mastracci. **Mia (MiaAI-Lab)** supplied the FP4 KV idea (ideas only; licence unverified; no code copied).
+  Tech2wild/tonyd2wild supplied the checkpoint and recipe lineage; no FP4 kernel or ABI implementation from them is copied.
 
-All earlier attribution above remains retained, including Red Hat DSpark,
-CosmicRaisins, b12x/RoCEnante, Luke Alonso, Jason Cook, tonyd2wild, rhys101,
-Willian-Zhang, FlashInfer, sparkDash, RigMark and the recipe author.
+## Experimental KV headroom planning
+
+The conditional cache policy uses Linux kernel memory interfaces and the
+Tech2wild/tonyd2wild serving comparison as motivation. The memory-pool extension
+retains kindlingai's dispram integration and the existing FP4x implementation.
+The future stress harness follows the campaign's fp4x-cal clone/launcher,
+think10 GateMetrics and sparkDash benchmark conventions. It is default-off;
+expanded memory budgets and performance remain unqualified.
+
+- **kindling dispramd**: external, unmodified AGPL-3.0 lender at
+  [5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram). Downloaded separately; no relicensing or binary bundled here.
+- **NVIDIA Marlin and vLLM contributors**: NVFP4 W4A16 packing, scales, TP slicing and native-MTP dispatch used by the independently written sidecar converters. **Z.ai**: architecture, tokenizer, native MTP and model licence. **Tech2wild/tonyd2wild**: original Int4-Int8Mix checkpoint.
