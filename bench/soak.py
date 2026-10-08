@@ -5,7 +5,7 @@ Blocks of ~400 s. Each block starts with an exclusive c1 probe (fixed prose + co
 512 tokens, GateMetrics cycle_ms) and then mixed load at a block-specific concurrency target (1/2/4/3/4/2):
 thinking-on prose chats (T=0.7), code chats, long token prompts 16K..200K (+256 out), APC repeats of earlier long
 prompts, and one client-aborted stream per block. In-flight prompt+max_tokens is kept <= 250K tokens (one pool).
-Memory: stress_step.Monitor (1 s, all ranks, kernel journal; trip <6.0 GiB any rank, swap growth, kernel faults).
+Memory: stress_step.Monitor (1 s, all ranks, kernel journal; trip <4.5 GiB any rank, swap growth, kernel faults).
 Pass: no request errors (aborts excluded), preemptions <= 5, monitor clean, rank-0 quiet MemAvailable end-start
 within 0.3 GiB, probe cycle_ms median (last 10 min / first 10 min) <= 1.02 for prose and code (one-sided).
 """
@@ -205,7 +205,7 @@ def main():
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=False)
     mon = S.Monitor(a.out, a.boot)
-    mon.min_floor_gib = mon.rank0_floor_gib = float(os.environ.get('RECIPE_LIVE_FLOOR_GIB') or 6.0)
+    mon.min_floor_gib = mon.rank0_floor_gib = float(os.environ.get('RECIPE_LIVE_FLOOR_GIB') or 4.5)
     mon.admitted = True
     soak = Soak(a)
     gate = GateMetrics(a.base + '/metrics', a.out / 'probes', labels={'model_name': 'GLM-5.3'}, metadata={'boot': a.boot})

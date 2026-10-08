@@ -24,7 +24,9 @@ SERVE_ARGS = Path(ENV.get('RECIPE_SERVE_ARGS', ROOT / 'profiles/serve-args.json'
 # RECIPE_* lines in current.env are launch-shape switches read here; they never enter a container.
 PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
                 if not k.startswith('RECIPE_') and k not in ('GLM_ATTN_WEIGHTS', 'GLM_NVFP4_GROUPS',
-                    'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT')]
+                    'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT',
+                    'GLM_DECODE_FAIR',
+                    'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL')]
 GiB = 1 << 30
 HEALTH_POLL_S = 1          # loopback /health while booting
 SAMPLE_BOOT_S = 5          # rank samples (memory floors, admission window) while booting
@@ -357,6 +359,12 @@ def optional_env():
     if int(adaptive.get('GLM_PREFILL_CHUNK_THRESHOLD', '16384')) <= 0:
         raise ValueError('GLM_PREFILL_CHUNK_THRESHOLD must be positive')
     env.update(adaptive)
+    fair = {k: ENV[k] for k in ('GLM_DECODE_FAIR', 'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL') if k in ENV}
+    sys.path.insert(0, str(ROOT / 'overlay' / 'bringup'))
+    import glm_decode_fair
+    glm_decode_fair.settings(dict(ENV, **env, **fair))
+    if fair.get('GLM_DECODE_FAIR', '0') != '0':
+        env.update(fair)
     weights = ENV.get('GLM_ATTN_WEIGHTS', 'int8')
     if weights not in ('int8', 'nvfp4'):
         raise ValueError('GLM_ATTN_WEIGHTS must be int8 or nvfp4')

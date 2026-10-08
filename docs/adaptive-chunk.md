@@ -1,5 +1,9 @@
 # Adaptive FP4x prefill
 
+Since October 8, [decode/prefill time-slicing](time-slicing.md) is on by default. While another request
+decodes, it caps the total prefill per step at 4096 tokens and inserts 40 pure-decode steps between prefill
+chunks. Without decode work, the 2048/4096 rule below is unchanged.
+
 Base: `perf/fp4x-kv` at `64269fe`. `GLM_PREFILL_CHUNK_ADAPTIVE=1`
 uses a 4096-token request budget during prefill when **total context** tokens
 (computed tokens including APC hits + remaining prompt tokens) are at least

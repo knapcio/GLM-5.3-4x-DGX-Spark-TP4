@@ -19,6 +19,8 @@ python3 -B "$ROOT/tests/test_release_1006.py"
 python3 -B "$ROOT/tests/test_release_gate.py"
 python3 -B "$ROOT/tests/test_persistent_cache.py"
 python3 -B "$ROOT/tests/test_adaptive_chunk.py"
+python3 -B "$ROOT/tests/test_decode_fair.py"
+python3 -B "$ROOT/tests/test_decode_timeslice.py"
 DEPS=(torch numpy regex transformers pydantic cachetools msgspec pyzmq psutil cloudpickle blake3 openai prometheus_client pyyaml sentencepiece tiktoken einops cbor2 aiohttp openai-harmony pillow pybase64 uvloop py-cpuinfo llguidance xgrammar safetensors)
 PY=(uv run --quiet --no-project --python 3.12)
 for dep in "${DEPS[@]}"; do PY+=(--with "$dep"); done

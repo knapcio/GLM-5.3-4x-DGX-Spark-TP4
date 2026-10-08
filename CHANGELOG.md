@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-10-08 — release/glm53-1008 (decode/prefill time-slicing)
+
+Decode/prefill time-slicing is on by default (`GLM_DECODE_FAIR=1`, chunk 4096, 40 pure-decode steps).
+While a request decodes, the central scheduler caps the total prefill per step at 4096 tokens, reserving
+decode rows first, then runs 40 pure-decode steps before the next prefill chunk. Without a decoding request
+the adaptive 2048/4096 prefill is unchanged. An optional schema-2 runtime sidecar (`GLM_DECODE_FAIR_CONTROL`,
+`scripts/decode_fair_control.py`) changes the policy or switches it off without a reboot; the profile boots the
+policy with no file dependency. [Time-slicing](docs/time-slicing.md).
+
+Measured on one boot, T2; all gates passed, with one documented functional exception (a reasoning probe returned
+empty reasoning text once, five of six re-probes were normal; single-request T=0 nondeterminism, policy inert).
+A request decoding during another request's cold ~100K prefill runs at 12.46 tok/s; that prefill's TTFT is 212.0 s.
+Against the policy switched off on an October 7 boot (0.44 tok/s, 130.9 s) that is +62 % TTFT.
+c1 decode, T2 same-boot ON/OFF ABBA over 48 pairs: +0.83 % [-0.36, +2.05]. sparkDash c1 prose/code/structured/json 33.99/42.23/45.04/41.83;
+RigMark prose/code/structured 28.67/40.07/44.42; qeval 74/75; needles 8/10 twice at 16K, 9/10 twice at 128K and at 250K;
+stress rank-0 minimum 6.30 GiB; 41-minute soak with 71 requests, 0 errors and 0 preemptions.
+The container command for this boot differs from the October 7 release only by the four `GLM_DECODE_FAIR*` keys.
+
+The live floor is 4.5 GiB (was 5.5), in use since October 7 after real multi-agent traffic tripped the 5.5 GiB
+floor. The ballast evidence shows no harm down to 3.5 GiB. Stress criterion 6.0, capture 6.0, admission 6.5 for
+60 s and pre-capture 7.5 GiB are unchanged. README tables now come from boot T2.
+[Gate result](GATE-RESULT.md), [receipt summary](docs/results/release-1008-summary.json).
+
 ## 2026-10-07 — release/glm53-1006 (262144 qualified)
 
 Qualified 262,144-token context with FP4x latent KV, a 6,318,718,976-byte ordinary head per rank,

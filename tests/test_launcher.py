@@ -26,6 +26,28 @@ def samples():
 
 
 class Launcher(unittest.TestCase):
+    def test_decode_fair_controls_reach_all_ranks_default_off(self):
+        keys = ('GLM_DECODE_FAIR', 'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_CONTROL')
+        self.assertFalse(any(k in C.optional_env() for k in keys))
+        profile = {key: 'v-' + key for key in C.PROFILE_KEYS}
+        profile.update(GLM_MTP_KSTOP='0', GLM_KV_FORMAT='fp8', GLM_PREFILL_CHUNK_ADAPTIVE='1', GLM_PAD_HYGIENE='0',
+                       GLM_FULL_MLA='triton', VLLM_USE_V2_MODEL_RUNNER='1',
+                       GLM_SPEC_SAMPLE='0', GLM_INDEXER_SHORTCUT='0',
+                       GLM_MTP_KSTOP_UNIFORM_BATCH='0', GLM_MTP_KSTOP_CAPTURE_LAYOUT='m12',
+                       GLM_W2_PREFILL_CONTROL='/cache/d2w2-prefill-control.json')
+        for chunk in ('512', '1024', '2048', '4096'):
+            values = dict(GLM_DECODE_FAIR='1', GLM_DECODE_FAIR_CHUNK=chunk,
+                          GLM_DECODE_FAIR_CONTROL='/cache/decode-fair.json')
+            with patch.dict(C.ENV, dict(profile, **values)):
+                for rank in range(4):
+                    env = C.rank_env(rank)
+                    self.assertEqual({k: env[k] for k in keys}, values)
+        for values in (dict(GLM_DECODE_FAIR='yes'), dict(GLM_DECODE_FAIR_CHUNK='12'),
+                       dict(GLM_DECODE_FAIR='1', GLM_PREFILL_CHUNK_ADAPTIVE='0'),
+                       dict(GLM_DECODE_FAIR_CONTROL='/cache/decode-fair.json')):
+            with patch.dict(C.ENV, dict(profile, **values)), self.assertRaises(ValueError):
+                C.optional_env()
+
     def test_recent_kv_same_boot_switch_reaches_all_ranks(self):
         profile = {key: 'v-' + key for key in C.PROFILE_KEYS}
         profile.update(GLM_MTP_KSTOP='1', GLM_KV_FORMAT='fp4x', GLM_PAD_HYGIENE='0',

@@ -89,6 +89,8 @@ def settings(vector):
     recent=glm_recent_kv.options(os.environ)
     kstop.register(os.environ)
     adaptive_on,threshold=adaptive.settings(os.environ)
+    import glm_decode_fair
+    glm_decode_fair.settings(os.environ)
     if adaptive_on and int(option(vector['args'],'--max-num-batched-tokens',4096))!=4096:
         raise ValueError('adaptive prefill requires fixed 4096 constructor capacity')
     if mode=='nvfp4':
@@ -207,12 +209,15 @@ def check_adaptive(models):
     if not enabled:return 'disabled'
     import importlib.util
     spec=importlib.util.find_spec('vllm.v1.core.sched.scheduler')
-    text=adaptive.transform(Path(spec.origin).read_text())
+    import glm_decode_fair
+    fair,chunk,path=glm_decode_fair.settings(os.environ)
+    text=adaptive.transform(Path(spec.origin).read_text(),fair)
     compile('from __future__ import annotations\n'+text,spec.origin,'exec')
     scheduler=NS(scheduler_config=models['cfg'].scheduler_config,max_num_scheduled_tokens=2048)
     scheduler.scheduler_config.max_num_batched_tokens=4096
     budget=adaptive.StepBudget(scheduler,threshold)
-    return dict(threshold=threshold,constructor_capacity=4096,initial_budget=budget.limit,source_pin=adaptive.PIN)
+    return dict(threshold=threshold,constructor_capacity=4096,initial_budget=budget.limit,source_pin=adaptive.PIN,
+                decode_fair=fair,decode_fair_chunk=chunk,decode_fair_decode_steps=glm_decode_fair.boot_decode_steps(os.environ),decode_fair_control=path)
 
 
 def effective_headers(data):

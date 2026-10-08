@@ -39,7 +39,7 @@ class Release(unittest.TestCase):
             self.assertEqual(len(vectors), 4)
             text = subprocess.check_output(['bash', str(root/'start.sh'), 'serve'], text=True,
                   env=dict(PATH=os.environ['PATH'], HOME=str(root), DRY='1'))
-            self.assertIn('# Memory floors (GiB MemAvailable per rank): live 5.5, capture headroom 6, admission 6.5 for 60 s, '
+            self.assertIn('# Memory floors (GiB MemAvailable per rank): live 4.5, capture headroom 6, admission 6.5 for 60 s, '
                           'in-process pre-capture 7.5', text.splitlines())
             for cmd in vectors:
                 env = dict(cmd[i+1].split('=', 1) for i,v in enumerate(cmd) if v == '-e')
@@ -53,12 +53,25 @@ class Release(unittest.TestCase):
                 self.assertEqual(env['GLM_LOADER'], 'fast')
                 self.assertNotIn('GLM_FP4_RECENT_WINDOW', env)
                 self.assertNotIn('VLLM_SERVER_DEV_MODE', env)
+                self.assertNotIn('GLM_DRAFT_HEAD', env)
+                self.assertEqual(env['GLM_DECODE_FAIR'], '1')
+                self.assertEqual(env['GLM_DECODE_FAIR_CHUNK'], '4096')
+                self.assertEqual(env['GLM_DECODE_FAIR_DECODE_STEPS'], '40')
+                self.assertEqual(env['GLM_DECODE_FAIR_CONTROL'], '')
             with (root/'.env').open('a') as f:
                 f.write('GLM_FP4_RECENT_WINDOW=2048\nGLM_FP4_RECENT_AB=1\nGLM_FP4_RECENT_INIT=0\nVLLM_SERVER_DEV_MODE=1\n')
             for cmd in render():
                 env = dict(cmd[i+1].split('=', 1) for i,v in enumerate(cmd) if v == '-e')
                 self.assertEqual(env['GLM_FP4_RECENT_WINDOW'], '2048')
                 self.assertEqual(env['GLM_FP4_RECENT_INIT'], '0')
+            # Plain .env assignments must reach the Python launcher too.
+            with (root/'.env').open('a') as f:
+                f.write('GLM_DECODE_FAIR=1\nGLM_DECODE_FAIR_CHUNK=1024\nGLM_DECODE_FAIR_CONTROL=/cache/decode-fair.json\n')
+            for cmd in render():
+                env = dict(cmd[i+1].split('=', 1) for i,v in enumerate(cmd) if v == '-e')
+                self.assertEqual(env['GLM_DECODE_FAIR'], '1')
+                self.assertEqual(env['GLM_DECODE_FAIR_CHUNK'], '1024')
+                self.assertEqual(env['GLM_DECODE_FAIR_CONTROL'], '/cache/decode-fair.json')
 
     def test_probe_geometry_262144_shared_pool_and_single_max(self):
         g = P.geometry(6318718976, 262144)

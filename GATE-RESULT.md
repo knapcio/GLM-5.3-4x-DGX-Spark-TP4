@@ -1,4 +1,59 @@
-# Release gate result: 262144 context (2026-10-06 19:32 to 2026-10-07 02:50 Europe/Warsaw)
+# Release gate result: decode/prefill time-slicing (2026-10-08 02:23 to 05:56 Europe/Warsaw)
+
+**Verdict: PASS. Time-slicing 4096/N40 is on by default and is the serving configuration.**
+
+- Code: `release/glm53-1006` plus the time-slicing policy, its launcher wiring, defaults and tests.
+  Context 262144, FP4x KV, 6,318,718,976 B head, 4135 blocks (264,640 tokens), live floor 4.5 GiB.
+- The DRY render of all eight container commands (four JIT-prep, four serve) differs from the October 7 release
+  only by `GLM_DECODE_FAIR=1`, `GLM_DECODE_FAIR_CHUNK=4096`, `GLM_DECODE_FAIR_DECODE_STEPS=40` and
+  `GLM_DECODE_FAIR_CONTROL`. vLLM arguments, volumes, docker flags, KV layout and graph sizes [1,4,12,16] are
+  identical; the floor header is identical because the October 7 serving boot already ran with a 4.5 GiB live floor
+  (the public default then was 5.5 and is now 4.5). On every rank the graph capture receipts equal the release boot's; `GLM_DECODE_FAIR armed`
+  appears on rank 0 only.
+- Gate boots also set `GLM_PARAM_HASH=1` and `VLLM_SERVER_DEV_MODE=1` (hash RPC only).
+- T2 booted with the runtime sidecar provisioned ON (schema 2, 4096/N40) so that the same-boot ABBA test could
+  switch the policy off and on. T1 was the same code with the boot policy and no sidecar; it passed stress, needles,
+  the scenario and the functional checks, and was stopped before sparkDash because it cannot switch in-boot.
+
+## Gates on boot T2
+
+| Gate | Result | Rule | Verdict |
+|---|---|---|---|
+| Admission | health 318.7 s, admission 378.7 s; pool 4135 x4, KV 264,640, served 262144; 0 fatal lines; admission minima 7.06/8.46/8.13/8.44 GiB | floors | PASS |
+| c1 same-boot ABBA (ON 4096/N40 vs OFF, x2, 8 exact rank-0 acknowledgements, ends ON) | all 48 pairs **+0.83 %** [-0.36, +2.05]; prose +1.51 % [-0.63, +3.43]; code +0.29 % [-1.09, +1.64] | point >= -1 % and CI contains 0 | PASS |
+| Scenario: A decodes during B's cold ~100K prefill | A 14.15 / 10.77 tok/s (mean 12.46); B TTFT 216.1 / 208.0 s (+62 % vs policy off, 130.9 s); 0 preemptions, 0 errors, no foreign traffic | A >= 10 tok/s, TTFT <= +80 % (235.6 s) | PASS |
+| Memory stress (c4 4x65,024+1024, single 261,120+1024) | minima 6.30/7.77/7.95/7.73 GiB; swap 0; preemptions 0; APC hit 64,896/65,024 | 5.8 GiB applied (release criterion 6.0) | PASS |
+| Needles 16K/128K/250K, twice | 8,8 / 9,9 / 9,9 of 10; registry correct; TTFT 25.3 / 167.4 / 376.8 s | long >= control - 1 | PASS |
+| Functional (APC, exact copy/numbers, c1-c2-c1, cancel, 24.6K chunked prefill during decode, tools) | all PASS, 0 preemptions | | PASS |
+| Functional reasoning item (17x23, thinking on) | answer 391 with `stop`, but empty reasoning text; re-probed six times on the same boot: 1 empty, 5 with reasoning. T1 passed it | | model-level T=0 nondeterminism on a single request, where the policy is inert; noted, not a blocker |
+| sparkDash c1 x5, c2/c4 x3, c8 x2, prefill 4K-32K x3 | see README; 0 failed runs | | recorded |
+| RigMark 1.0.0 | prose 28.67, code 40.07, structured 44.42; code c4 65.62; 8K cold prefill 913; all gates | workload gates | PASS |
+| qeval x1 | 74/75 (failed `code_camel_to_snake`), primary 54, 0 truncations | 70.553 | PASS |
+| Mixed-load soak, 40 min (c1-c4) | 71 requests, 0 errors, 0 preemptions; minima 6.18/7.16/7.45/7.72 GiB; rank-0 quiet drift -0.063 GiB; step ratio prose 1.003 / code 1.000 | 0 errors, drift <= 0.3 GiB, ratio <= 1.02 | PASS |
+| Collect | 0 fatal lines x4, containers running, not OOM-killed, 0 restarts; post-soak quiet 6.31/7.51/7.97/7.81 GiB | | PASS |
+
+Cross-boot checks against the October 7 release boot H, for drift only: paired cycle prose 0.991 [0.987, 0.998],
+code 1.005 [0.996, 1.009]; sparkDash c1 prose -2.9 % (runs 33.2-35.9 vs 32.7-37.8), code +0.6 %, structured
+-0.7 %, json +0.3 %; c2/c4 within -4.5..+4.6 %; prefill 4K-32K +0.0..+2.8 %. All four c8 cells were 2.4-4.7 %
+lower (n = 2). At c8, a queued prompt prefills when a slot frees while the remaining streams decode, which is the
+mix the policy paces; the receipts do not establish that this is the cause.
+
+## Time-slicing arms (October 7, one boot, policy switched by sidecar)
+
+Scenario as above; two repetitions per arm; c1 panel of 24 pairs per arm against OFF.
+
+| Arm | A tok/s during B's prefill | B TTFT | c1 paired vs OFF |
+|---|---:|---:|---|
+| OFF | 0.435 | 130.9 s | — |
+| 4096 / N20 | 7.07 | 169.9 s (+30 %) | -0.45 % [-2.3, +1.3] |
+| **4096 / N40** | **13.03** | 212.4 s (+62 %) | -0.43 % [-2.0, +1.1] |
+| 2048 / N10 | 6.60 | 182.4 s (+39 %) | -0.36 % [-2.2, +1.5] |
+
+A's gaps are bimodal: median 0.08-0.09 s (its solo cadence) and one ~5.2 s gap per prefill chunk. The long gap
+matches the mixed-step fit `0.443 + 0.001164 x C` seconds. 4096/N40 was chosen for multi-agent use; 2048/N10 is
+dominated by N20.
+
+# Previous gate: 262144 context (2026-10-06 19:32 to 2026-10-07 02:50 Europe/Warsaw)
 
 **Verdict: 262144 PASSES with the floors from the ballast test (live 5.5 GiB, stress criterion 6.0 GiB).**
 Boot H serves it now under `glm-serving-watch`. No public release was made.

@@ -1,0 +1,648 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Europe/Warsaw",
+  "boot": "T2",
+  "status": "decode/prefill time-slicing qualified on one boot; every number is from boot T2 except scenario.policy_off_reference (October 7 boot)",
+  "release": {
+    "context": 262144,
+    "head_bytes": 6318718976,
+    "blocks": 4135,
+    "kv_tokens": 264640,
+    "decode_fair": {
+      "GLM_DECODE_FAIR": 1,
+      "chunk": 4096,
+      "decode_steps": 40,
+      "control": "schema 2 sidecar, provisioned ON"
+    },
+    "live_floor_GiB": 4.5,
+    "stress_criterion_GiB_applied": 5.8,
+    "release_stress_criterion_GiB": 6.0
+  },
+  "boot_T2": {
+    "health_s": 318.7,
+    "admission_s": 378.7,
+    "bootmin": {
+      "preboot": [
+        113.24,
+        114.04,
+        113.92,
+        114.44
+      ],
+      "weights": [
+        12.39,
+        13.06,
+        13.45,
+        12.98
+      ],
+      "kv+profile": [
+        8.51,
+        9.75,
+        9.97,
+        9.8
+      ],
+      "capture": [
+        8.13,
+        9.12,
+        9.35,
+        9.31
+      ],
+      "post-capture->health": [
+        7.22,
+        8.16,
+        8.28,
+        8.28
+      ],
+      "admission60": [
+        7.06,
+        8.46,
+        8.13,
+        8.44
+      ]
+    }
+  },
+  "c1_same_boot_abba": {
+    "rule": "point >= -1 % and CI includes 0 (combined prose+code)",
+    "acks": 8,
+    "ends_on": {
+      "chunk": 4096,
+      "decode_steps": 40,
+      "schema": 2,
+      "sequence": 8
+    },
+    "prose": {
+      "n": 24,
+      "on_vs_off_pct": 1.51,
+      "ci95": [
+        -0.63,
+        3.43
+      ],
+      "on_median": 31.6605,
+      "off_median": 31.3065
+    },
+    "code": {
+      "n": 24,
+      "on_vs_off_pct": 0.29,
+      "ci95": [
+        -1.09,
+        1.64
+      ],
+      "on_median": 39.8245,
+      "off_median": 39.408
+    },
+    "all": {
+      "n": 48,
+      "on_vs_off_pct": 0.83,
+      "ci95": [
+        -0.36,
+        2.05
+      ],
+      "on_median": 36.5645,
+      "off_median": 36.7275
+    }
+  },
+  "scenario": {
+    "description": "A: 60,043-token prefix-cached prompt decoding; B: cold ~100K-token prompt, 16 output tokens; A measured from B submit to B first token",
+    "gate": {
+      "a_min": 10.0,
+      "b_ttft_max": 235.6,
+      "ok": true,
+      "a_mean": 12.46,
+      "b_ttft_mean": 212.0,
+      "b_ttft_vs_off_pct": 62.0
+    },
+    "rows": [
+      {
+        "rep": 0,
+        "a_prompt_tokens": 60043,
+        "a_ttft": 1.13,
+        "a_solo_tps": 26.733,
+        "b_prompt_tokens": 100052,
+        "b_ttft": 216.07,
+        "b_tokens": 16,
+        "b_finish": "length",
+        "b_error": null,
+        "a_tokens_during_b_prefill": 3058,
+        "a_tps_during_b_prefill": 14.153,
+        "a_gaps_during": {
+          "median": 0.092,
+          "p95": 0.103,
+          "p99": 5.403,
+          "max": 5.816,
+          "n": 990,
+          "n_long": 25,
+          "long_median": 5.301,
+          "small_median": 0.0912,
+          "long_time": 130.98
+        },
+        "a_tps_after_b_first": 39.586,
+        "a_error": null,
+        "b_prefill_tps": 463.1,
+        "prefix_hits_delta_b": 0.0,
+        "preemptions_delta": 0.0,
+        "kv_max": 0.618,
+        "max_running": 2.0,
+        "foreign": false,
+        "drained_after": true
+      },
+      {
+        "rep": 1,
+        "a_prompt_tokens": 60043,
+        "a_ttft": 0.59,
+        "a_solo_tps": 25.519,
+        "b_prompt_tokens": 100048,
+        "b_ttft": 207.95,
+        "b_tokens": 16,
+        "b_finish": "length",
+        "b_error": null,
+        "a_tokens_during_b_prefill": 2239,
+        "a_tps_during_b_prefill": 10.767,
+        "a_gaps_during": {
+          "median": 0.08,
+          "p95": 0.095,
+          "p99": 5.354,
+          "max": 5.819,
+          "n": 991,
+          "n_long": 25,
+          "long_median": 5.281,
+          "small_median": 0.0798,
+          "long_time": 130.43
+        },
+        "a_tps_after_b_first": 26.193,
+        "a_error": null,
+        "b_prefill_tps": 481.1,
+        "prefix_hits_delta_b": 0.0,
+        "preemptions_delta": 0.0,
+        "kv_max": 0.615,
+        "max_running": 2.0,
+        "foreign": false,
+        "drained_after": true
+      }
+    ],
+    "policy_off_reference": {
+      "source": "same-boot October 7 window (policy switched OFF/ON by sidecar)",
+      "off_a_tps": [
+        0.448,
+        0.423
+      ],
+      "off_b_ttft_s": [
+        131.7,
+        130.1
+      ],
+      "on_4096_n40_a_tps": [
+        13.91,
+        12.14
+      ],
+      "on_4096_n40_b_ttft_s": [
+        214.3,
+        210.4
+      ]
+    }
+  },
+  "sparkdash": {
+    "decode": [
+      {
+        "kind": "prose",
+        "concurrency": 1,
+        "n": 5,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 33.99,
+        "median_aggregate_decode_tps": 33.99,
+        "aggregate_runs": [
+          35.25,
+          33.21,
+          33.55,
+          35.94,
+          33.99
+        ]
+      },
+      {
+        "kind": "prose",
+        "concurrency": 2,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 24.72,
+        "median_aggregate_decode_tps": 48.06,
+        "aggregate_runs": [
+          49.48,
+          45.88,
+          48.06
+        ]
+      },
+      {
+        "kind": "prose",
+        "concurrency": 4,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 16.4,
+        "median_aggregate_decode_tps": 63.69,
+        "aggregate_runs": [
+          65.72,
+          63.65,
+          63.69
+        ]
+      },
+      {
+        "kind": "prose",
+        "concurrency": 8,
+        "n": 2,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 17.275,
+        "median_aggregate_decode_tps": 58.71,
+        "aggregate_runs": [
+          58.31,
+          59.11
+        ]
+      },
+      {
+        "kind": "prose",
+        "concurrency": 3,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 18.22,
+        "median_aggregate_decode_tps": 53.4,
+        "aggregate_runs": [
+          53.4,
+          53.75,
+          52.55
+        ]
+      },
+      {
+        "kind": "code",
+        "concurrency": 1,
+        "n": 5,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 42.23,
+        "median_aggregate_decode_tps": 42.23,
+        "aggregate_runs": [
+          40.79,
+          42.23,
+          43.92,
+          42.65,
+          42.16
+        ]
+      },
+      {
+        "kind": "code",
+        "concurrency": 2,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 26.11,
+        "median_aggregate_decode_tps": 49.96,
+        "aggregate_runs": [
+          51.93,
+          49.81,
+          49.96
+        ]
+      },
+      {
+        "kind": "code",
+        "concurrency": 4,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 17.8,
+        "median_aggregate_decode_tps": 70.53,
+        "aggregate_runs": [
+          70.53,
+          70.84,
+          69.98
+        ]
+      },
+      {
+        "kind": "code",
+        "concurrency": 8,
+        "n": 2,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 18.63,
+        "median_aggregate_decode_tps": 60.44,
+        "aggregate_runs": [
+          58.13,
+          62.75
+        ]
+      },
+      {
+        "kind": "structured",
+        "concurrency": 1,
+        "n": 5,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 45.04,
+        "median_aggregate_decode_tps": 45.04,
+        "aggregate_runs": [
+          45.04,
+          44.7,
+          45.09,
+          44.97,
+          45.69
+        ]
+      },
+      {
+        "kind": "structured",
+        "concurrency": 2,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 28.83,
+        "median_aggregate_decode_tps": 56.28,
+        "aggregate_runs": [
+          53.2,
+          56.28,
+          56.33
+        ]
+      },
+      {
+        "kind": "structured",
+        "concurrency": 4,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 23.36,
+        "median_aggregate_decode_tps": 85.81,
+        "aggregate_runs": [
+          85.81,
+          67.73,
+          89.36
+        ]
+      },
+      {
+        "kind": "structured",
+        "concurrency": 8,
+        "n": 2,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 24.43,
+        "median_aggregate_decode_tps": 78.235,
+        "aggregate_runs": [
+          77.34,
+          79.13
+        ]
+      },
+      {
+        "kind": "json",
+        "concurrency": 1,
+        "n": 5,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 41.83,
+        "median_aggregate_decode_tps": 41.83,
+        "aggregate_runs": [
+          41.83,
+          41.86,
+          41.5,
+          41.65,
+          42.93
+        ]
+      },
+      {
+        "kind": "json",
+        "concurrency": 2,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 26.21,
+        "median_aggregate_decode_tps": 51.34,
+        "aggregate_runs": [
+          51.34,
+          57.64,
+          50.48
+        ]
+      },
+      {
+        "kind": "json",
+        "concurrency": 4,
+        "n": 3,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 20.27,
+        "median_aggregate_decode_tps": 77.55,
+        "aggregate_runs": [
+          77.55,
+          80.32,
+          75.35
+        ]
+      },
+      {
+        "kind": "json",
+        "concurrency": 8,
+        "n": 2,
+        "runs_failed": 0,
+        "median_per_stream_decode_tps": 20.73,
+        "median_aggregate_decode_tps": 68.61,
+        "aggregate_runs": [
+          67.55,
+          69.67
+        ]
+      }
+    ],
+    "prefill": [
+      {
+        "cell": "4k",
+        "target_tokens": 4096,
+        "n": 3,
+        "median_prefill_tps": 977.15,
+        "runs": [
+          974.21,
+          979.79,
+          977.15
+        ],
+        "median_ttft_ms": 4223.52
+      },
+      {
+        "cell": "8k",
+        "target_tokens": 8192,
+        "n": 3,
+        "median_prefill_tps": 929.6,
+        "runs": [
+          931.71,
+          928.95,
+          929.6
+        ],
+        "median_ttft_ms": 8844.65
+      },
+      {
+        "cell": "16k",
+        "target_tokens": 16384,
+        "n": 3,
+        "median_prefill_tps": 895.07,
+        "runs": [
+          895.07,
+          892.76,
+          895.52
+        ],
+        "median_ttft_ms": 18338.17
+      },
+      {
+        "cell": "32k",
+        "target_tokens": 32768,
+        "n": 3,
+        "median_prefill_tps": 888.46,
+        "runs": [
+          888.46,
+          888.92,
+          888.2
+        ],
+        "median_ttft_ms": 36918.82
+      }
+    ]
+  },
+  "rigmark": {
+    "gates": {
+      "code": true,
+      "prose": true,
+      "structured": true
+    },
+    "runs": {
+      "code": [
+        40.074,
+        40.198,
+        39.751,
+        38.623,
+        40.65
+      ],
+      "prose": [
+        28.627,
+        28.671,
+        29.623,
+        27.528,
+        29.188
+      ],
+      "structured": [
+        44.195,
+        44.421,
+        44.418,
+        44.902,
+        44.306
+      ]
+    },
+    "ranges": {
+      "code": [
+        38.623,
+        40.65
+      ],
+      "prose": [
+        27.528,
+        29.623
+      ],
+      "structured": [
+        44.195,
+        44.902
+      ]
+    },
+    "rates": {
+      "code": 40.074,
+      "prose": 28.671,
+      "structured": 44.418,
+      "code_c1_aggregate": 35.052,
+      "code_c1_per_stream_decode": 37.625,
+      "code_c2_aggregate": 45.849,
+      "code_c2_per_stream_decode": 24.859,
+      "code_c4_aggregate": 65.616,
+      "code_c4_per_stream_decode": 17.572,
+      "prefill_8k_cold": 912.92,
+      "prefill_8k_warm_replay": 15588.518
+    }
+  },
+  "needle": {
+    "verdict": "PASS",
+    "runs": [
+      {
+        "target": 16384,
+        "rep": 1,
+        "prompt_tokens": 16154,
+        "score": "8/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 25.3
+      },
+      {
+        "target": 16384,
+        "rep": 2,
+        "prompt_tokens": 16154,
+        "score": "8/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 1.2
+      },
+      {
+        "target": 128000,
+        "rep": 1,
+        "prompt_tokens": 127814,
+        "score": "9/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 167.4
+      },
+      {
+        "target": 128000,
+        "rep": 2,
+        "prompt_tokens": 127814,
+        "score": "9/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 1.5
+      },
+      {
+        "target": 250000,
+        "rep": 1,
+        "prompt_tokens": 249837,
+        "score": "9/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 376.8
+      },
+      {
+        "target": 250000,
+        "rep": 2,
+        "prompt_tokens": 249837,
+        "score": "9/10",
+        "registry": true,
+        "finish": "stop",
+        "ttft_s": 2.0
+      }
+    ]
+  },
+  "stress": {
+    "status": "PASS",
+    "c4": "4 x (65,024 prompt + 1024 output)",
+    "single": "261,120 prompt + 1024 output",
+    "min_GiB": {
+      "0": 6.3,
+      "1": 7.77,
+      "2": 7.95,
+      "3": 7.73
+    },
+    "apc_hit": 64896.0,
+    "apc_query": 65024.0,
+    "preemptions": 0,
+    "swap_kB": 0
+  },
+  "soak": {
+    "verdict": "PASS",
+    "minutes": 41.2,
+    "requests": 71,
+    "by_kind": {
+      "abort": 6,
+      "apc": 12,
+      "code": 18,
+      "long": 6,
+      "prose_think": 29
+    },
+    "errors": 0,
+    "preemptions": 0.0,
+    "min_GiB": {
+      "0": 6.18,
+      "1": 7.16,
+      "2": 7.45,
+      "3": 7.72
+    },
+    "rank0_quiet_drift_GiB": -0.063,
+    "step_ratio": {
+      "prose": 1.0032,
+      "code": 1.0001
+    }
+  },
+  "qeval": {
+    "runs": 1,
+    "score": 74,
+    "tasks": 75,
+    "primary": 54,
+    "threshold": 70.553,
+    "failed": [
+      "code_camel_to_snake"
+    ],
+    "truncations": 0,
+    "passed": true
+  }
+}

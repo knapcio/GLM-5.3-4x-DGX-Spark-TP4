@@ -49,6 +49,11 @@ def install(module):
         _, threshold = glm_adaptive_chunk.settings(os.environ)
         print('GLM_PREFILL_CHUNK_ADAPTIVE armed: small=2048 large=4096 threshold=%d; fixed capacity=4096' % threshold,
               file=sys.stderr, flush=True)
+        import glm_decode_fair
+        fair, chunk, path = glm_decode_fair.settings(os.environ)
+        if fair:
+            print('GLM_DECODE_FAIR armed: chunk=%d decode_steps=%d control=%s; central scheduler only' % (chunk, glm_decode_fair.boot_decode_steps(os.environ), path or 'boot'),
+                  file=sys.stderr, flush=True)
     original = module.Scheduler.schedule
 
     @functools.wraps(original)

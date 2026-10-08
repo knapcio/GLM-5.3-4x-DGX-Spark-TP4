@@ -53,7 +53,7 @@ def schedule_source(source):
     return ast.unparse(fn)
 
 
-def transform(source):
+def transform(source, decode_fair=False):
     text = schedule_source(source)
     replacements = (
         ('token_budget = self.max_num_scheduled_tokens',
@@ -73,15 +73,38 @@ def transform(source):
         if text.count(old) != 1:
             raise RuntimeError('adaptive prefill transform anchor drift: ' + old)
         text = text.replace(old, new)
+    if decode_fair:
+        # Fair budgets inspect the actual native emitted map, including native
+        # preemption refunds, instead of duplicating allocation bookkeeping.
+        for old, new in (
+            ('token_budget, input_budget)\n', 'token_budget, input_budget, num_scheduled_tokens)\n'),
+            ('request_token_budget = min(_glm_cap, token_budget, input_budget - draft_slots)',
+             'if _glm_cap == 0:\n                    break\n'
+             '                request_token_budget = min(_glm_cap, token_budget, input_budget - draft_slots)'),
+            ('self._update_after_schedule(scheduler_output)',
+             '_glm_budget.finish(num_scheduled_tokens)\n        self._update_after_schedule(scheduler_output)'),
+        ):
+            expected = 2 if old == 'token_budget, input_budget)\n' else 1
+            if text.count(old) != expected:
+                raise RuntimeError('decode fair transform anchor drift: ' + old)
+            text = text.replace(old, new)
     return text
 
 
 def install(module, env=None):
-    enabled, threshold = settings(os.environ if env is None else env)
+    env = os.environ if env is None else env
+    enabled, threshold = settings(env)
+    import glm_decode_fair
+    fair, chunk, path = glm_decode_fair.settings(env)
     if not enabled:
         return False
     source = Path(module.__file__).read_text()
-    namespace = dict(module.__dict__, _glm_budget_factory=lambda s: StepBudget(s, threshold))
-    exec(compile('from __future__ import annotations\n' + transform(source), module.__file__, 'exec'), namespace)
+    factory = lambda s: StepBudget(s, threshold)
+    if fair:
+        decode_steps = glm_decode_fair.boot_decode_steps(env)
+        factory = lambda s: glm_decode_fair.FairStepBudget(s, threshold,
+            *glm_decode_fair.control_policy(s, path, chunk, decode_steps))
+    namespace = dict(module.__dict__, _glm_budget_factory=factory)
+    exec(compile('from __future__ import annotations\n' + transform(source, fair), module.__file__, 'exec'), namespace)
     module.Scheduler.schedule = namespace['schedule']
     return True

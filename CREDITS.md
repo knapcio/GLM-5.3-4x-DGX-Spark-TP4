@@ -108,6 +108,14 @@ This repository does not claim a blanket relicense of either project or of exter
 
 - **knapcio campaign day2/w2; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
 
+- **Decode/prefill time-slicing** (on by default): **vLLM contributors**: the chunked-prefill scheduler, request
+  eligibility, native preemption and the `SchedulerOutput` broadcast the policy runs inside; the pinned scheduler
+  source is transformed, not replaced (Apache-2.0). Related prior work: Sarathi-Serve stall-free batching
+  (Agrawal et al., "Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve", OSDI 2024), which
+  bounds prefill work per step so decodes keep progressing; no code from it is used. The aggregate prefill cap with
+  decode reservations, the N pure-decode steps between chunks, the mixed-step cost model, the schema-2 runtime
+  sidecar and the CPU tests are local work (knapcio).
+
 - **FP4x KV storage**: knapcio's original dc5ad9e E2M1/block-E4M3/power-of-two-row
   encoder, packed ABI, fused writer/readers and CPU tests. NVIDIA and Triton contributors:
   datatype conversions/compiler; vLLM contributors: MLA/MTP cache dispatch, paged indexer,
