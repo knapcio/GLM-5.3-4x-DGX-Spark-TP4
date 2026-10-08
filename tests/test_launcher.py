@@ -26,6 +26,17 @@ def samples():
 
 
 class Launcher(unittest.TestCase):
+    def test_draft_head_initial_on_all_ranks(self):
+        profile={key:'v-'+key for key in C.PROFILE_KEYS}
+        profile.update(GLM_MTP_KSTOP='1',GLM_KV_FORMAT='fp8',GLM_PAD_HYGIENE='0',
+            GLM_SPEC_SAMPLE='0',GLM_INDEXER_SHORTCUT='0',VLLM_USE_V2_MODEL_RUNNER='1',
+            GLM_MTP_KSTOP_UNIFORM_BATCH='k2',GLM_MTP_KSTOP_CAPTURE_LAYOUT='reuse',
+            GLM_DRAFT_HEAD='nvfp4',GLM_DRAFT_HEAD_INIT='1')
+        with patch.dict(C.ENV,profile):
+            for rank in range(4):
+                self.assertEqual(C.rank_env(rank)['GLM_DRAFT_HEAD_INIT'],'1')
+        with patch.dict(C.ENV,dict(profile,GLM_DRAFT_HEAD='0')),self.assertRaises(ValueError):
+            C.optional_env()
     def test_decode_fair_controls_reach_all_ranks_default_off(self):
         keys = ('GLM_DECODE_FAIR', 'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_CONTROL')
         self.assertFalse(any(k in C.optional_env() for k in keys))

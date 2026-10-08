@@ -75,4 +75,4 @@ NVIDIA and model licences are unchanged.
 Mia (MiaAI-Lab): FP4 KV idea only. Licence unverified; no code copied.
 kindling dispramd: external unmodified AGPL-3.0 tool, not bundled or relicensed.
 https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram
-NVFP4 sidecar converters retain NVIDIA Marlin/vLLM attribution; checkpoint credit remains Tech2wild/tonyd2wild and Z.ai.
+NVFP4 sidecar converters retain Marlin (via vLLM) and NVIDIA NVFP4 format attribution; checkpoint credit remains Tech2wild/tonyd2wild and Z.ai.

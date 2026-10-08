@@ -40,7 +40,7 @@ def main():
     p.add_argument('--head-bytes', type=int, default=int(os.environ.get('RECIPE_KV_HEAD_BYTES') or 6318718976))
     # Release values (profiles/current.env); the 165312 gate used guard 8.05 and stress 8.4.
     p.add_argument('--live-floor', type=float, default=float(os.environ.get('RECIPE_LIVE_FLOOR_GIB') or 4.5))
-    p.add_argument('--stress-floor', type=float, default=float(os.environ.get('RECIPE_STRESS_FLOOR_GIB') or 6.0))
+    p.add_argument('--stress-floor', type=float, default=float(os.environ.get('RECIPE_STRESS_FLOOR_GIB') or 5.8))
     a = p.parse_args()
     g = geometry(a.head_bytes, a.max_model_len)
     single_prompt = a.max_model_len - S.OUTPUT

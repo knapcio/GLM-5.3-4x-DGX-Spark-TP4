@@ -1,6 +1,51 @@
-# Release gate result: decode/prefill time-slicing (2026-10-08 02:23 to 05:56 Europe/Warsaw)
+# Release gate result: draft-only NVFP4 LM head (2026-10-08 09:44 to 12:16 Europe/Warsaw)
 
-**Verdict: PASS. Time-slicing 4096/N40 is on by default and is the serving configuration.**
+**Verdict: PASS. The draft-only NVFP4 head (INIT=1) and time-slicing 4096/N40 are on by default and are the serving
+configuration.**
+
+- Code: the time-slicing release plus the draft-only head, its boot-time INIT qualification and tests.
+  Context 262144, FP4x KV, 6,318,718,976 B head, 4135 blocks (264,640 tokens). Floors live 4.5, stress 5.8 GiB.
+- Boot D booted with the time-slicing runtime sidecar provisioned ON. Gate boots also set `GLM_PARAM_HASH=1`
+  (hash RPC only); the draft head sets `VLLM_SERVER_DEV_MODE=1` itself.
+- Runtime head switching is unsupported in the qualified serving procedure; boot D used no head toggles. The speed
+  comparisons below are therefore cross-boot, except the October 7 same-boot confirmation.
+
+## Gates on boot D
+
+| Gate | Result | Rule | Verdict |
+|---|---|---|---|
+| Admission | health 330.6 s; pool 4135 x4, KV 264,640, served 262144; admission minima 6.71/7.84/7.85/7.83 GiB | floors | PASS |
+| Draft-head INIT | all four ranks ON and ready, 16 cases, 341 qualification rows per rank, 0 failed, target head bit-exact | all ranks pass | PASS |
+| Paired cycle vs the time-slicing boot (cross-boot) | prose cycle **-4.2 %** [-4.9, -3.6]; code **-4.8 %** [-5.5, -4.4]; committed tokens per cycle unchanged | | recorded |
+| c1 pairs, same 24-prompt panel (cross-boot) | vs time-slicing boot +3.4 % [+1.4, +5.4]; vs October 7 release boot **+4.16 %** [+1.81, +6.47] (prose +1.86 %, CI contains 0; code +6.08 %) | | recorded |
+| Functional (APC, exact copy/numbers, c1-c2-c1, cancel, chunked prefill, tools, reasoning) | all PASS, 0 preemptions | | PASS |
+| Memory stress (c4 4x65,024+1024, single 261,120+1024) | minima 6.05/6.45/7.49/6.53 GiB; swap 0; preemptions 0; APC hit 64,896/65,024 | 5.8 GiB | PASS |
+| Needles 16K/128K/250K, twice | 9,8 / 9,9 / 8,8 of 10; registry correct; TTFT 19.6 / 168.4 / 382.5 s | long >= control - 1 | PASS |
+| Time-slicing scenario | A 12.06 / 13.12 tok/s (mean 12.59); B TTFT 208.2 / 210.0 s (+59.7 % vs policy off, 130.9 s) | A >= 10, TTFT <= +80 % | PASS |
+| sparkDash full grid | see README; 0 failed runs | | recorded |
+| RigMark 1.0.0 | prose 29.32, code 41.63, structured 46.60; code c4 62.93; 8K cold prefill 900; all gates | workload gates | PASS |
+| qeval x3 | 72 / 74 / 73, mean 73.0; primary 52/54/53; 0 truncations | 70.553 | PASS |
+| Mixed-load soak, 40 min (c1-c4) | 65 requests, 0 errors, 0 preemptions; minima 5.72/5.91/7.35/6.64 GiB; rank-0 quiet drift -0.028 GiB; step ratio prose 1.015 / code 0.979 | 0 errors, drift <= 0.3 GiB, ratio <= 1.02 | PASS |
+| Collect | 0 fatal lines x4, 0 restarts; quiet after soak 5.84/6.02/7.42/7.08 GiB | | PASS |
+
+Post-soak quiet memory was about 0.47-1.49 GiB lower than on the time-slicing boot (cross-boot); the receipts do not
+isolate how much comes from the head bank, its draft graphs or other allocations. Every rank stayed above the 4.5 GiB
+live floor.
+
+## Draft-head INIT history
+
+Bit-exact eager-vs-graph criteria refused the head on earlier boots: the first execution at a new input value
+sometimes differed by a few BF16 ULP in the draft hidden feedback, with identical draft tokens. Instrumented boots
+showed every stage before the routed experts bit-stable; the first varying stage was the MTP Marlin MoE output.
+`moe_align_block_size` returned a different within-expert token order in 16-20 of 20 repeated calls on identical
+routing, and each Marlin GEMM was bit-exact for a fixed order, so the variation is the fp32 reduction order.
+The released criterion requires write coverage on every descriptor and execution, exact draft tokens, and
+bounds hidden feedback (16 BF16 steps, 1/64 of elements), confidence (1e-5) and logits (1/16). It passed on all
+ranks of boot D.
+
+# Previous gate: decode/prefill time-slicing (2026-10-08 02:23 to 05:56 Europe/Warsaw)
+
+**Verdict: PASS. Time-slicing 4096/N40 was made the default.**
 
 - Code: `release/glm53-1006` plus the time-slicing policy, its launcher wiring, defaults and tests.
   Context 262144, FP4x KV, 6,318,718,976 B head, 4135 blocks (264,640 tokens), live floor 4.5 GiB.

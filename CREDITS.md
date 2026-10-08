@@ -108,6 +108,16 @@ This repository does not claim a blanket relicense of either project or of exter
 
 - **knapcio campaign day2/w2; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
 
+- **Draft-only NVFP4 LM head** (on by default): **Marlin** (IST-DASLab; Elias Frantar, Dan Alistarh and
+  contributors): the W4A16 mixed-precision GEMM, as integrated in vLLM; **NVIDIA**: the NVFP4 format the draft head
+  bank uses. **vLLM contributors**: the Marlin linear integration and NVFP4 schemes, the V2 model
+  runner's native MTP speculator and draft CUDA graph manager, the shared LM head and logits processor (left unpatched
+  for the target), and `moe_align_block_size` with the Marlin MoE kernel, whose atomic token ordering and
+  block-partitioned fp32 reduction explain the few-ULP draft-state variation the INIT criterion bounds (no change to
+  either is made). **Z.ai**: GLM-5.3's native MTP layer and shared head. The quantized draft-only copy, the all-rank
+  INIT qualification with collective fallback, the write-coverage / exact-token / bounded-float criterion, the
+  instrumented localisation of the variation and the CPU/Gloo tests are local work (knapcio).
+
 - **Decode/prefill time-slicing** (on by default): **vLLM contributors**: the chunked-prefill scheduler, request
   eligibility, native preemption and the `SchedulerOutput` broadcast the policy runs inside; the pinned scheduler
   source is transformed, not replaced (Apache-2.0). Related prior work: Sarathi-Serve stall-free batching
@@ -134,4 +144,4 @@ expanded memory budgets and performance remain unqualified.
 
 - **kindling dispramd**: external, unmodified AGPL-3.0 lender at
   [5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram). Downloaded separately; no relicensing or binary bundled here.
-- **NVIDIA Marlin and vLLM contributors**: NVFP4 W4A16 packing, scales, TP slicing and native-MTP dispatch used by the independently written sidecar converters. **Z.ai**: architecture, tokenizer, native MTP and model licence. **Tech2wild/tonyd2wild**: original Int4-Int8Mix checkpoint.
+- **Marlin kernels via vLLM (IST-DASLab and vLLM contributors); NVIDIA NVFP4 format**: NVFP4 W4A16 packing, scales, TP slicing and native-MTP dispatch used by the independently written sidecar converters. **Z.ai**: architecture, tokenizer, native MTP and model licence. **Tech2wild/tonyd2wild**: original Int4-Int8Mix checkpoint.

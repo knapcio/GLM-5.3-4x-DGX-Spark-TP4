@@ -25,7 +25,7 @@ SERVE_ARGS = Path(ENV.get('RECIPE_SERVE_ARGS', ROOT / 'profiles/serve-args.json'
 PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
                 if not k.startswith('RECIPE_') and k not in ('GLM_ATTN_WEIGHTS', 'GLM_NVFP4_GROUPS',
                     'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT',
-                    'GLM_DECODE_FAIR',
+                    'GLM_DRAFT_HEAD', 'GLM_DRAFT_HEAD_INIT', 'GLM_DECODE_FAIR',
                     'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL')]
 GiB = 1 << 30
 HEALTH_POLL_S = 1          # loopback /health while booting
@@ -333,6 +333,13 @@ def optional_env():
     env = {k: ENV[k].strip() for k in OPTIONAL_KEYS if ENV.get(k, '').strip() not in ('', '0')}
     sys.path.insert(0, str(ROOT / 'overlay/bringup'))
     from glm_recent_kv import options as recent_options
+    from glm_draft_head_config import options as draft_head_options
+    draft_head = draft_head_options(ENV)
+    if draft_head != '0':
+        env['GLM_DRAFT_HEAD'] = draft_head
+        if ENV.get('GLM_DRAFT_HEAD_INIT', '0') == '1':
+            env['GLM_DRAFT_HEAD_INIT'] = '1'
+        env['VLLM_SERVER_DEV_MODE'] = '1'
     recent_window, _, recent_ab = recent_options(ENV)
     if recent_window:
         env.update({k: ENV[k] for k in ('GLM_FP4_RECENT_WINDOW','GLM_FP4_RECENT_AB','GLM_FP4_RECENT_INIT') if k in ENV})
@@ -348,8 +355,8 @@ def optional_env():
     hashing = env.get('GLM_PARAM_HASH', '0')
     if hashing not in ('0', '1'):
         raise ValueError('GLM_PARAM_HASH must be 0 or 1')
-    if (mode == 'ab' or hashing == '1' or recent_ab) != ('VLLM_SERVER_DEV_MODE' in env):
-        raise ValueError('VLLM_SERVER_DEV_MODE=1 needs GLM_SKIP_MLA_PLAN=ab or GLM_PARAM_HASH=1 or recent KV AB')
+    if (mode == 'ab' or hashing == '1' or recent_ab or draft_head != '0') != ('VLLM_SERVER_DEV_MODE' in env):
+        raise ValueError('VLLM_SERVER_DEV_MODE=1 needs GLM_SKIP_MLA_PLAN=ab or GLM_PARAM_HASH=1 or recent KV AB or draft head')
     if 'GLM_SKIP_MLA_PLAN_AB_INIT' in env and mode != 'ab':
         raise ValueError('GLM_SKIP_MLA_PLAN_AB_INIT applies to GLM_SKIP_MLA_PLAN=ab only')
     # Include zero explicitly so FP4x's default-on scheduler can be disabled.

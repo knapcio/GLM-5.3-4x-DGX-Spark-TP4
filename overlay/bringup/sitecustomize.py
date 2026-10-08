@@ -70,6 +70,9 @@ try:
     if os.environ.get('GLM_DISPRAM_KV', '0') != '0':
         import glm_dispram_kv
         glm_dispram_kv.register()
+    if os.environ.get('GLM_DRAFT_HEAD', '0') != '0':
+        import glm_draft_head
+        glm_draft_head.register()
 except BaseException:
     import traceback
     traceback.print_exc()

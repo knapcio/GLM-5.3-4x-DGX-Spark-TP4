@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-10-08 — release/glm53-1008b (draft-only NVFP4 LM head)
+
+The native MTP draft uses its own NVFP4 (Marlin W4A16) copy of the LM head by default (`GLM_DRAFT_HEAD=nvfp4`,
+`GLM_DRAFT_HEAD_INIT=1`), 133.8 MB per rank. The unchanged target model, whose LM head remains BF16, verifies drafts
+through standard speculative verification (this does not establish bitwise-identical output across runs). Committed
+tokens per cycle were consistent with unchanged on the measured panels; the decode cycle is 4-5 % shorter. At boot, all four ranks qualify
+the draft graphs (write coverage, exact draft tokens, bounded float drift) and fall back to the BF16 draft head
+together if any rank refuses. The float bound follows the root cause found during qualification: vLLM's
+`moe_align_block_size` orders tokens within an expert by atomic arrival, so the Marlin MoE fp32 reduction order and
+the draft hidden state can vary by a few ULP. [Draft head](docs/draft-head.md).
+
+Measured on one boot, D; all gates passed. Same-boot ON/OFF confirmation on October 7: prose +5.61 % [+3.94, +7.47],
+code+structured +4.43 % [+3.17, +5.71]. Boot D: sparkDash c1 prose/code/structured/json 36.25/44.10/47.31/43.29;
+RigMark prose/code/structured 29.32/41.63/46.60; qeval 72/74/73 (mean 73.0); needles 9/10 and 8/10 at 16K,
+9/10 twice at 128K, 8/10 twice at 250K; stress rank-0 minimum 6.05 GiB; 41-minute soak with 65 requests, 0 errors and
+0 preemptions. Time-slicing stays on: a request decoding during another request's cold ~100K prefill runs at
+12.59 tok/s; that prefill's TTFT is 209.1 s, +60 % against the October 7 policy-off boot (cross-boot).
+
+The stress criterion is 5.8 GiB (was 6.0), set for the draft head's bank. The live floor stays 4.5 GiB, now
+documented as the lowest harmless ballast level (2.5 GiB, second October 7 run) plus 2.0. README tables come from
+boot D. [Gate result](GATE-RESULT.md), [receipt summary](docs/results/release-1008b-summary.json).
+
 ## 2026-10-08 — release/glm53-1008 (decode/prefill time-slicing)
 
 Decode/prefill time-slicing is on by default (`GLM_DECODE_FAIR=1`, chunk 4096, 40 pure-decode steps).
