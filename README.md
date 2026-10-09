@@ -4,24 +4,29 @@ Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) (753B), tensor parallel a
 with native MTP speculative decoding, FP4x KV, NVFP4 weight sidecars and **262,144-token context**.
 The ranks implement one shared **264,640-token KV pool (4,135 blocks)**; four simultaneous maximum-context
 requests do not fit. The ordinary KV head is 6,318,718,976 bytes per rank, plus the display carveout.
-The recent-FP8 bank is disabled by default. The native MTP draft uses its own NVFP4 copy of the LM head, and
-decode/prefill time-slicing keeps a decoding request responsive while another request prefills a long prompt.
-Results are from one boot, D, measured October 8, 2026, unless a row says otherwise.
+The recent-FP8 bank is disabled by default. Deterministic MoE token alignment makes single-request output
+**reproducible at temperature 0** in the tested panel, the native MTP draft uses its own NVFP4 copy of the LM head, and decode/prefill time-slicing keeps a
+decoding request responsive while another request prefills a long prompt.
+Results are from one boot, E, measured October 9, 2026, unless a row says otherwise.
 [Gate result](GATE-RESULT.md).
 
 ## sparkDash (thinking off)
 
-Decode tok/s, aggregate **[per stream]**, 256 output tokens, temperature 0, boot D, better of two sparkDash runs on one boot.
+Decode tok/s, aggregate **[per stream]**, 256 output tokens, temperature 0, boot E.
 Cells are medians: c1 five runs, c2/c4 three runs, c8 two runs. All requests completed without failures.
-The whole table is from the first of two full sparkDash runs on boot D; it had the higher geometric mean over the
-16 decode cells (aggregate 58.11 vs 58.09, per stream 26.05 vs 25.91) and over prefill. Cells are not mixed across runs.
+One full sweep on boot E, without best-of-sweep selection (prose c1 runs 34.74-35.29). Single-request output is now
+reproducible at temperature 0 in the tested panel ([determinism](docs/determinism.md)), so reruns are expected to
+repeat the same token trajectories rather than sample new ones. The previous table's 36.25 for prose c1 came from the
+selected first of two sweeps of a configuration whose trajectories varied between runs; these receipts record timing, not
+token sequences, so they do not isolate how much of the difference that explains. Cross-boot paired cycle on the same
+night: prose 70.0 ms with deterministic alignment vs 70.7-70.8 ms without.
 
 | Prompt type | c1 | c2 | c4 | c8* |
 |---|---:|---:|---:|---:|
-| prose | **36.25** | 48.99 [24.61] | 65.04 [16.52] | 59.45 [17.48] |
-| code | 44.10 | 52.62 [26.66] | 67.35 [17.77] | 62.58 [19.14] |
-| structured | 47.31 | 62.01 [31.33] | 90.65 [23.70] | 74.12 [24.61] |
-| json | 43.29 | 54.48 [27.96] | 80.15 [20.31] | 67.49 [20.50] |
+| prose | **35.22** | 52.18 [26.09] | 64.84 [16.75] | 59.91 [17.30] |
+| code | 43.78 | 54.03 [27.24] | 72.09 [18.17] | 62.90 [19.10] |
+| structured | 48.09 | 58.39 [30.12] | 91.52 [23.85] | 78.96 [24.43] |
+| json | 43.38 | 54.62 [28.12] | 78.17 [19.96] | 68.59 [20.83] |
 
 *Four serving slots: at c8 four requests decode and the rest queue. When a slot frees, the next queued prompt
 prefills while the remaining streams decode, which is the mix time-slicing paces. Per-stream decode is measured during
@@ -30,23 +35,42 @@ the separate memory stress uses four distinct prompts.
 
 ### Prefill
 
-Cold sparkDash prompts, boot D, better of two sparkDash runs on one boot, median of three:
+Cold sparkDash prompts, boot E, median of three:
 
 | Input | 4K | 8K | 16K | 32K |
 |---|---:|---:|---:|---:|
-| cold prefill tok/s | 976 | 933 | 880 | 876 |
-| time to first token (s) | 4.23 | 8.81 | 18.66 | 37.46 |
+| cold prefill tok/s | 983 | 929 | 899 | 887 |
+| time to first token (s) | 4.20 | 8.85 | 18.26 | 36.98 |
 
-Long retrieval prompts, boot D, first cold request at each length (a different workload from sparkDash):
+Long retrieval prompts, boot E, first cold request at each length (a different workload from sparkDash):
 
 | Needle target | Actual input tokens | Cold TTFT (s) |
 |---|---:|---:|
-| 16K | 16,154 | 19.6 |
-| 128K | 127,814 | 168.4 |
-| 250K | 249,837 | 382.5 |
+| 16K | 16,154 | 19.7 |
+| 128K | 127,814 | 167.7 |
+| 250K | 249,837 | 377.7 |
 
 Adaptive chunks select 2048 below 16,384 total prompt tokens, otherwise 4096, including prefix-cache hits.
 Prefix caching remains on; cold prompts and warm replay are reported separately.
+
+## Temperature-0 reproducibility
+
+vLLM's `moe_align_block_size` orders tokens inside each expert by atomic arrival, and the Marlin MoE fp32 reduction
+depends on that order, so identical requests could produce different tokens. `GLM_MOE_DET_ALIGN=1` replaces the
+align step for the target and MTP experts with a counting-sort kernel that keeps token ids ascending in each expert,
+with the stock layout otherwise unchanged. In a single-GPU graph microbenchmark it was faster than the stock align
+at decode sizes (2.1-2.6 vs 4.4-4.5 µs at M1-M16) and slower at M512 (12.0 vs 6.2 µs, prefill only).
+
+| 30 prompts x 3 sequential repeats, temperature 0, 64 tokens, prefix cache reset before each | Rows identical in all repeats | First-token flips |
+|---|---:|---:|
+| deterministic align (default), October 9 qualification boot, same code and configuration as E | **30 / 30** | 0 |
+| stock align, October 8 boot | 4 / 30 | 15 |
+
+Requests are byte-identical within each row's repeats. This supports the diagnosed MoE-order explanation;
+reproducibility with concurrent requests and across boots remains unqualified.
+
+qeval x3 on boot E failed the same two tasks in every run. Verify on your own boot with `bench/t0_probe.py`
+([determinism](docs/determinism.md#how-to-verify)).
 
 ## Draft-only NVFP4 LM head
 
@@ -58,7 +82,8 @@ panels; the decode cycle is about 4-5 % shorter. Same-boot ON/OFF confirmation (
 graphs on all four ranks (write coverage, exact draft tokens, bounded float drift) and falls back to the BF16 draft
 head on all ranks if any rank refuses; boot D passed on all ranks. The float bound exists because vLLM's MoE token
 alignment orders tokens with atomics, so the Marlin MoE fp32 reduction order, and the draft hidden state at the few-ULP
-level, can vary between runs. [Details](docs/draft-head.md).
+level, could vary between runs; deterministic alignment now removes that source, and the bound stays as a safety
+check. Boot E also passed on all ranks. [Details](docs/draft-head.md).
 
 ## Decoding while another agent prefills
 
@@ -68,7 +93,7 @@ With [time-slicing](docs/time-slicing.md) (prefill capped at 4096 tokens per ste
 
 | Two runs each | A decode during B's prefill | B time to first token |
 |---|---:|---:|
-| time-slicing on (default), boot D | **12.59 tok/s** (12.06 / 13.12) | 209.1 s (208.2 / 210.0) |
+| time-slicing on (default), boot E | **13.18 tok/s** (10.88 / 15.48) | 209.3 s (204.4 / 214.1) |
 | policy off, October 7 same-boot window | 0.44 tok/s (0.45 / 0.42) | 130.9 s (131.7 / 130.1) |
 
 The cost is B's TTFT, **+60 %** against the October 7 policy-off boot (cross-boot). A returns to its normal rate after B's first token, and a lone prefill runs at full
@@ -89,50 +114,51 @@ Without the sidecar, boot with `GLM_DECODE_FAIR=0`.
 
 ## RigMark 1.0.0 (thinking on, effort low)
 
-Boot D, c1 decode medians of five; all workload gates passed.
+Boot E, c1 decode medians of five; all workload gates passed.
 
 | Workload | c1 decode tok/s | range |
 |---|---:|---|
-| prose | **29.32** | 28.72–29.67 |
-| code | 41.63 | 41.03–41.73 |
-| structured | 46.60 | 46.29–46.69 |
+| prose | **29.13** | 28.74–29.81 |
+| code | 41.75 | 41.57–42.61 |
+| structured | 46.63 | 46.42–46.79 |
 
-Concurrency, code workload, aggregate end-to-end tok/s **[per-stream decode]**, boot D:
+Concurrency, code workload, aggregate end-to-end tok/s **[per-stream decode]**, boot E:
 
 | Workload | c1 | c2 | c4 |
 |---|---:|---:|---:|
-| code | 35.75 [38.41] | 47.23 [26.02] | 62.93 [17.74] |
+| code | 35.14 [38.68] | 47.42 [26.43] | 65.77 [17.94] |
 
-| Prefill | Boot D tok/s |
+| Prefill | Boot E tok/s |
 |---|---:|
-| 8K cold | 900 |
-| 8K warm replay | 15,792 |
+| 8K cold | 908 |
+| 8K warm replay | 16,011 |
 
 ## Quality and capacity
 
-| Check | Boot D result |
+| Check | Boot E result |
 |---|---|
-| qeval, 75 tasks, x3 | 72 / 74 / 73, **mean 73.0 passed tasks** (threshold 70.553); primary 52/54/53; no truncations or request failures |
-| Needle 16K, twice | 9/10 / 8/10; PASS |
+| qeval, 75 tasks, x3 | 73 / 73 / 73, **mean 73.0 passed tasks** (threshold 70.553); primary 53/53/53; no truncations or request failures |
+| Needle 16K, twice | 8/10 / 8/10; PASS |
 | Needle 128K, twice | 9/10 / 9/10; PASS |
 | Needle 250K, twice | 8/10 / 8/10; PASS |
-| Memory stress | c4 4x(65,024 prompt +1024 output), single 261,120+1024 PASS; rank-0 minimum **6.05 GiB** (criterion 5.8), swap 0, preemptions 0 |
+| Memory stress | c4 4x(65,024 prompt +1024 output), single 261,120+1024 PASS; rank-0 minimum **5.96 GiB** (criterion 5.8), swap 0, preemptions 0 |
 | Prefix cache | APC repeat hit 64,896/65,024 prompt tokens; cache retained through stress |
-| Mixed-load soak | 40.8 min, 65 requests (thinking prose, code, 16K-200K prompts, APC repeats, cancels), 0 errors, 0 preemptions; rank-0 minimum 5.72 GiB, quiet drift -0.028 GiB |
+| Mixed-load soak | 43.0 min, 66 requests (thinking prose, code, 16K-200K prompts, APC repeats, cancels), 0 errors, 0 preemptions; rank-0 minimum 5.64 GiB, quiet drift -0.09 GiB |
 | Draft-head INIT | all four ranks ON and ready; 341 qualification rows per rank, 0 failed; target head bit-exact |
+| Deterministic align | `glm-moe-det` installed on target and MTP sites on all four ranks |
 
-qeval failures: `code_camel_to_snake` (3 of 3 runs), `reason_r10` (2 of 3), `code_interval_intersect` (1 of 3).
+qeval failures: `code_camel_to_snake` and `code_two_sum`, identical in all three runs.
 Every needle response had all seven registry fields correct and finished with `stop`.
 The retrieval probe checks latest revisions, aliases and an operator fix embedded in synthetic public text.
 These are operational screens. The 50 tok/s prose-c1 goal and multi-day stability remain unqualified.
-[Portable receipt summary](docs/results/release-1008b-summary.json).
+[Portable receipt summary](docs/results/release-1009-summary.json).
 
 ## Memory safety
 
 The floors are **4.5 GiB live**, **5.8 GiB stress criterion**, **6.0 GiB capture**,
 **6.5 GiB admission for 60 s**, and **7.5 GiB before capture**, on every rank.
-Boot D's rank-0 admission minimum was 6.71 GiB; the stress minimum was 6.05 GiB, the soak minimum 5.72 GiB and the
-quiet level after the soak 5.84 GiB. The draft head's bank costs 133.8 MB per rank.
+Boot E's observed 60-second rank-0 admission minimum was 6.77 GiB, clearing the 6.5 GiB criterion; the stress minimum was 5.96 GiB, the soak minimum 5.64 GiB and the
+quiet level after the soak 5.78 GiB. The draft head's bank costs 133.8 MB per rank.
 
 Two bounded, unpinned ballast runs on the October 7 release boot found **no observed harm down to 2.5 GiB under
 load**: at a 2.59 GiB quiet level rank 0 reached 2.46 GiB, with paired prose/code cycle ratios 0.995/1.002, c1 TTFT
@@ -152,6 +178,7 @@ revision `206507bbb047d8223964a0414cd83230c59428f9`. Its files remain unchanged;
 | Display carveout KV | 6,318,718,976 B ordinary head plus 2046 MiB external carveout | `RECIPE_DISPRAM=require` | [kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram), external unmodified AGPL-3.0; NVIDIA; vLLM |
 | FP4x latent KV | Packed latent rows; RoPE and index keys remain FP8 | `GLM_KV_FORMAT=fp4x` | Mia (MiaAI-Lab), FP4 KV idea only, no code copied; knapcio implementation; NVIDIA/Triton/vLLM |
 | Adaptive prefill | 2048/4096 chunk budget selected from total prompt context | `GLM_PREFILL_CHUNK_ADAPTIVE=1` | vLLM scheduler contributors; knapcio |
+| Deterministic MoE align | Counting-sort replacement for `moe_align_block_size` on target and MTP Marlin MoE; token ids ascending per expert; single-request temperature-0 output reproducible in the tested panel | `GLM_MOE_DET_ALIGN=1` | vLLM `moe_align_block_size` authors (layout contract) and Marlin MoE via vLLM; NVIDIA CUDA/CUB; knapcio kernel |
 | Draft-only NVFP4 LM head | MTP draft uses an NVFP4 Marlin copy of the LM head; BF16 target head verifies; boot-time all-rank INIT qualification with BF16 fallback | `GLM_DRAFT_HEAD=nvfp4`, `GLM_DRAFT_HEAD_INIT=1` | Marlin W4A16 kernels (IST-DASLab) and NVIDIA NVFP4 format via vLLM; vLLM contributors (MTP speculator, CUDA graphs, Marlin integration, `moe_align_block_size`); Z.ai native MTP; knapcio |
 | Decode/prefill time-slicing | While a request decodes: prefill capped at 4096 tokens per step, then 40 pure-decode steps | `GLM_DECODE_FAIR=1`, `GLM_DECODE_FAIR_CHUNK=4096`, `GLM_DECODE_FAIR_DECODE_STEPS=40` | vLLM chunked-prefill scheduler contributors; Sarathi-Serve stall-free batching (Agrawal et al., prior work, no code used); knapcio |
 | NVFP4 sidecars | 385 attention +225 shared +6 dense +776 MTP matrices, Marlin W4A16 | `GLM_ATTN_WEIGHTS=nvfp4`, `GLM_NVFP4_GROUPS=attn,shared,dense,mtp` | Marlin kernels via vLLM; NVIDIA NVFP4 format; vLLM quantization contributors; Tech2wild/tonyd2wild checkpoint; Z.ai; knapcio converters |

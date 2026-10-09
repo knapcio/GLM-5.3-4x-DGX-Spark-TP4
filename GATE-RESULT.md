@@ -1,7 +1,41 @@
-# Release gate result: draft-only NVFP4 LM head (2026-10-08 09:44 to 12:16 Europe/Warsaw)
+# Release gate result: deterministic MoE align (2026-10-09, boot E admitted 03:47, gates to 06:02 Europe/Warsaw)
 
-**Verdict: PASS. The draft-only NVFP4 head (INIT=1) and time-slicing 4096/N40 are on by default and are the serving
-configuration.**
+**Verdict: PASS. Deterministic MoE align, the draft-only NVFP4 head (INIT=1) and time-slicing 4096/N40 are on by
+default and are the serving configuration.**
+
+- Code: the draft-head release plus `GLM_MOE_DET_ALIGN=1` (counting-sort align for target and MTP Marlin MoE).
+  Context 262144, FP4x KV, 4135 blocks (264,640 tokens). Floors live 4.5, stress 5.8, admission 6.5 GiB.
+- Boot E booted with the time-slicing runtime sidecar provisioned ON and `GLM_PARAM_HASH=1` (hash RPC only).
+  The DRY render of all eight container commands equals boot E's except one inert key, `GLM_MOE_CANON_ALIGN=0`,
+  the off switch of an unreleased sort-based alternative that is not part of this repository.
+- Same gate suite, thresholds and references as the draft-head qualification.
+
+## Gates on boot E
+
+| Gate | Result | Rule | Verdict |
+|---|---|---|---|
+| Admission | pool 4135 x4, KV 264,640, served 262144; observed 60-second admission minima 6.77/7.78/7.86/8.08 GiB; `glm-moe-det` installed on target and MTP sites on all ranks | admission minima >= 6.5 GiB | PASS |
+| Draft-head INIT | all four ranks ON and ready, 16 cases, 341 rows per rank, 0 failed, target head bit-exact | all ranks pass | PASS |
+| Temperature-0 probe on the October 9 qualification boot, same code and configuration (30 prompts x 3 sequential repeats, prefix cache reset before each, 0 prefix-cache hits) | **30/30 identical**, 0 first-token flips; stock align on an October 8 boot: 4/30, 26 diverging, 15 first-token flips | 30/30 | PASS |
+| Paired cycle, cross-boot, same night vs the draft-head configuration | prose 70.0 ms vs 70.7-70.8 ms; code 78.1 ms vs 78.5-79.2 ms | not slower beyond noise | PASS |
+| c1 pairs, same 24-prompt panel (cross-boot) | vs October 7 release boot: prose +2.92 % [+0.38, +5.41], code +5.53 % [+2.81, +8.39], all +4.35 % [+2.34, +6.42] | | recorded |
+| Functional (APC, exact copy/numbers, c1-c2-c1, cancel, chunked prefill, tools) | all PASS | | PASS |
+| Memory stress (c4 4x65,024+1024, single 261,120+1024) | minima 5.96/6.47/6.76/6.29 GiB; APC hit 64,896/65,024 | 5.8 GiB | PASS |
+| Needles 16K/128K/250K, twice | 8,8 / 9,9 / 8,8 of 10; TTFT 19.7 / 167.7 / 377.7 s | long >= control - 1 | PASS |
+| Time-slicing scenario | A 10.88 / 15.48 tok/s (mean 13.18); B TTFT 204.4 / 214.1 s (+59.9 % vs policy off, cross-boot) | A >= 10, TTFT <= +80 % | PASS |
+| sparkDash full grid | see README; 0 failed runs; one sweep, no best-of selection | | recorded |
+| RigMark 1.0.0 | prose 29.13, code 41.75, structured 46.63; code c4 65.77; 8K cold prefill 908; all gates | workload gates | PASS |
+| qeval x3 | 73 / 73 / 73; same two failures each run (`code_camel_to_snake`, `code_two_sum`); 0 truncations | 70.553 | PASS |
+| Mixed-load soak, 43 min (c1-c4) | 66 requests, 0 errors, 0 preemptions; minima 5.64/6.38/6.83/6.87 GiB; rank-0 quiet drift -0.09 GiB; step ratio prose 0.999 / code 1.002 | 0 errors, drift <= 0.3 GiB, ratio <= 1.02 | PASS |
+| Collect | 0 fatal lines; quiet after soak 5.78/6.46/6.88/6.97 GiB | | PASS |
+
+Single-GPU align microbenchmark (graph mode): 2.1-2.6 µs vs stock 4.4-4.5 µs at M1-M16; 12.0 vs 6.2 µs at M512
+(prefill only). 181 GPU layout, expert-map and narrowing checks against the stock layout passed; the microbenchmark's
+own speed gate failed on the M512 cell. This October 8 experiment is separate from the serving gates above.
+
+# Previous gate: draft-only NVFP4 LM head (2026-10-08 09:44 to 12:16 Europe/Warsaw)
+
+**Verdict: PASS. The draft-only NVFP4 head (INIT=1) was made the default.**
 
 - Code: the time-slicing release plus the draft-only head, its boot-time INIT qualification and tests.
   Context 262144, FP4x KV, 6,318,718,976 B head, 4135 blocks (264,640 tokens). Floors live 4.5, stress 5.8 GiB.

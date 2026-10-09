@@ -50,14 +50,15 @@ identical. Instrumented boots localised it:
 - The Marlin MoE kernel partitions work by token block and reduces in fp32; a token landing in a different block
   is summed in a different order, giving a **few-ULP difference**. Each GEMM was bit-exact for a fixed order.
 - The head itself is downstream of the variation, and turning off the L2 discard (`GLM_DIRTY_L2=0`) did not remove
-  it. The same two components are used by the target's routed experts; that they also explain the known run-to-run
-  variation of full GLM-5.3 at temperature 0 is an untested hypothesis.
+  it. The same two components are used by the target's routed experts. With the deterministic alignment released
+  on October 9, 30 of 30 tested prompts were identical across three sequential temperature-0 repeats, against 4 of
+  30 before, which supports this explanation ([determinism](determinism.md)).
 
 Every order is a valid summation, and the target verifies every draft token through standard speculative
 verification; the variation affects draft proposals, not the verification rule.
 The INIT criterion therefore requires exact draft tokens and full write coverage, and bounds the float drift
-instead of requiring bit equality. Making the expert token order canonical is expected to remove this source of
-variation; GPU validation remains outstanding, and it is not part of this release.
+instead of requiring bit equality. Since October 9 the default deterministic alignment (`GLM_MOE_DET_ALIGN=1`)
+fixes the expert token order; the bounded criterion stays unchanged as a safety check and passed on boot E.
 
 ## Measured
 

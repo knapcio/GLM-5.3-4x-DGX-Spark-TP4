@@ -108,13 +108,20 @@ This repository does not claim a blanket relicense of either project or of exter
 
 - **knapcio campaign day2/w2; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
 
+- **Deterministic MoE align** (on by default): **vLLM contributors**, in particular the authors of
+  `moe_align_block_size` and its CUDA kernels: the align layout contract (padded expert segments, block labels,
+  padded token count, sentinel padding) that the replacement reproduces exactly, and the Marlin MoE integration it
+  feeds; **Marlin** (IST-DASLab and contributors) via vLLM: the MoE GEMM whose fp32 reduction order depends on the
+  token order. **NVIDIA**: CUDA warp intrinsics and CUB block scans used through the toolkit headers. The
+  counting-sort kernel, its launcher and scratch arena, the source-pinned hook, the temperature-0 probe and the tests
+  are original local work (knapcio, Apache-2.0); no third-party align kernel is vendored.
+
 - **Draft-only NVFP4 LM head** (on by default): **Marlin** (IST-DASLab; Elias Frantar, Dan Alistarh and
   contributors): the W4A16 mixed-precision GEMM, as integrated in vLLM; **NVIDIA**: the NVFP4 format the draft head
   bank uses. **vLLM contributors**: the Marlin linear integration and NVFP4 schemes, the V2 model
   runner's native MTP speculator and draft CUDA graph manager, the shared LM head and logits processor (left unpatched
   for the target), and `moe_align_block_size` with the Marlin MoE kernel, whose atomic token ordering and
-  block-partitioned fp32 reduction explain the few-ULP draft-state variation the INIT criterion bounds (no change to
-  either is made). **Z.ai**: GLM-5.3's native MTP layer and shared head. The quantized draft-only copy, the all-rank
+  block-partitioned fp32 reduction explain the few-ULP draft-state variation the INIT criterion bounds. **Z.ai**: GLM-5.3's native MTP layer and shared head. The quantized draft-only copy, the all-rank
   INIT qualification with collective fallback, the write-coverage / exact-token / bounded-float criterion, the
   instrumented localisation of the variation and the CPU/Gloo tests are local work (knapcio).
 

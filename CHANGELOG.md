@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-10-09 — release/glm53-1009 (deterministic MoE align, temperature-0 reproducibility)
+
+`GLM_MOE_DET_ALIGN=1` is on by default. It replaces vLLM's `moe_align_block_size` for the target and native MTP
+Marlin MoE with an original counting-sort CUDA kernel that returns the stock layout with token ids ascending inside
+each expert segment. The stock kernel places tokens with `atomicAdd`, so the within-expert order, and with it the
+Marlin MoE fp32 reduction order, varied between calls. The kernel is compiled once per boot with the image's `nvcc`
+and was faster than the stock align at decode sizes in a single-GPU microbenchmark (2.1-2.6 µs vs 4.4-4.5 µs at
+M1-M16; slower at M512, 12.0 vs 6.2 µs, prefill only).
+[Determinism](docs/determinism.md); `bench/t0_probe.py` verifies a boot.
+
+Measured on one boot, E; all serving gates passed. Temperature-0 probe on the October 9 qualification boot (same code
+and configuration; 30 prompts x 3 sequential repeats, prefix cache reset): **30/30 identical**, against 4/30 with the
+stock align on an October 8 boot; concurrent and cross-boot reproducibility remain unqualified. qeval 73/73/73 with the
+same two failures each run; cross-boot paired cycle the same night, prose 70.0 ms vs 70.7-70.8 ms. sparkDash c1
+prose/code/structured/json 35.22/43.78/48.09/43.38 from one sweep without best-of selection (the previous table's
+36.25 came from the selected first of two sweeps; the receipts do not isolate the cause of the difference). RigMark prose/code/structured
+29.13/41.75/46.63, code c4 65.77; needles 8/10 twice at 16K, 9/10 twice at 128K, 8/10 twice at 250K; stress rank-0
+minimum 5.96 GiB; 43-minute soak with 66 requests, 0 errors and 0 preemptions. Floors are unchanged.
+[Gate result](GATE-RESULT.md), [receipt summary](docs/results/release-1009-summary.json).
+
 ## 2026-10-08 — release/glm53-1008b (draft-only NVFP4 LM head)
 
 The native MTP draft uses its own NVFP4 (Marlin W4A16) copy of the LM head by default (`GLM_DRAFT_HEAD=nvfp4`,

@@ -55,6 +55,7 @@ class Release(unittest.TestCase):
                 self.assertEqual(env['VLLM_SERVER_DEV_MODE'], '1')
                 self.assertEqual(env['GLM_DRAFT_HEAD'], 'nvfp4')
                 self.assertEqual(env['GLM_DRAFT_HEAD_INIT'], '1')
+                self.assertEqual(env['GLM_MOE_DET_ALIGN'], '1')
                 self.assertEqual(env['GLM_DECODE_FAIR'], '1')
                 self.assertEqual(env['GLM_DECODE_FAIR_CHUNK'], '4096')
                 self.assertEqual(env['GLM_DECODE_FAIR_DECODE_STEPS'], '40')

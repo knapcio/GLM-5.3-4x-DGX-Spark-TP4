@@ -26,7 +26,8 @@ PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/curre
                 if not k.startswith('RECIPE_') and k not in ('GLM_ATTN_WEIGHTS', 'GLM_NVFP4_GROUPS',
                     'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT',
                     'GLM_DRAFT_HEAD', 'GLM_DRAFT_HEAD_INIT', 'GLM_DECODE_FAIR',
-                    'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL')]
+                    'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL',
+                    'GLM_MOE_DET_ALIGN')]
 GiB = 1 << 30
 HEALTH_POLL_S = 1          # loopback /health while booting
 SAMPLE_BOOT_S = 5          # rank samples (memory floors, admission window) while booting
@@ -331,6 +332,13 @@ OPTIONAL_KEYS = ('GLM_SKIP_MLA_PLAN', 'GLM_SKIP_MLA_PLAN_AB_INIT', 'VLLM_SERVER_
 
 def optional_env():
     env = {k: ENV[k].strip() for k in OPTIONAL_KEYS if ENV.get(k, '').strip() not in ('', '0')}
+    det_align = ENV.get('GLM_MOE_DET_ALIGN', '0')
+    if det_align not in ('0', '1'):
+        raise ValueError('GLM_MOE_DET_ALIGN must be 0 or 1')
+    if det_align == '1':
+        if ENV.get('GLM_MOE_CANON_ALIGN', '0') != '0':
+            raise ValueError('canonical and deterministic MoE align are mutually exclusive')
+        env['GLM_MOE_DET_ALIGN'] = '1'
     sys.path.insert(0, str(ROOT / 'overlay/bringup'))
     from glm_recent_kv import options as recent_options
     from glm_draft_head_config import options as draft_head_options

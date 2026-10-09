@@ -21,6 +21,7 @@ python3 -B "$ROOT/tests/test_persistent_cache.py"
 python3 -B "$ROOT/tests/test_adaptive_chunk.py"
 python3 -B "$ROOT/tests/test_decode_fair.py"
 python3 -B "$ROOT/tests/test_decode_timeslice.py"
+python3 -B "$ROOT/tests/test_t0_probe.py"
 DEPS=(torch numpy regex transformers pydantic cachetools msgspec pyzmq psutil cloudpickle blake3 openai prometheus_client pyyaml sentencepiece tiktoken einops cbor2 aiohttp openai-harmony pillow pybase64 uvloop py-cpuinfo llguidance xgrammar safetensors)
 PY=(uv run --quiet --no-project --python 3.12)
 for dep in "${DEPS[@]}"; do PY+=(--with "$dep"); done
@@ -33,6 +34,7 @@ for dep in "${DEPS[@]}"; do PY+=(--with "$dep"); done
 "${PY[@]}" python -B "$ROOT/tests/test_draft_head_init.py"
 "${PY[@]}" python -B "$ROOT/tests/test_draft_head_replay_criterion.py"
 "${PY[@]}" python -B "$ROOT/tests/test_draft_head_leakgate.py"
+"${PY[@]}" python -B "$ROOT/tests/test_moe_det.py"
 "${PY[@]}" python -B "$ROOT/tests/test_skip_mla_plan.py"
 "${PY[@]}" python -B "$ROOT/tests/test_kernel_cpu.py"
 "${PY[@]}" python -B "$ROOT/tests/test_glm_fast_load.py"

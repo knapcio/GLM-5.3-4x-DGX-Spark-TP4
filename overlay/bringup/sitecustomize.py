@@ -73,6 +73,9 @@ try:
     if os.environ.get('GLM_DRAFT_HEAD', '0') != '0':
         import glm_draft_head
         glm_draft_head.register()
+    if os.environ.get('GLM_MOE_DET_ALIGN', '0') != '0':
+        import glm_moe_det
+        glm_moe_det.register()
 except BaseException:
     import traceback
     traceback.print_exc()
