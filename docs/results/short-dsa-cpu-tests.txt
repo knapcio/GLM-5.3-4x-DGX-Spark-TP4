@@ -186,8 +186,8 @@ Ran 1 test in 0.024s
 OK
 glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.0 s (0.29 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
 glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
-glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpdgsxktmo): 207 eager + 9 mmap tensors, 0.0 GiB in 0.0 s (0.26 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
-glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpdgsxktmo): last slab released after 0.5 s
+glm-fast-load: load 1 (2 files, /tmp/tmpdgsxktmo): 207 eager + 9 mmap tensors, 0.0 GiB in 0.0 s (0.26 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, /tmp/tmpdgsxktmo): last slab released after 0.5 s
 OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
 OK: wiring
 GLM_ROCE: the image already routes through b12x_ar_comm (B12X_ROCENANTE); the shim stays off

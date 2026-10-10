@@ -108,18 +108,18 @@ Ran 18 tests in 0.276s
 
 OK
 test_copy_is_verified_and_removed_on_mismatch (__main__.PersistentCache.test_copy_is_verified_and_removed_on_mismatch) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpi92znokt/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /tmp/tmpi92znokt/persist/b2349ff1147f3e7ee43893bcfc2b34f7
 ok
 test_corrupt_payload_fails_closed_before_copy (__main__.PersistentCache.test_corrupt_payload_fails_closed_before_copy) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/injected.so']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['fi/cached_ops/sampling/sampling.so']" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: [('triton/abc/link', '/etc/passwd')]" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "manifest.json does not match READY" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "READY does not name this key" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: Expecting value: line 1 column 1 (char 0)" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: [Errno 2] No such file or directory: '/var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7/manifest.json'" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
-PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unsupported file type: triton/abc/pipe" remove /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/kernel.cubin']" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['triton/abc/injected.so']" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: ['fi/cached_ops/sampling/sampling.so']" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "payload differs from manifest: [('triton/abc/link', '/etc/passwd')]" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "manifest.json does not match READY" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "READY does not name this key" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: Expecting value: line 1 column 1 (char 0)" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unreadable READY/manifest: [Errno 2] No such file or directory: '/tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7/manifest.json'" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
+PERSISTENT CACHE CORRUPT b2349ff1147f3e7ee43893bcfc2b34f7 "unsupported file type: triton/abc/pipe" remove /tmp/tmpx1fbkb2x/persist/b2349ff1147f3e7ee43893bcfc2b34f7
 PERSISTENT CACHE HIT b2349ff1147f3e7ee43893bcfc2b34f7 2
 ok
 test_existing_generation_is_never_overwritten (__main__.PersistentCache.test_existing_generation_is_never_overwritten) ... PERSISTENT CACHE SAVED b2349ff1147f3e7ee43893bcfc2b34f7 124
@@ -307,8 +307,8 @@ Ran 1 test in 0.029s
 OK
 glm-fast-load: test: 312 eager + 12 mmap tensors, 0.0 GiB in 0.1 s (0.16 GiB/s), 21 slabs, peak 8 live, verified 15, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
 glm-fast-load: armed (weight_utils.safetensors_weights_iterator wrapped)
-glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp1xe4nmz7): 207 eager + 9 mmap tensors, 0.0 GiB in 0.1 s (0.13 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
-glm-fast-load: load 1 (2 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmp1xe4nmz7): last slab released after 0.5 s
+glm-fast-load: load 1 (2 files, /tmp/tmp1xe4nmz7): 207 eager + 9 mmap tensors, 0.0 GiB in 0.1 s (0.13 GiB/s), 12 slabs, peak 6 live, verified 10, MemAvailable start -0.0 GiB low -0.0 GiB end -0.0 GiB
+glm-fast-load: load 1 (2 files, /tmp/tmp1xe4nmz7): last slab released after 0.5 s
 OK: 324 tensors, 312 eager, 12 pass-through, 21 slabs, 15 verified
 OK: wiring
 W1002 12:54:37.182000 97243 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
@@ -323,11 +323,11 @@ test_proposer_replaces_embedding_and_head (__main__.SourceProof.test_proposer_re
 test_target_consumer_drops_mtp_names_first (__main__.SourceProof.test_target_consumer_drops_mtp_names_first) ... ok
 test_draft_reads_only_mtp_shards (__main__.Synthetic.test_draft_reads_only_mtp_shards) ... ok
 test_draft_same_calls_and_loaded_set (__main__.Synthetic.test_draft_same_calls_and_loaded_set) ... ok
-test_index_disagreement_raises (__main__.Synthetic.test_index_disagreement_raises) ... glm-fast-load: load 2 (4 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpb65imki9): last slab released after 0.5 s
+test_index_disagreement_raises (__main__.Synthetic.test_index_disagreement_raises) ... glm-fast-load: load 2 (4 files, /tmp/tmpb65imki9): last slab released after 0.5 s
 ok
 test_inert_and_bad_flags (__main__.Synthetic.test_inert_and_bad_flags) ... ok
 test_missing_index_raises (__main__.Synthetic.test_missing_index_raises) ... ok
-test_source_drift_raises (__main__.Synthetic.test_source_drift_raises) ... glm-fast-load: load 4 (4 files, /var/folders/_q/7z447bc57z74fnd2_cty9sxm0000gn/T/tmpb65imki9): last slab released after 0.5 s
+test_source_drift_raises (__main__.Synthetic.test_source_drift_raises) ... glm-fast-load: load 4 (4 files, /tmp/tmpb65imki9): last slab released after 0.5 s
 ok
 test_stream_mismatch_raises (__main__.Synthetic.test_stream_mismatch_raises) ... ok
 test_target_skips_mtp_layer_only (__main__.Synthetic.test_target_skips_mtp_layer_only) ... ok
