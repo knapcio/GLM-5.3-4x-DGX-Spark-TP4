@@ -14,6 +14,13 @@ from public_export_audit import audit
 
 
 class FrozenRelease(unittest.TestCase):
+    def test_readme_keeps_full_rigmark_table(self):
+        readme = (ROOT/'README.md').read_text()
+        self.assertIn('## RigMark 1.0.0 (thinking on, effort low)', readme)
+        self.assertIn('| prose | **30.051** | 29.057–30.674 |', readme)
+        self.assertIn('| code | 34.89 [37.37] | 46.99 [25.20] | 67.90 [18.33] |', readme)
+        self.assertIn('| warm prefix-cache replay | 16,114.3 |', readme)
+
     def test_public_tree_passes_export_audit(self):
         self.assertTrue(audit(ROOT)['passed'])
 

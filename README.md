@@ -24,6 +24,30 @@ Cold prefill, median of three, with prefix-cache state recorded separately:
 | cold prefill tok/s | 977 | 882 | 862 | 881 |
 | time to first token (s) | 4.22 | 9.32 | 19.04 | 37.23 |
 
+## RigMark 1.0.0 (thinking on, effort low)
+
+Release boot, c1 decode medians of five; all workload gates passed.
+
+| Workload | c1 decode tok/s | Observed range |
+|---|---:|---:|
+| prose | **30.051** | 29.057–30.674 |
+| code | 42.372 | 41.664–43.040 |
+| structured | 47.338 | 46.750–47.700 |
+
+Code concurrency, aggregate end-to-end tok/s **[per-stream decode]**:
+
+| Workload | c1 | c2 | c4 |
+|---|---:|---:|---:|
+| code | 34.89 [37.37] | 46.99 [25.20] | 67.90 [18.33] |
+
+| 8K prefill | tok/s |
+|---|---:|
+| cold | 904.7 |
+| warm prefix-cache replay | 16,114.3 |
+
+The exact receipt and its SHA256 provenance are recorded in
+[the reduced-gate notes](docs/release-1010-gate.md#recorded-reduced-gate-and-cell-provenance).
+
 ## Current release configuration
 
 Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) (753B), tensor parallel across four DGX Sparks,
