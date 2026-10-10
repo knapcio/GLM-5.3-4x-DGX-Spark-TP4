@@ -8,35 +8,41 @@ Boot B launch after removing its two instrumentation keys. Five fabric/rank keys
 The default `RECIPE_PROFILE=native-mtp-k2` selects native MTP async with K-stop (up to three drafts, confidence
 stop, uniform multi-request batches) and prefix caching; `GLM_MTP_KSTOP=0` (with `GLM_MTP_KSTOP_UNIFORM_BATCH=0`
 and, if wanted, `GLM_INDEXER_SHORTCUT=1`) in `.env` returns to the released native K2 vector apart from prefix
-caching and shard selection. Set `RECIPE_PROFILE=dspark-k3`
+caching and shard selection. Turning off the draft head or K-stop also requires disabling eh_proj with both
+`GLM_DRAFT_EHPROJ=0` and `GLM_DRAFT_EHPROJ_INIT=0`. Set `RECIPE_PROFILE=dspark-k3`
 to apply `profiles/dspark-k3.env` and `profiles/dspark-k3-args.json`: MTP fix off, independent SWA
 pool and draft low-memory loader on, unmodified Red Hat drafter K3, synchronous scheduling.
 The alternative mounts and verifies `DRAFT_DIR`; native MTP needs only the target checkpoint.
 Stop the current deployment before changing profiles and use a fresh runtime path.
 
+The current full-model release also enables deterministic MoE alignment, the NVFP4 draft LM head
+and FP8 draft eh_proj with all-rank INIT qualification. Row selection and F3 index caching are off.
+See [the frozen selectors](release-1010-gate.md), [eh_proj](eh_proj.md) and [glue-lite](glue-lite.md).
+
 The host runtime is mounted at `/overlay`; it contains these modules in the same container namespaces
 used by the measured launch:
 
-| startup order | module | active gate / source guard |
+| registration order | module | active gate / source guard |
 |---|---|---|
-| 1 | `bringup/sitecustomize.py` | first on PYTHONPATH; aborts process on registration failure |
-| 2 | `overlay/glm_param_hash.py` | opt-in tool, never in a profile: `GLM_PARAM_HASH=1` with the dev API (campaign weight-equality windows) |
-| 3 | `overlay/glm_fast_load.py` (+ `glm_mtp_select.py`) | `GLM_FAST_LOAD=1`; called directly when the external draft pool is off; shard selection with `GLM_MTP_ONLY_LOAD=1` / `GLM_TARGET_SKIP_MTP=1` (on) |
-| 4 | `bringup/glm_mtp_fix.py` | `GLM_MTP_FIX=1`; pinned native MTP module, packed quant mapping |
-| 5 | `bringup/glm_full_mla.py` | `GLM_FULL_MLA=triton`; SM90 backend SHA256 |
-| 6 | `bringup/glm_window_memory.py` | full-MLA gate; pinned V1/V2 runner capture boundary |
-| 7 | `bringup/glm_prefill_switch.py` | drained cap2048, constructor capacity4096 |
-| 8 | `bringup/glm_dsa_short.py` | `GLM_INDEXER_SHORTCUT=1` (off in the default: K-stop is on); five pinned module sources |
-| 9 | `bringup/glm_dirty_l2.py` | `GLM_DIRTY_L2=discard`; needs `GLM_FULL_MLA=triton` and `GLM_MLA_SPLIT_K=32`; split-kernel SHA256 |
-| 10 | `bringup/glm_glue_lite.py` | staged, off: any of `GLM_GLUE_ROUTER_BF16`, `GLM_GLUE_MOE_WS`, `GLM_GLUE_DSA_IDX_CACHE` = `1`; eleven pinned module sources; registered after dirty L2 |
-| 11 | `kstop/glm_mtp_kstop.py` | on: `GLM_MTP_KSTOP=1`; composes with `GLM_INDEXER_SHORTCUT=1`; appends `/overlay/kstop` to `sys.path`; eight pinned module sources |
-| 12 | `bringup/glm_skip_mla_plan.py` | optional, off: `GLM_SKIP_MLA_PLAN=1` or `ab`; needs `GLM_FULL_MLA=triton`; SM90 backend and worker SHA256; registered last |
+| 1 | `bringup/sitecustomize.py` | first on PYTHONPATH; aborts on registration failure |
+| 2 | `overlay/glm_fast_load.py` and MTP shard selection | fast loader; five MTP shards |
+| 3 | `bringup/glm_mtp_fix.py` | native packed quant mapping; pinned checkpoint consumer |
+| 4 | `bringup/glm_full_mla.py`, memory and prefill hooks | split32 MLA; capture floor; adaptive chunks |
+| 5 | `bringup/glm_dirty_l2.py` | discard consumed split32 partials |
+| 6 | `kstop/glm_mtp_kstop.py` | K3 at c1, K2 multi-request; composes with the short-context shortcut |
+| 7 | `bringup/glm_skip_mla_plan.py` | optional, default off |
+| 8 | `bringup/glm_dispram_kv.py` | FP4x carveout storage when selected by the launcher |
+| 9 | `bringup/glm_draft_head.py` | NVFP4 draft head; all-rank INIT qualification |
+| 10 | `bringup/glm_draft_ehproj.py` | FP8 draft projection; outer combined load/capture qualification |
+| 11 | `bringup/glm_mtp_rowselect.py` | optional, default off; no import in the release vector |
+| 12 | `bringup/glm_moe_det.py` | ascending per-expert target/MTP token order |
+| 13 | `bringup/glm_glue_lite.py` | F1+F2 on, F3 off; registered after the other bringup hooks |
 
 `bringup/glm_spec_sample.py` (optional, off) registers right after the fast loader when `GLM_SPEC_SAMPLE=1`; it
 needs `GLM_MTP_KSTOP=0` (the launcher refuses the pair, and K-stop's MTP install refuses any draft sampler other
 than greedy).
 
-The native K2 profile disables the DSpark SWA pool and draft low-memory adapter. It loads MTP from `/model`, shares the checkpoint's target embedding/head and preserves the image's native MTP index compaction/reset. Fused QKV, gate-up and indexer packed-module mappings are supplied before compressed-tensors configuration. Explicit draft quantization is `compressed-tensors`; target and draft KV are FP8, block size64. No weight bytes, norm semantics or kernel arithmetic change. The .pth-installed `glm_roce.boot` registers transport independently.
+The native K2 profile disables the DSpark SWA pool and draft low-memory adapter. It loads MTP from `/model`, shares the checkpoint's target embedding/head and preserves the image's native MTP index compaction/reset. Fused QKV, gate-up and indexer packed-module mappings are supplied before compressed-tensors configuration. Explicit draft quantization is `compressed-tensors`; target and draft KV use the FP4x layout with unchanged rotary/index storage, block size64. No weight bytes, norm semantics or kernel arithmetic change. The .pth-installed `glm_roce.boot` registers transport independently.
 
 The sparse-MLA adapter uses the pinned image's sparse slot conversion and metadata; it does not replace
 DSA selection with dense attention. It handles 16 heads/rank, 512 latent dimensions and RoPE 0 or 64,
@@ -109,33 +115,11 @@ It logs `glm-dirty-l2: armed (discard, split 32)` and the first dispatch. It ref
 `0` or `discard`, and any split count other than 32. `GLM_DIRTY_L2=0` returns to the released reduce; the
 DSpark profile sets it to 0. The three kernel source hashes are in `docs/results/dirty-l2-profile.json`.
 
-## Glue-lite (staged, off by default)
+## Glue-lite (F1+F2 on, F3 off)
 
-`glm_glue_lite` removes small launches whose results are unused or recomputed identically; it changes no
-arithmetic and adds no kernel. Each switch is `0` or `1`; any other value, and the bank-switching mode
-`GLM_GLUE_LITE_BANKABLE` (it needs an external in-boot A/B harness), stops startup. Strict mode (default)
-refuses source drift in any of the eleven pinned vLLM files and requires the arming counts in
-`GLM_GLUE_ROUTER_EXPECT=target:75,mtp:1` and `GLM_GLUE_IDX_EXPECT=57`.
-
-- `GLM_GLUE_ROUTER_BF16=1` (F1): the GLM gate's last tier returns the BF16 router logits instead of casting
-  them to FP32. The fused CUDA `grouped_topk` single-group kernel widens each BF16 logit to FP32 before any
-  arithmetic, so the selected experts and weights are those of the cast input. Armed per MoE layer only for
-  the covered contract (256 experts, one group, top-8, sigmoid with an FP32 correction bias, renormalize,
-  scaling 1.0 or 2.5, modular Marlin experts, no fused shared-expert gate); anything else is refused.
-- `GLM_GLUE_MOE_WS=1` (F2): `fused_marlin_moe` gets one persistent zeroed lock workspace per device instead
-  of `torch.zeros` per call. Marlin resets every lock it used before a call completes, so stream-ordered reuse
-  sees the same zeros. It is allocated at model load; a capture that finds none fails closed; a caller's own
-  workspace is never touched; eager calls on a second stream use the stock allocation.
-- `GLM_GLUE_DSA_IDX_CACHE=1` (F3): on the 57 static skip-top-k layers of the target model, the index
-  conversion (`triton_convert_req_index_to_global_index` and its `full_like(-1)`) reuses the result of the
-  last computing layer of the same forward when every input pointer, shape, stride, dtype and flag is the
-  same. Any other MLA forward invalidates it; the MTP layer is never armed.
-
-It logs `glm-glue-lite: registered`, the F1 and F3 arming counts and, in strict mode, refuses a partial
-arming. The single-GPU gates in `tests/gpu/` (`run_gpu_gates.py` runs F1, F2, F3 in order on one idle GPU in
-the pinned image) check bit equality against the stock path, including CUDA-graph replay with inputs changed
-in place; they have not been run yet, and the switches stay off until they pass and a fleet A/B shows the gain.
-The DSpark profile sets all three to 0.
+The current profile enables router BF16 and Marlin MoE workspace reuse. Their measured panel was
+token-identical: +0.43 % prose and +1.0 % code. The sparse index cache stays off and the FP4x launcher
+continues to refuse it. [Details and credits](glue-lite.md). The combined release gate remains pending.
 
 ## Native MTP K-stop (on by default)
 
@@ -171,7 +155,8 @@ warm-up runs real decode steps with spec tokens whose drafts are synthetic, so w
 K-stop as well (and checked clean right after it); and a new or resumed request padded to the decode width by the
 scheduler carries spec tokens without any draft, so it is verified at its full scheduled width. The runtime binds
 the full GLM-5.3 classes explicitly (`GlmMoeDsaForCausalLM` target, `DeepSeekMTP` drafter) and fails closed on
-anything else. The four-slot `[1, 4, 16]` layout of this release has not booted yet.
+anything else. Those historical checks used `[1, 4, 16]`; the current public layout is `[1, 4, 12, 16]` with K2 reuse.
+The new combined candidate still requires its own release gate.
 
 tau was chosen offline from assumed costs (K2 79.6 ms, K3 91.2 ms, 11.75 ms saved per skipped position); it
 should be refit once the skip cost is measured.

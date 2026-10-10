@@ -6,7 +6,7 @@ Implemented on `perf/nvfp4-attn`, from serving `84a38e06f16ee09e0521a653851fe574
 
 Use the image's **Marlin NVFP4 W4A16**, with BF16 activations and FP32 reduction. No activation quantization, FP4 activation MMA, custom Triton kernel, new JIT, or persistent BF16 weight bank. Existing compiled `vllm._C` supplies the GEMM and repack. Actual sm121 FP4 instantiation and latency still require the GB10 checker below; Mac shape checks are not a CUDA execution claim.
 
-Pinned base: `ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6`, vLLM source `487ecf187`. Local evidence root: `/srv/campaign/diagnostics/glm53-full-20260929/day3/release-dirtyl2/image-source/`. [Source hashes](../../overlay/overlay/nvfp4_source_pins.json) cover 13 Python source files and are enforced at enabled startup. Sources are not modified.
+Pinned base: `ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6`, vLLM source `487ecf187`. Local evidence root: `receipts/glm53-full-20260929/day3/release-dirtyl2/image-source/`. [Source hashes](../../overlay/overlay/nvfp4_source_pins.json) cover 13 Python source files and are enforced at enabled startup. Sources are not modified.
 
 Relevant paths below are relative to that image root:
 

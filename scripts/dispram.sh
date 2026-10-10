@@ -5,7 +5,7 @@
 #   sudo-pw | dispram.sh drm-lock|drm-unlock     DRM exclusion for the whole lease (device nodes 0000)
 #   dispram.sh start|stop                        daemon lifetime (refuses with any GPU process/borrower/lease)
 #   dispram.sh status|watch|preborrow|postcheck  watch/preborrow/postcheck exit 3 = NOT safe (fail closed)
-#   dispram.sh service                           foreground supervisor for the draft unit (service/)
+#   dispram.sh service|monitor                   start-and-monitor or adopt an existing healthy lender
 #
 # dispramd and librmlist are third-party (kindling-spark-os, AGPL-3.0, kindlingai). This script only
 # fetches them at a pinned commit, compiles rmlist.c against NVIDIA's MIT headers at the driver tag,
@@ -30,7 +30,7 @@ SHA_DISPRAMD=769cbff80b80af5c667a75b70036fadabcebe36bec375facc57761cc7aaa5cdd
 SHA_RMLIST_C=457bf38aa06af41bafe4c049006f89125790bf469b7818d30bc64b82f3f36657
 SHA_LIBRMLIST=9f28b4eb143bc4c01b96f06f52bacdaf2c17f33f747a06e58f75263f36b963f0  # gcc 13.3, A1 build
 IMAGE=${DISPRAM_IMAGE:-glm53-roce:v11-b58f34ea}                      # serving image: python3 + gcc 13.3
-HOME_D=${DISPRAM_HOME:-$HOME/dispram}
+HOME_D=${DISPRAM_HOME:-/srv/glm-dispram}
 SRC=$HOME_D/src; BIN=$HOME_D/kindling; RUN=$HOME_D/run; LOG=$HOME_D/log
 LABEL=glm.dispram=1
 
@@ -265,8 +265,8 @@ stop)  # no force option: the lender outlives every borrower and context (fix2 r
   verified_free || die 'refusing: a borrower, CUDA context or lease exists or cannot be verified (RUN.md section 4)'
   timeout --kill-after=5 60 docker stop -t 10 "$n" >/dev/null || die 'docker stop failed'
   echo "$(ts) stop $n" >> "$LOG/events.txt"; echo "stopped $n" ;;
-service)  # foreground: start, then watch every 30 s; on INVALID stop borrowers, verify, stop daemon, exit 3
-  "$0" start
+service|monitor)  # service starts idle; monitor adopts an already healthy running lender without restarting it
+  if [ "$1" = service ]; then "$0" start; else "$0" watch >/dev/null; fi
   while sleep "${DISPRAM_WATCH_S:-30}"; do
     out=$(timeout --kill-after=5 120 "$0" watch 2>&1) && continue
     echo "$(ts) ${out:-watch timed out}" | tee -a "$LOG/events.txt" > "$(invalid_marker)"
@@ -281,16 +281,17 @@ census)  # fix5 pre-window: classify the last 24 h of kernel lines; exit 3 if an
     echo "$w" | tr ';' '\n' | grep -vF 'refcntRequestReference_IMPL: Failed to enter state 1 (current state: 0, status: 0x00000056)' | grep -q . \
       && bad "kernel lines that would invalidate a lease: $(echo "$w" | cut -c1-600)"; }
   echo 'CENSUS-OK (only the profiler refcnt line, if any)' ;;
-deadman)  # fix5 controller-loss guard on the node: $2 = hard epoch. Heartbeat: $RUN/../heartbeat (mtime).
+deadman)  # controller-loss guard: $2 = hard epoch, or none for selected serving. Heartbeat mtime.
   # Stale heartbeat (> DEADMAN_STALE s, default 900) or now > hard epoch + 1800: stop every running
   # glm53full-* container that is not the default serving set, then release the lender only after
   # verified_free (teardown); never touches DRM modes (no sudo), never restores serving (needs all 4 nodes).
-  HB=$HOME_D/heartbeat; hard=${2:?hard epoch}; stale=${DEADMAN_STALE:-900}
+  HB=$HOME_D/heartbeat; hard=${2:?hard epoch or none}; stale=${DEADMAN_STALE:-900}
+  case "$hard" in none) ;; *[!0-9]*|'') die 'hard epoch must be numeric or none' ;; esac
   echo "$(ts) deadman pid $$ hard $hard stale ${stale}s" >> "$LOG/events.txt"
   while sleep "${DEADMAN_POLL:-30}"; do
     [ -e "$HOME_D/deadman.stop" ] && { echo "$(ts) deadman stopped by controller" >> "$LOG/events.txt"; exit 0; }
     now=$(date +%s); age=$(( now - $(stat -c %Y "$HB" 2>/dev/null || echo 0) ))
-    [ "$age" -gt "$stale" ] || [ "$now" -gt $((hard + 1800)) ] || continue
+    [ "$age" -gt "$stale" ] || { [ "$hard" != none ] && [ "$now" -gt $((hard + 1800)) ]; } || continue
     echo "$(ts) CONTROLLER-LOST heartbeat age ${age}s: stopping borrowers" | tee -a "$LOG/events.txt" > "$HOME_D/CONTROLLER-LOST"
     for c in $(timeout 60 docker ps --format '{{.Names}}' | grep '^glm53full-' | grep -v '^glm53full-rel-default-20261002r-'); do
       timeout --kill-after=5 120 docker stop -t 60 "$c" >/dev/null 2>&1; echo "$(ts) deadman stopped $c" >> "$LOG/events.txt"; done
@@ -304,5 +305,5 @@ reset-invalid)  # manual reset after RUN.md section 4 recovery; only with no GPU
   idle_gpu reset-invalid; [ -z "$(running)" ] || die 'daemon running'
   m=$(invalid_marker); [ -e "$m" ] || die 'nothing to reset'
   mv "$m" "$m.reset-$(date +%Y%m%d-%H%M%S)"; echo "$(ts) reset-invalid by $(id -un)" >> "$LOG/events.txt"; echo 'reset' ;;
-*) echo "usage: $0 fetch|build|drm-lock|drm-unlock|start|status|watch|preborrow|postcheck|stop|service|service-teardown|census|deadman|invalid-state|reset-invalid"; exit 1 ;;
+*) echo "usage: $0 fetch|build|drm-lock|drm-unlock|start|status|watch|preborrow|postcheck|stop|service|monitor|service-teardown|census|deadman|invalid-state|reset-invalid"; exit 1 ;;
 esac

@@ -1,0 +1,380 @@
+{
+  "offline": true,
+  "tests": 670,
+  "passed": 644,
+  "skips": 26,
+  "failed": 0,
+  "standalone_checks": {
+    "fast_loader_tensor_batch_and_wiring": "PASS, 324 tensors",
+    "frozen_native_import_order": "PASS, CUDA library preparation substituted",
+    "native_fp8_full_size_prepare": "PASS, CUDA repack/GEMM substituted"
+  },
+  "scope": "historical offline preparation receipt; tracked tip export; no live work was performed by this receipt",
+  "source_pin_files": 30,
+  "python_AST_files": 226,
+  "original_runner": "stopped at native Gloo initialization: sandbox denies loopback bind",
+  "collective_limits": "29 K-stop cases use mocked one-rank collectives; five RoCE Gloo cases and one TCPStore case skipped",
+  "live_gate": "completed separately under the owner-approved reduced scope; see release-1010-summary.json",
+  "gpu": "NOT RUN",
+  "public_base": "988413f (release identity supplied; public object unavailable locally)",
+  "dev_base": "36373c6",
+  "modules": [
+    {
+      "module": "test_adaptive_chunk",
+      "tests": 14,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_boot_preflight",
+      "tests": 12,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_coalesced_load",
+      "tests": 20,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_coalesced_nvfp4",
+      "tests": 0,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_decode_fair",
+      "tests": 16,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_decode_timeslice",
+      "tests": 10,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_dirty_l2",
+      "tests": 12,
+      "skips": 4,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_ehproj",
+      "tests": 8,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_ehproj_rollback",
+      "tests": 13,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_head",
+      "tests": 17,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_head_init",
+      "tests": 12,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_head_leakgate",
+      "tests": 4,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_draft_head_replay_criterion",
+      "tests": 17,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_dsa_short",
+      "tests": 9,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_fp4_kv",
+      "tests": 16,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_fp4_kv_admission",
+      "tests": 2,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_fp4_kv_integration",
+      "tests": 4,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_fp4_mla_prefill",
+      "tests": 3,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_fp4_prefill_memory",
+      "tests": 10,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_glm_fast_load",
+      "tests": 0,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_glue_lite",
+      "tests": 35,
+      "skips": 1,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_integ_1006",
+      "tests": 8,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_kernel_cpu",
+      "tests": 1,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_kstop",
+      "tests": 29,
+      "skips": 0,
+      "rc": 0,
+      "transport": "mocked one-rank collectives"
+    },
+    {
+      "module": "test_kstop_compat",
+      "tests": 14,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_kstop_spec_distribution",
+      "tests": 1,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_kv_headroom",
+      "tests": 10,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_launcher",
+      "tests": 65,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_loader_guard",
+      "tests": 12,
+      "skips": 1,
+      "rc": 0,
+      "transport": "one TCPStore case skipped: sandbox denies loopback bind"
+    },
+    {
+      "module": "test_moe_det",
+      "tests": 20,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_mtp_rowselect",
+      "tests": 6,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_mtp_select",
+      "tests": 13,
+      "skips": 1,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_nvfp4_attn",
+      "tests": 25,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_nvfp4_more",
+      "tests": 10,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_nvfp4_quality",
+      "tests": 3,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_pad_hygiene",
+      "tests": 14,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_param_hash",
+      "tests": 17,
+      "skips": 2,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_persistent_cache",
+      "tests": 10,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_recent_kv",
+      "tests": 12,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_recipe",
+      "tests": 24,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_release_1006",
+      "tests": 6,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_release_1010",
+      "tests": 2,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_release_gate",
+      "tests": 18,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_rowselect_init",
+      "tests": 14,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_skip_mla_plan",
+      "tests": 18,
+      "skips": 12,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_spec_sample",
+      "tests": 6,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_swa_pool",
+      "tests": 13,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_t0_probe",
+      "tests": 39,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_topk_exactness",
+      "tests": 4,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_w4_integration",
+      "tests": 4,
+      "skips": 0,
+      "rc": 0,
+      "transport": "repository test unchanged"
+    },
+    {
+      "module": "test_glm_roce_cpu",
+      "tests": 18,
+      "skips": 5,
+      "rc": 0,
+      "transport": "five native four-rank Gloo cases skipped: sandbox denies loopback bind"
+    }
+  ]
+}

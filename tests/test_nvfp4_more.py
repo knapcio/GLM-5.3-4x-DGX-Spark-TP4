@@ -57,7 +57,7 @@ class MoreTests(unittest.TestCase):
         self.assertIsNone(groups.classify('model.layers.78.eh_proj'))
         self.assertIsNone(groups.classify('model.layers.0.mlp.down_proj'))
         self.assertEqual(groups.classify('model.layers.78.mtp_block.mlp.experts'),'mtp')
-        source=Path('/srv/campaign/diagnostics/glm53-full-20260929/day3/mtp-accept-lab/weights/e8-tech2wild')
+        source=Path('receipts/glm53-full-20260929/day3/mtp-accept-lab/weights/e8-tech2wild')
         if source.exists():
             inv=groups.inventory(json.loads((source/'model.safetensors.index.json').read_text())['weight_map'],groups.ORDER)
             self.assertEqual({g:sum(e['group']==g for e in inv.values()) for g in groups.ORDER},groups.COUNTS)

@@ -47,8 +47,8 @@ COPY roce/glm_roce.pth /opt/glm-roce/glm_roce.pth
 # Install the .pth next to vllm, i.e. in a directory site.py is known to process.
 RUN python3 -c "import importlib.util as u, os, shutil; d = os.path.dirname(os.path.dirname(u.find_spec('vllm').origin)); shutil.copy('/opt/glm-roce/glm_roce.pth', d); print('glm_roce.pth ->', d)"
 
-# Runtime defaults (a docker run -e overrides any of them). B12X_ROCE_HCA: both ConnectX-7 rails
-# (10.100.96.x and 10.100.97.x on this fleet). Spin limit 300M polls (~5 min, tonyd2wild's value):
+# Runtime defaults (a docker run -e overrides any of them). B12X_ROCE_HCA selects both fabric rails.
+# Spin limit 300M polls (~5 min, tonyd2wild's value):
 # vLLM's eager profile/warm-up can JIT-compile on one rank while its peers wait inside a RoCE
 # kernel, and b12x's default (20M, ~20 s) would poison the runtime on a cold-cache boot. A real
 # transport stall therefore surfaces after ~5 min instead of ~20 s.

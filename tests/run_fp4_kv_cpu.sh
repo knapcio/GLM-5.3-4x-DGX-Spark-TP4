@@ -32,7 +32,7 @@ exec docker run --pull never --network none --name "$NAME" --platform linux/arm6
   -e MKL_NUM_THREADS=2 -e OPENBLAS_NUM_THREADS=2 -e PYTHONDONTWRITEBYTECODE=1 \
   -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e TRITON_CACHE_DIR=/results/triton \
   --mount "type=bind,src=$ROOT,dst=/pkg,readonly" \
-  --mount "type=bind,src=$DAY,dst=/campaign/day3,readonly" \
+  --mount "type=bind,src=$DAY,dst=/receipts/day3,readonly" \
   --mount "type=bind,src=$DUMPS,dst=/probe,readonly" \
   --mount "type=bind,src=$OUT,dst=/results" --entrypoint /usr/bin/nice \
   "$IMAGE" -n 10 python3 -B /pkg/tests/fp4_kv_cpu_suite.py

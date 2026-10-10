@@ -61,7 +61,7 @@ Extra conversion: **13,347,389,440 elements**, about**7.508GB** payload plus hea
 ```bash
 cd /srv/projects/glm53-full-nvfp4more
 PY=/srv/operator/.cache/uv/archive-v0/_WsxjzKnb0gWDXwh/bin/python
-export GLM_IMAGE_SRC=/srv/campaign/diagnostics/glm53-full-20260929/day3/release-dirtyl2/image-source
+export GLM_IMAGE_SRC=receipts/glm53-full-20260929/day3/release-dirtyl2/image-source
 "$PY" -m unittest discover -s tests -p 'test_nvfp4*.py'
 "$PY" -m unittest discover -s tests -p test_recipe.py
 "$PY" tests/test_glm_fast_load.py
@@ -69,11 +69,11 @@ export GLM_IMAGE_SRC=/srv/campaign/diagnostics/glm53-full-20260929/day3/release-
 python3 scripts/nvfp4_more_cost.py --cycle-ms 75
 # Fresh external directory; prepare renders DRY only and never calls SSH.
 python3 scripts/nvfp4_more_prepare.py \
-  --reference-clone /srv/campaign/diagnostics/glm53-full-20261006-integ/prepared-mac-final/restore0/clone \
+  --reference-clone receipts/glm53-full-20261006-integ/prepared-mac-final/restore0/clone \
   --out /path/to/fresh/prepared-window --tag WINDOWTAG
 ```
 
-Prepared Mac artifacts are at `/srv/campaign/diagnostics/glm53-full-20261006-nvfp4more/prepared-mac/`: B,S,SD,M,I, each with a frozen clone, launcher, source guard, exact98,176 cap/ordinary1GiB/dispram geometry, `cycle.py`, `gate_metrics.py`, four-rank DRY commands and hashes. SD is optional and separately measured. Default M and I retain shared only; `--with-dense` inserts qualified dense into M/I. Preparation is no-clobber and never advances an arm. Refresh packages after changing code; hashes bind their actual contents. A freshly prepared B package is the restore candidate, but the coordinator must record the actual current watch/guard/container identity before using it.
+Prepared Mac artifacts are at `receipts/glm53-full-20261006-nvfp4more/prepared-mac/`: B,S,SD,M,I, each with a frozen clone, launcher, source guard, exact98,176 cap/ordinary1GiB/dispram geometry, `cycle.py`, `gate_metrics.py`, four-rank DRY commands and hashes. SD is optional and separately measured. Default M and I retain shared only; `--with-dense` inserts qualified dense into M/I. Preparation is no-clobber and never advances an arm. Refresh packages after changing code; hashes bind their actual contents. A freshly prepared B package is the restore candidate, but the coordinator must record the actual current watch/guard/container identity before using it.
 
 ## Later coordinator window — written only, not executed
 

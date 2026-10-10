@@ -6,7 +6,7 @@ Planning forecast: **+2% relative committed/cycle in prose, +1% in code** versus
 
 ## Evidence and what it establishes
 
-Receipt roots under `/srv/campaign/diagnostics/`:
+Receipt roots under `receipts/`:
 
 * `glm53-full-20261006-v2cycle/RESULT.json`: FP8 vs FP4x, prose 2.796 vs 2.704 committed/cycle (-3.29%), code 3.740 vs 3.669 (-1.90%). Cycle 76.51 vs 77.12 ms / 83.11 vs 83.76 ms. sparkDash prose c1 32.65 vs 30.65 tok/s (-6.13%). The difference between the throughput and committed ratios cannot all be assigned to quantization acceptance.
 * `glm53-full-20261006-mtpfp8/window/compare-m.json`: MTP-layer-only FP8 vs all-FP4x e, pooled prose 0.9942, code 1.0047. Against FP8 C, prose 0.9856 [0.9709,0.9997], code 0.9949 [0.9805,1.0076]. No useful MTP-only precision recovery. Trajectories and small samples limit causal certainty; this is strong prioritization evidence for the target.

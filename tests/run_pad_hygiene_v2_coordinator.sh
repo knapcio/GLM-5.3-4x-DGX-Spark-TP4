@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-task_repo=/srv/projects/glm53-full-padv2
-task_day=/srv/campaign/diagnostics/glm53-full-20260929/day3
+task_repo=$(cd "$(dirname "$0")/.." && pwd)
+: "${GLM_CAMPAIGN_DAY:?Set GLM_CAMPAIGN_DAY to the external day3 CPU fixture directory}"
+task_day=$(cd "$GLM_CAMPAIGN_DAY" && pwd)
 task_out=$task_repo/tests/results/padv2/coordinator
 task_image=ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
 cd "$task_repo"
-[[ $(uname -s) == Darwin && $(docker context show) == colima ]]
+[[ -d "$task_day/mtp-kstop" ]] || { echo "missing mtp-kstop CPU fixtures" >&2; exit 2; }
 task_running=$(docker ps -q)
 [[ -z $task_running ]] || { echo 'docker ps must be empty' >&2; exit 2; }
 docker image inspect "$task_image" --format '{{.Id}} {{.Architecture}}'

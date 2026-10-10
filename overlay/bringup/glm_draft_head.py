@@ -669,30 +669,53 @@ def initial_fallback(runner, refusal):
     runner._draft_head_qualification = None
     runner._k4_drafthead_qualification = None
     runner._draft_head_init_failure = refusal.receipt
+    runner.speculator._kstop.bad = 'INIT fallback incomplete; whole candidate stop required'
     error = None
     try:
         torch.cuda.synchronize()
         release_draft_graphs(runner)
+        if getattr(runner.speculator, '_glm_rowselect', None) is not None:
+            from glm_mtp_rowselect import disable
+            disable(runner.speculator, refusal)
         gc.collect(); torch.cuda.empty_cache()
         runner._draft_head.on = False
+    except Exception as exc:
+        error = exc
+    # Every rank reaches this vote before a rollback rank can allocate or recapture.
+    ehproj = getattr(runner, '_draft_ehproj', None) is not None
+    agree({'initial_fallback_drained': keys, 'ehproj_enabled': ehproj}, error is None)
+    if error is not None:
+        raise RuntimeError('initial fallback drain failed') from error
+    if ehproj:
+        from glm_draft_ehproj import rollback
+        rollback(runner)
+    try:
+        if ehproj:
+            gc.collect(); torch.cuda.empty_cache()
         capture_draft_arm(runner, True)
         torch.cuda.synchronize()
         gc.collect(); torch.cuda.empty_cache()
+        available = memory()
     except Exception as exc:
         error = exc
-    available = memory()
+        available = 0
     conditions = dict(no_exception=error is None, head_off=not runner._draft_head.on,
         graph_set=descriptors(runner) == keys, target_graphs=runner.cudagraph_manager.graphs == target,
         target_identity=runner.model.lm_head is runner._draft_head.original,
         target_method=runner.model.lm_head.quant_method is runner._draft_head_init_target_method,
+        rowselect_off=(getattr(runner.speculator, '_glm_rowselect', None) is None or
+                       runner.speculator._glm_rowselect.get('disabled', False)),
         memory_floor=available >= 4.5*(1 << 30))
     valid = qualification_term('initial_fallback_off', conditions,
         dict(graphs=descriptors(runner), mem_available=available, floor_bytes=int(4.5*(1 << 30))), error)
     agree({'initial_fallback_off': keys}, valid)
+    if ehproj:
+        from glm_draft_ehproj import rollback_qualified
+        rollback_qualified(runner)
     # No poison: native OFF engine can decode. DH controls stay unready and
     # status retains the failed gate, so candidate acceptance must fail.
     runner.speculator._kstop.bad = None
-    print('draft-head INIT qualification REFUSED; boot continues with DH OFF; '
+    print('draft-head INIT qualification REFUSED; boot continues with DH OFF/rowselect OFF; '
           'DH gate FAILED '+json.dumps(refusal.receipt, sort_keys=True), flush=True)
 
 

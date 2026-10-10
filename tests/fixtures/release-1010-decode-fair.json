@@ -1,0 +1,6 @@
+{
+  "schema": 2,
+  "chunk": 4096,
+  "decode_steps": 40,
+  "sequence": 0
+}

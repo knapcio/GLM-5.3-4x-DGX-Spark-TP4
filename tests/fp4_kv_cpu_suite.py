@@ -9,7 +9,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[1]
 source=Path(importlib.util.find_spec('vllm').origin).resolve().parent.parent
 env=dict(os.environ,GLM_IMAGE_SRC=str(source),GLM_IMAGE_SRC_SECOND=str(source),
-         GLM_KV_FORMAT='fp8',FP4_SIM_DIR='/campaign/day3/release-stack',FP4_DUMPS='/probe',FP4_RESULTS='/results')
+         GLM_KV_FORMAT='fp8',FP4_SIM_DIR='/receipts/day3/release-stack',FP4_DUMPS='/probe',FP4_RESULTS='/results')
 checks=[('scripts/check_source_pins.py',str(source)),('tests/test_recipe.py',),('tests/test_launcher.py',),
         ('tests/test_persistent_cache.py',),('tests/test_fp4_kv.py',),('tests/test_fp4_kv_integration.py',),('tests/test_fp4_prefill_memory.py',),('tests/test_fp4_mla_prefill.py',),('tests/test_topk_exactness.py',),('tests/test_fp4_kv_admission.py',)]
 for file,*args in checks:

@@ -110,7 +110,9 @@ def prepare(a):
 
 
 def remote(rank, command, timeout=80):
-    r=subprocess.run(['ssh','-n','-o','BatchMode=yes','-o','ConnectTimeout=5',f'Spark_0{rank+1}',command],
+    hosts=os.environ.get('RECIPE_HOSTS','').split()
+    if len(hosts)!=4:raise ValueError('RECIPE_HOSTS must contain four rank-ordered hosts')
+    r=subprocess.run(['ssh','-n','-o','BatchMode=yes','-o','ConnectTimeout=5',hosts[rank],command],
                      capture_output=True,text=True,timeout=timeout,check=True)
     return r.stdout.strip()
 
@@ -141,9 +143,11 @@ class LoaderSamples:
     def start(self):
         helper=(S.ROOT/'scripts/loader_memwatch.py').read_text().split("if __name__ == '__main__':")[0]
         code=helper+"\nwhile True:\n print(json.dumps(sample()),flush=True)\n time.sleep(.1)\n"
+        hosts=os.environ.get('RECIPE_HOSTS','').split()
+        if len(hosts)!=4:raise ValueError('RECIPE_HOSTS must contain four rank-ordered hosts')
         for r in range(4):
             with (self.out/f'rank{r}-loader-memory.stderr').open('w') as err:
-                p=subprocess.Popen(['ssh','-n','-o','BatchMode=yes','-o','ConnectTimeout=5',f'Spark_0{r+1}',
+                p=subprocess.Popen(['ssh','-n','-o','BatchMode=yes','-o','ConnectTimeout=5',hosts[r],
                                     'python3 -u -c '+shlex.quote(code)],stdout=subprocess.PIPE,stderr=err,text=True)
             self.procs.append(p);threading.Thread(target=self.reader,args=(r,p),daemon=True).start()
         threading.Thread(target=self.watch,daemon=True).start()
@@ -185,10 +189,12 @@ def transport(step,m,out,mon):
     images=rendered_images(step/'dry.txt')
     # Images appear immediately before the vllm serve argument in the rendered vector.
     if len(images)!=4:raise RuntimeError('transport image vector missing')
+    hosts=os.environ.get('RECIPE_HOSTS','').split()
+    if len(hosts)!=4:raise ValueError('RECIPE_HOSTS must contain four rank-ordered hosts')
     for r in range(4):
         mon.check();stage='/srv/glm/glm-control/integ-transport/'+m['boot']
         remote(r,'mkdir -p /srv/glm/glm-control/integ-transport; mkdir '+shlex.quote(stage)+'; mkdir '+shlex.quote(stage+'/tmp'))
-        subprocess.run(['rsync','-a','--exclude=state','--exclude=logs','--exclude=cache',str(step/'clone')+'/',f'Spark_0{r+1}:'+stage+'/src/'],check=True,timeout=120)
+        subprocess.run(['rsync','-a','--exclude=state','--exclude=logs','--exclude=cache',str(step/'clone')+'/',hosts[r]+':'+stage+'/src/'],check=True,timeout=120)
         command=shlex.join(['docker','run','--pull','never','--network','none','--name',m['boot']+f'-transport-r{r}',
              '--gpus','all','--ipc','host','--ulimit','memlock=-1:-1','-e','TMPDIR=/transport-tmp',
              '--mount','type=bind,src='+stage+'/src,dst=/pkg,readonly',

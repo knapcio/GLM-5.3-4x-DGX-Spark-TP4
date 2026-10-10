@@ -1,180 +1,110 @@
 # Full GLM-5.3 on 4x NVIDIA DGX Spark
 
-Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) (753B), tensor parallel across four DGX Sparks,
-with native MTP speculative decoding, FP4x KV, NVFP4 weight sidecars and **262,144-token context**.
-The ranks implement one shared **264,640-token KV pool (4,135 blocks)**; four simultaneous maximum-context
-requests do not fit. The ordinary KV head is 6,318,718,976 bytes per rank, plus the display carveout.
-The recent-FP8 bank is disabled by default. Deterministic MoE token alignment makes single-request output
-**reproducible at temperature 0** in the tested panel, the native MTP draft uses its own NVFP4 copy of the LM head, and decode/prefill time-slicing keeps a
-decoding request responsive while another request prefills a long prompt.
-Results are from one boot, E, measured October 9, 2026, unless a row says otherwise.
-[Gate result](GATE-RESULT.md).
-
 ## sparkDash (thinking off)
 
-Decode tok/s, aggregate **[per stream]**, 256 output tokens, temperature 0, boot E.
-Cells are medians: c1 five runs, c2/c4 three runs, c8 two runs. All requests completed without failures.
-One full sweep on boot E, without best-of-sweep selection (prose c1 runs 34.74-35.29). Single-request output is now
-reproducible at temperature 0 in the tested panel ([determinism](docs/determinism.md)), so reruns are expected to
-repeat the same token trajectories rather than sample new ones. The previous table's 36.25 for prose c1 came from the
-selected first of two sweeps of a configuration whose trajectories varied between runs; these receipts record timing, not
-token sequences, so they do not isolate how much of the difference that explains. Cross-boot paired cycle on the same
-night: prose 70.0 ms with deterministic alignment vs 70.7-70.8 ms without.
+Decode tok/s, aggregate **[per stream]**, 256 output tokens, temperature 0.
+Report medians across every scored run: c1 five, c2/c4 three, c8 two; discard only named warmups.
+Measurements belong to the exact release configuration and its October 10 gen-12 boot. This was one complete
+262,144-context sweep with no failed jobs and no best-of selection; see [the gate result](GATE-RESULT.md).
 
 | Prompt type | c1 | c2 | c4 | c8* |
 |---|---:|---:|---:|---:|
-| prose | **35.22** | 52.18 [26.09] | 64.84 [16.75] | 59.91 [17.30] |
-| code | 43.78 | 54.03 [27.24] | 72.09 [18.17] | 62.90 [19.10] |
-| structured | 48.09 | 58.39 [30.12] | 91.52 [23.85] | 78.96 [24.43] |
-| json | 43.38 | 54.62 [28.12] | 78.17 [19.96] | 68.59 [20.83] |
+| prose | 39.38 | 50.90 [25.97] | 65.89 [17.05] | 61.31 [18.09] |
+| code | 45.74 | 54.39 [27.19] | 72.94 [18.38] | 62.78 [19.26] |
+| structured | 48.66 | 67.04 [33.52] | 92.22 [24.20] | 72.64 [24.32] |
+| json | 45.54 | 55.26 [28.40] | 78.98 [20.22] | 70.69 [21.34] |
 
-*Four serving slots: at c8 four requests decode and the rest queue. When a slot frees, the next queued prompt
-prefills while the remaining streams decode, which is the mix time-slicing paces. Per-stream decode is measured during
-active generation; aggregate includes the batch wall time. sparkDash repeats one prompt across concurrent streams;
-the separate memory stress uses four distinct prompts.
+*Four serving slots: c8 queues four requests. Per-stream decode covers active generation;
+aggregate includes batch wall time. sparkDash repeats one prompt across streams; memory stress uses distinct prompts.
 
-### Prefill
-
-Cold sparkDash prompts, boot E, median of three:
+Cold prefill, median of three, with prefix-cache state recorded separately:
 
 | Input | 4K | 8K | 16K | 32K |
 |---|---:|---:|---:|---:|
-| cold prefill tok/s | 983 | 929 | 899 | 887 |
-| time to first token (s) | 4.20 | 8.85 | 18.26 | 36.98 |
+| cold prefill tok/s | 977 | 882 | 862 | 881 |
+| time to first token (s) | 4.22 | 9.32 | 19.04 | 37.23 |
 
-Long retrieval prompts, boot E, first cold request at each length (a different workload from sparkDash):
+## Current release configuration
 
-| Needle target | Actual input tokens | Cold TTFT (s) |
-|---|---:|---:|
-| 16K | 16,154 | 19.7 |
-| 128K | 127,814 | 167.7 |
-| 250K | 249,837 | 377.7 |
+Full [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) (753B), tensor parallel across four DGX Sparks,
+with native MTP speculative decoding, FP4x KV, NVFP4 weight sidecars and **262,144-token context**.
+One shared **264,640-token KV pool (4,135 blocks)** spans the ranks; four simultaneous maximum-context requests
+do not fit. The ordinary KV head is 6,318,718,976 bytes per rank, plus the display carveout.
+The recent-FP8 bank is disabled. The fast loader is the default.
 
-Adaptive chunks select 2048 below 16,384 total prompt tokens, otherwise 4096, including prefix-cache hits.
-Prefix caching remains on; cold prompts and warm replay are reported separately.
+Deterministic MoE alignment, the draft-only NVFP4 LM head, **FP8 draft eh_proj**, and **glue-lite F1+F2** are on.
+Native confidence stopping retains K3 at c1 and K2 in multi-request batches. Decode/prefill time-slicing remains
+4096/N40. Row selection is off, F3 index caching is off, and cache trim and async v2 are absent from this export.
+Split32 MLA and the existing rotary storage retain the public release layout.
+This configuration passed the owner-approved reduced release gate on October 10, 2026 and is serving under the
+watchdog. The exact scope, carried evidence and deliberately skipped full-gate phases are recorded in
+[GATE-RESULT](GATE-RESULT.md).
 
-## Temperature-0 reproducibility
+## Draft projection and launch overhead
 
-vLLM's `moe_align_block_size` orders tokens inside each expert by atomic arrival, and the Marlin MoE fp32 reduction
-depends on that order, so identical requests could produce different tokens. `GLM_MOE_DET_ALIGN=1` replaces the
-align step for the target and MTP experts with a counting-sort kernel that keeps token ids ascending in each expert,
-with the stock layout otherwise unchanged. In a single-GPU graph microbenchmark it was faster than the stock align
-at decode sizes (2.1-2.6 vs 4.4-4.5 µs at M1-M16) and slower at M512 (12.0 vs 6.2 µs, prefill only).
+The native MTP draft's replicated 6144x12288 `eh_proj` uses FP8 W8A16 Marlin with per-output-channel BF16 scales.
+The target model stays unchanged and verifies drafts using vLLM speculative verification.
+Combined INIT checks qualify the projection and draft head on all four ranks before readiness; a collective refusal
+restores the native BF16 projection and disables the draft head, which fails this candidate's acceptance gate.
+[eh_proj details](docs/eh_proj.md).
 
-| 30 prompts x 3 sequential repeats, temperature 0, 64 tokens, prefix cache reset before each | Rows identical in all repeats | First-token flips |
-|---|---:|---:|
-| deterministic align (default), October 9 qualification boot, same code and configuration as E | **30 / 30** | 0 |
-| stock align, October 8 boot | 4 / 30 | 15 |
+Glue-lite F1 feeds BF16 router logits directly into vLLM's widening grouped-topk path; F2 reuses the Marlin MoE
+workspace after the kernel's existing lock reset. The glue defaults are `GLM_GLUE_ROUTER_BF16=1`,
+`GLM_GLUE_MOE_WS=1`, `GLM_GLUE_DSA_IDX_CACHE=0`, `GLM_GLUE_IDX_EXPECT=0`, and
+`GLM_GLUE_ROUTER_EXPECT=target:75,mtp:1`; the zero index expectation matches F3 being off.
+[Glue-lite details and exactness boundaries](docs/glue-lite.md).
 
-Requests are byte-identical within each row's repeats. This supports the diagnosed MoE-order explanation;
-reproducibility with concurrent requests and across boots remains unqualified.
+## Reproducibility and responsiveness
 
-qeval x3 on boot E failed the same two tasks in every run. Verify on your own boot with `bench/t0_probe.py`
-([determinism](docs/determinism.md#how-to-verify)).
+Deterministic MoE alignment keeps token ids ascending within each expert, avoiding atomic-arrival-dependent
+Marlin reductions. Single-request temperature-0 repeatability was 30/30 across three sequential runs on the
+release boot. Concurrent repeatability remains unqualified.
+[Determinism](docs/determinism.md), `bench/t0_probe.py`.
 
-## Draft-only NVFP4 LM head
-
-The MTP draft reads its own NVFP4 (Marlin W4A16) copy of the LM head, 133.8 MB per rank. The unchanged target model,
-whose LM head remains BF16, verifies drafts through standard speculative verification; this does not establish
-bitwise-identical output across runs. Committed tokens per cycle were consistent with unchanged on the measured
-panels; the decode cycle is about 4-5 % shorter. Same-boot ON/OFF confirmation (October 7 boot, fresh 12-prompt panels): prose **+5.61 %**
-[+3.94, +7.47], code+structured **+4.43 %** [+3.17, +5.71]. At boot, `GLM_DRAFT_HEAD_INIT=1` qualifies the draft
-graphs on all four ranks (write coverage, exact draft tokens, bounded float drift) and falls back to the BF16 draft
-head on all ranks if any rank refuses; boot D passed on all ranks. The float bound exists because vLLM's MoE token
-alignment orders tokens with atomics, so the Marlin MoE fp32 reduction order, and the draft hidden state at the few-ULP
-level, could vary between runs; deterministic alignment now removes that source, and the bound stays as a safety
-check. Boot E also passed on all ranks. [Details](docs/draft-head.md).
-
-## Decoding while another agent prefills
-
-Agent A is decoding (a 60,043-token prefix-cached prompt) when agent B sends a cold ~100K-token prompt.
-Without time-slicing every scheduler step mixes a 4096-token prefill chunk with A's decode, about 5.2 s per step.
-With [time-slicing](docs/time-slicing.md) (prefill capped at 4096 tokens per step, then 40 pure-decode steps):
-
-| Two runs each | A decode during B's prefill | B time to first token |
-|---|---:|---:|
-| time-slicing on (default), boot E | **13.18 tok/s** (10.88 / 15.48) | 209.3 s (204.4 / 214.1) |
-| policy off, October 7 same-boot window | 0.44 tok/s (0.45 / 0.42) | 130.9 s (131.7 / 130.1) |
-
-The cost is B's TTFT, **+60 %** against the October 7 policy-off boot (cross-boot). A returns to its normal rate after B's first token, and a lone prefill runs at full
-speed. c1 decode is consistent with unchanged: same-boot ON/OFF ABBA on the time-slicing release boot (October 8),
-48 pairs, **+0.83 %** [-0.36, +2.05]. The policy-off
-row comes from a single October 7 boot that switched the policy with the runtime sidecar; with the policy on, that
-boot measured 13.03 tok/s and 212.4 s.
-
-Emergency off without a reboot, if the boot used the runtime sidecar (`GLM_DECODE_FAIR_CONTROL`, see
-[time-slicing](docs/time-slicing.md#runtime-control-without-a-reboot)); run on the rank-0 host:
-
-```bash
-SEQ=1   # one more than the sequence currently in the file
-python3 scripts/decode_fair_control.py "$OVERLAY_REMOTE/cache/decode-fair.json" --chunk 0 --decode-steps 0 --sequence "$SEQ"
-```
-
-Without the sidecar, boot with `GLM_DECODE_FAIR=0`.
-
-## RigMark 1.0.0 (thinking on, effort low)
-
-Boot E, c1 decode medians of five; all workload gates passed.
-
-| Workload | c1 decode tok/s | range |
-|---|---:|---|
-| prose | **29.13** | 28.74–29.81 |
-| code | 41.75 | 41.57–42.61 |
-| structured | 46.63 | 46.42–46.79 |
-
-Concurrency, code workload, aggregate end-to-end tok/s **[per-stream decode]**, boot E:
-
-| Workload | c1 | c2 | c4 |
-|---|---:|---:|---:|
-| code | 35.14 [38.68] | 47.42 [26.43] | 65.77 [17.94] |
-
-| Prefill | Boot E tok/s |
-|---|---:|
-| 8K cold | 908 |
-| 8K warm replay | 16,011 |
+Decode/prefill time-slicing runs 40 pure-decode steps between mixed prefill chunks capped at 4096 tokens,
+keeping a decoding request responsive during another request's long prefill. A lone prefill retains adaptive chunks:
+2048 below 16,384 total prompt tokens, otherwise 4096. This trades the second request's TTFT for decode responsiveness.
+The optional `GLM_DECODE_FAIR_CONTROL` sidecar supports runtime changes; the default boot needs no sidecar.
+[Time-slicing](docs/time-slicing.md) explains boot options and emergency control.
 
 ## Quality and capacity
 
-| Check | Boot E result |
-|---|---|
-| qeval, 75 tasks, x3 | 73 / 73 / 73, **mean 73.0 passed tasks** (threshold 70.553); primary 53/53/53; no truncations or request failures |
-| Needle 16K, twice | 8/10 / 8/10; PASS |
-| Needle 128K, twice | 9/10 / 9/10; PASS |
-| Needle 250K, twice | 8/10 / 8/10; PASS |
-| Memory stress | c4 4x(65,024 prompt +1024 output), single 261,120+1024 PASS; rank-0 minimum **5.96 GiB** (criterion 5.8), swap 0, preemptions 0 |
-| Prefix cache | APC repeat hit 64,896/65,024 prompt tokens; cache retained through stress |
-| Mixed-load soak | 43.0 min, 66 requests (thinking prose, code, 16K-200K prompts, APC repeats, cancels), 0 errors, 0 preemptions; rank-0 minimum 5.64 GiB, quiet drift -0.09 GiB |
-| Draft-head INIT | all four ranks ON and ready; 341 qualification rows per rank, 0 failed; target head bit-exact |
-| Deterministic align | `glm-moe-det` installed on target and MTP sites on all four ranks |
+The reduced gate ran boot/admission, receipt and INIT checks, temperature-0 repeats, full sparkDash, RigMark,
+stress, a short mixed-load soak, one 128K needle, collection and handover/verification. Qpanel and qeval
+evidence, 16K needles and glue exactness were carried from the source runs named below. The time-slicing
+scenario, qeval x3, 250K needles and long soak were not run on this release boot.
+[Receipt paths and SHA256 provenance](docs/release-1010-gate.md#recorded-reduced-gate-and-cell-provenance).
 
-qeval failures: `code_camel_to_snake` and `code_two_sum`, identical in all three runs.
-Every needle response had all seven registry fields correct and finished with `stop`.
-The retrieval probe checks latest revisions, aliases and an operator fix embedded in synthetic public text.
-These are operational screens. The 50 tok/s prose-c1 goal and multi-day stability remain unqualified.
-[Portable receipt summary](docs/results/release-1009-summary.json).
+| Check | Release result |
+|---|---|
+| Quality admission; qeval status | Carried qpanel/B (glm53full-cand3win7-w4ehproj-6): 110/116, 2 truncations; decision PASS. carried w4-ehproj-g5: 71/75, primary 51/55, 1 truncation, 4 failed tasks; decision KILL; carried w4-ehproj-g6: 71/75, primary 51/55, 1 truncation, 4 failed tasks; decision INFORMATIONAL (release_decision KILL). Qeval x3 not run on release boot. |
+| Needle 16K, carried twice | Carried w4-ehproj-g6: 8/10, 8/10; not rerun on release boot. |
+| Needle 128K, one run | 1 run, 9/10; missed `matching_count`; TTFT 170.86024899967015 s; PASS under the reduced rule. |
+| Needle 250K | Not run; no carried 250K receipt in the reduced scope. |
+| c4 shared-pool and single maximum-context stress | PASS; c4 65024+1024 each, single 261120+1024; rank 0/1/2/3 minima 5.808849334716797/6.767314910888672/7.456321716308594/7.352359771728516 GiB; swap maxima 0/0/0/0 KiB; preemptions 0.0. |
+| Prefix-cache first/repeat and retained-cache stress | 8K cold/replay prefill 904.667/16114.311 tok/s; stress APC hits/queries 64896.0/65024.0 tokens; retained-cache quiet minima 5.89/6.836/7.515/7.398 GiB (ranks 0/1/2/3). |
+| Mixed-load soak | PASS; requested 15.0 min, observed 1071.0947126080282 s; 27 requests, 0 errors, 0.0 preemptions; quiet drift -0.022/0.006/-0.024/0.017 GiB (ranks 0/1/2/3). |
+| Draft-head + eh_proj INIT | 4/4 ranks ON/ready, combined FP8 eh_proj qualified; 16 cases and 342/342/342/342 rows per rank; 0 failed; target head bit-exact on every rank. |
+| Temperature-0 sequential repeats on this boot | 30/30 prompts identical across 3 repeats; 30/30 native-ID equality to carried stack-g2/glue-t0. |
+| RigMark 1.0.0, thinking on, effort low | prose 30.051 tok/s; code 42.372 tok/s; structured 47.338 tok/s; code c4 aggregate 67.904 tok/s; 8K cold prefill 904.667 tok/s; all workload gates passed. |
+
+These are operational screens; multi-day stability remains unqualified.
 
 ## Memory safety
 
-The floors are **4.5 GiB live**, **5.8 GiB stress criterion**, **6.0 GiB capture**,
-**6.5 GiB admission for 60 s**, and **7.5 GiB before capture**, on every rank.
-Boot E's observed 60-second rank-0 admission minimum was 6.77 GiB, clearing the 6.5 GiB criterion; the stress minimum was 5.96 GiB, the soak minimum 5.64 GiB and the
-quiet level after the soak 5.78 GiB. The draft head's bank costs 133.8 MB per rank.
+On every rank, the floors are **4.5 GiB live and release stress**, **6.0 GiB capture**,
+**6.5 GiB admission for 60 s**, and **7.5 GiB before capture**.
+**knapcio selected the 4.5 GiB stress criterion on October 10, 2026**, matching the live floor.
+This changes only stress acceptance; capture, admission, swap and preemption checks remain in force.
+Stress must report the observed minimum on each rank, rather than substituting the threshold as a result.
+The watchdog applies the live floor, sustained swap/error guards, 600 s busy-without-progress allowance
+with idle reset, and an 1800 s boot deadline. APC stays on. [Memory layout](docs/memory-1006.md).
 
-Two bounded, unpinned ballast runs on the October 7 release boot found **no observed harm down to 2.5 GiB under
-load**: at a 2.59 GiB quiet level rank 0 reached 2.46 GiB, with paired prose/code cycle ratios 0.995/1.002, c1 TTFT
-1.014, c4 wall 0.961 and 120K TTFT 0.977 relative to the unballasted baseline; PSI some avg10 stayed at 0.00 and
-preemptions were 0. A second node at 2.58 GiB quiet reached 2.32 GiB with cycle ratios 0.976/0.981. Lower levels were
-not tested. The live floor is the lowest harmless level plus 2.0 GiB; the 5.8 GiB stress criterion was set for the
-draft head's bank. 2.5 GiB is evidence, not a serving floor.
-
-## What is in the stack
-
-Base checkpoint: [Tech2wild/GLM-5.3-Int4-Int8Mix](https://huggingface.co/Tech2wild/GLM-5.3-Int4-Int8Mix/tree/206507bbb047d8223964a0414cd83230c59428f9),
-revision `206507bbb047d8223964a0414cd83230c59428f9`. Its files remain unchanged; conversion writes separate sidecars.
+## Levers and credit
 
 | Piece | What it does | Switch | Credit |
 |---|---|---|---|
-| Native MTP with K-stop | Confidence stop at c1; K2 batches; graphs [1,4,12,16] | `GLM_MTP_KSTOP=1` | Z.ai; vLLM; SpecDec++/DISCO ideas; DeepSeek verify-cap idea; keys/@u1tra_instinct TensorFold results |
+| Native MTP with K-stop | Confidence stop at c1; K2 batches; graphs [1,4,12,16] | `GLM_MTP_KSTOP=1` | Z.ai; vLLM; SpecDec++/DISCO ideas; DeepSeek verify-cap idea; keys/@u1tra_instinct TensorFold results; knapcio implementation |
 | Display carveout KV | 6,318,718,976 B ordinary head plus 2046 MiB external carveout | `RECIPE_DISPRAM=require` | [kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram), external unmodified AGPL-3.0; NVIDIA; vLLM |
 | FP4x latent KV | Packed latent rows; RoPE and index keys remain FP8 | `GLM_KV_FORMAT=fp4x` | Mia (MiaAI-Lab), FP4 KV idea only, no code copied; knapcio implementation; NVIDIA/Triton/vLLM |
 | Adaptive prefill | 2048/4096 chunk budget selected from total prompt context | `GLM_PREFILL_CHUNK_ADAPTIVE=1` | vLLM scheduler contributors; knapcio |
@@ -185,6 +115,8 @@ revision `206507bbb047d8223964a0414cd83230c59428f9`. Its files remain unchanged;
 | Prefix caching | Reuses full KV blocks of repeated prefixes | `--enable-prefix-caching` | vLLM |
 | Short-context DSA | All-selected short contexts skip unnecessary indexer work | `GLM_INDEXER_SHORTCUT=1` | Guess-Verify-Refine idea; DeepSeek DSA; vLLM |
 | Pad hygiene and c2 reuse | Padded rows reuse live experts; c2 replays existing exact graph | `GLM_PAD_HYGIENE=1`, `GLM_MTP_KSTOP_CAPTURE_LAYOUT=reuse` | vLLM MoE/graph contributors; knapcio |
+| FP8 draft eh_proj | Replicated draft-only projection; combined INIT qualification | `GLM_DRAFT_EHPROJ=fp8`, `GLM_DRAFT_EHPROJ_INIT=1` | knapcio; vLLM FP8 Marlin contributors; NVIDIA FP8; PyTorch |
+| Glue-lite F1+F2 | Remove router cast and repeated MoE workspace reset; token-identical panel | `GLM_GLUE_ROUTER_BF16=1`, `GLM_GLUE_MOE_WS=1`; F3 off | knapcio; vLLM grouped-topk and Marlin contributors |
 | Sparse MLA and dirty L2 | GB10-compatible split32 MLA; discard consumed partials | `GLM_FULL_MLA=triton`, `GLM_DIRTY_L2=discard` | CosmicRaisins; Matt Mastracci ideas; NVIDIA PTX; Triton |
 | Switched RoCE | RDMA TP collectives on both rails | `GLM_ROCE_ALLREDUCE=1` | b12x/RoCEnante; Luke Alonso; Jason Cook; tonyd2wild; rhys101 |
 | Fast loading and shard selection | Bounded copies; MTP reads its five shards | `GLM_FAST_LOAD=1`, `GLM_MTP_ONLY_LOAD=1` | Willian-Zhang; vLLM; knapcio |
@@ -197,13 +129,15 @@ No weights, dispramd binary, or container image is distributed here.
 
 ## Install and run
 
-Four ARM64 DGX Sparks, switched ConnectX-7 fabric configured with NVIDIA Sync, management LAN/Tailscale,
+Four ARM64 DGX Sparks, switched ConnectX-7 fabric configured with NVIDIA Sync, management access,
 the pinned v11 ARM64 image, local checkpoint and sidecars on every rank, and NCCL 2.30.7 are required.
-[Installation](docs/install.md), [sidecar conversion commands, hashes and timing](docs/NVFP4-SIDECARS.md),
-[service and recovery](service/README.md).
+Fill the four hosts, fabric addresses, image IDs, paths and NCCL hashes before launching.
+[Installation](docs/install.md), [sidecar conversion and hashes](docs/NVFP4-SIDECARS.md),
+[service and recovery](service/README.md). Gate instructions and table-filling notes are in
+[docs/release-1010-gate.md](docs/release-1010-gate.md).
 
 ```bash
-cp .env.example .env          # fill four hosts, fabric addresses, image IDs, paths and NCCL hashes
+cp .env.example .env
 bash overlay/guard/build_guard.sh
 DRY=1 ./start.sh serve
 ./start.sh preflight
@@ -211,12 +145,6 @@ DRY=1 ./start.sh serve
 ./start.sh stop
 ```
 
-Keep management recovery access working. The watchdog uses the 4.5 GiB live floor above, sustained swap/error guards,
-a 600 s busy-without-progress allowance with idle reset, and an 1800 s boot deadline.
-No public router port forwarding is needed.
+Keep management recovery access working; no public router port forwarding is needed.
 Thinking off uses `chat_template_kwargs: {"enable_thinking": false}`; RigMark uses effort low.
-Tool parser `glm47`, reasoning parser `glm45`. The [changelog](CHANGELOG.md) describes the changes against the
-current public recipe; [GATE-RESULT.md](GATE-RESULT.md) records the completed qualification.
-
-The default is the fast loader (`GLM_LOADER=fast`). The ajclark Apache-2.0 coalesced loader port is
-**opt-in**, not default: boot B refused at load on rank 2 because of external memory pressure.
+Tool parser `glm47`, reasoning parser `glm45`. The coalesced loader is opt-in (`GLM_LOADER=coalesced`).

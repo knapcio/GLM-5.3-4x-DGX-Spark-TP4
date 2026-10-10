@@ -41,7 +41,7 @@ hashes; this is component-source provenance, not a complete container image
 claim. `validation/nvfp4-pins.json` retains the additional pinned NVFP4 sources.
 
 All receipts are below:
-`/srv/campaign/diagnostics/glm53-full-20261006-integ`.
+`receipts/glm53-full-20261006-integ`.
 `prepared-mac-ready` is the final source-bound local preparation. Earlier
 `prepared-mac-*` directories are intermediate validation receipts and must
 not be used as the final coordinator package. No guard binary is committed.

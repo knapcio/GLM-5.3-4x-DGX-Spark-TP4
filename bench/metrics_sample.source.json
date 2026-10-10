@@ -1,5 +1,5 @@
 {
-  "source": "/srv/campaign/diagnostics/glm53-full-20260929/day3/apc-released/runs/apc-q5-20261002-1217/on/metrics-start.json",
+  "source": "receipts/glm53-full-20260929/day3/apc-released/runs/apc-q5-20261002-1217/on/metrics-start.json",
   "sha256": "f0e83a5344b4b8087ad7b1506f32019a3f24c1684a1ae7f72444d004db544659",
   "kind": "recorded flattened /metrics snapshot from APC Q5; original labels not retained",
   "self_test_after": "synthetic increments on the recorded baseline, not a fleet measurement"

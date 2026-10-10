@@ -25,6 +25,7 @@ SERVE_ARGS = Path(ENV.get('RECIPE_SERVE_ARGS', ROOT / 'profiles/serve-args.json'
 PROFILE_KEYS = [k for k in re.findall(r'^export (\w+)=', (ROOT / 'profiles/current.env').read_text(), re.M)
                 if not k.startswith('RECIPE_') and k not in ('GLM_ATTN_WEIGHTS', 'GLM_NVFP4_GROUPS',
                     'GLM_FP4_RECENT_WINDOW', 'GLM_FP4_RECENT_AB', 'GLM_LOADER', 'GLM_KV_FORMAT',
+                    'GLM_MTP_ROWSELECT', 'GLM_DRAFT_EHPROJ', 'GLM_DRAFT_EHPROJ_INIT',
                     'GLM_DRAFT_HEAD', 'GLM_DRAFT_HEAD_INIT', 'GLM_DECODE_FAIR',
                     'GLM_DECODE_FAIR_CHUNK', 'GLM_DECODE_FAIR_DECODE_STEPS', 'GLM_DECODE_FAIR_CONTROL',
                     'GLM_MOE_DET_ALIGN')]
@@ -340,6 +341,13 @@ def optional_env():
             raise ValueError('canonical and deterministic MoE align are mutually exclusive')
         env['GLM_MOE_DET_ALIGN'] = '1'
     sys.path.insert(0, str(ROOT / 'overlay/bringup'))
+    from glm_draft_ehproj_config import options as ehproj_options
+    from glm_mtp_rowselect_config import options as rowselect_options
+    if rowselect_options(ENV):
+        env['GLM_MTP_ROWSELECT'] = '1'
+    ehproj = ehproj_options(ENV)
+    if ehproj != '0':
+        env.update(GLM_DRAFT_EHPROJ=ehproj, GLM_DRAFT_EHPROJ_INIT='1')
     from glm_recent_kv import options as recent_options
     from glm_draft_head_config import options as draft_head_options
     draft_head = draft_head_options(ENV)

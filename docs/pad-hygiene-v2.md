@@ -2,7 +2,7 @@
 
 2026-10-03, Europe/Warsaw. Offline Mac work on `perf/pad-hygiene-v2`,
 base `release/stack-1003` / `2538edfc307c8cf5f871491d6d6107968c457cf5`,
-worktree `/srv/projects/glm53-full-padv2`.
+historical worktree `perf/pad-hygiene-v2`.
 
 `GLM_PAD_HYGIENE=1` now includes the existing remap only in captured descriptors
 that can receive fewer live tokens than their captured size. The analyzer reads
@@ -59,7 +59,7 @@ identity using the pinned modular Marlin hook with CPU expert substitutes.
 ## Mac checks
 
 Cached wheels only (torch 2.13.0); no installs or downloads. Source extraction:
-`/srv/campaign/diagnostics/glm53-full-20260929/day3/apc-prep/source`.
+`receipts/glm53-full-20260929/day3/apc-prep/source`.
 Receipts and reproduction scripts: `tests/results/padv2/` in this worktree.
 
 - Padding 14 PASS; composition 14 PASS; pure K-stop 12 PASS; all K-stop 29 PASS
@@ -100,37 +100,14 @@ A/B measurement; it cannot establish that the removed launches explain all of it
 
 ## Exact coordinator command
 
-Run `bash /srv/projects/glm53-full-padv2/tests/run_pad_hygiene_v2_coordinator.sh`.
-Host workdir and all host mounts are under `/srv/projects`. The container
-workdir `/pkg` is the read-only bind of the requested worktree. This uses the
-locally cached pinned ARM64 image, no network or GPU, and produces the real CPU
-compatibility suite, Gloo guards and all 16 paired T=0 matrix receipts.
-It was prepared but not executed during this task.
+The campaign control-flow fixture is external to this repository. Provide its
+`day3` directory (containing `mtp-kstop`) as `GLM_CAMPAIGN_DAY`. The helper
+resolves this repository relative to its own path, uses the locally cached
+digest-pinned ARM64 image without network or GPU access, and produces the real
+CPU compatibility suite, Gloo guards and all 16 paired T=0 matrix receipts.
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-task_repo=/srv/projects/glm53-full-padv2
-task_day=/srv/campaign/diagnostics/glm53-full-20260929/day3
-task_out=$task_repo/tests/results/padv2/coordinator
-task_image=ghcr.io/tonyd2wild/vllm-glm53-flash@sha256:4def0ef644cb2e9814136dcffd5e385e21bc594f48f3b292234051904abe85a6
-cd "$task_repo"
-[[ $(uname -s) == Darwin && $(docker context show) == colima ]]
-task_running=$(docker ps -q)
-[[ -z $task_running ]] || { echo 'docker ps must be empty' >&2; exit 2; }
-docker image inspect "$task_image" --format '{{.Id}} {{.Architecture}}'
-mkdir -p "$task_out"
-docker run --pull never --network none --rm --platform linux/arm64 --cpus 2 --memory 8g \
-  -e CUDA_VISIBLE_DEVICES= -e NVIDIA_VISIBLE_DEVICES=void -e OMP_NUM_THREADS=2 \
-  -e MKL_NUM_THREADS=2 -e OPENBLAS_NUM_THREADS=2 -e PYTHONDONTWRITEBYTECODE=1 \
-  -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e TRITON_CACHE_DIR=/tmp/triton \
-  --workdir /pkg \
-  --mount "type=bind,src=$task_repo,dst=/pkg,readonly" \
-  --mount "type=bind,src=$task_day,dst=/campaign/day3,readonly" \
-  --mount "type=bind,src=$task_out,dst=/results" --entrypoint /usr/bin/nice \
-  "$task_image" -n 10 python3 -B /pkg/tests/kstop_compat_cpu_suite.py \
-  > "$task_out/suite.txt" 2>&1
-cat "$task_out/PASS.json"
+GLM_CAMPAIGN_DAY=/path/to/day3 bash tests/run_pad_hygiene_v2_coordinator.sh
 ```
 
 Successful execution must produce `tests/results/padv2/coordinator/PASS.json`,

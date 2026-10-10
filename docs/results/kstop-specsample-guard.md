@@ -162,6 +162,6 @@ The full existing offline matrix now includes this four-rank regression:
 ```sh
 cd /srv/projects/glm53-full-ksspec
 ./tests/run_kstop_compat_cpu.sh \
-  /srv/campaign/diagnostics/glm53-full-20260929/day3 \
+  receipts/glm53-full-20260929/day3 \
   /srv/projects/kstop-specsample-guard-receipts/full-suite
 ```

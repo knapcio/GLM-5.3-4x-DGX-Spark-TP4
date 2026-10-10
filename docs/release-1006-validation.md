@@ -19,4 +19,4 @@ Reproduce all Mac suites with an already installed CPU Python/environment and sa
 FP4_DUMPS="$SAVED_FP4_PROBE" python3 -B tests/run_integ_mac.py --source "$SAVED_IMAGE_SOURCE" --sim-dir "$SAVED_SIM_DIR" --out "$NEW_CPU_RECEIPTS"
 ```
 
-No throughput or numeric GPU claim is added by these checks. At this offline checkpoint the release gate was pending. The later 262144 gate passed; the coalesced loader was refused at load and stays opt-in. [Memory decision](memory-1006.md), [GATE](../GATE.md).
+No throughput or numeric GPU claim is added by these checks. At this offline checkpoint the release gate was pending. The later 262144 gate passed; the coalesced loader was refused at load and stays opt-in. [Memory decision](memory-1006.md), [export audit](publication-audit.md), [GATE](../GATE.md).

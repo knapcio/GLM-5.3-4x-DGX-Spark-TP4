@@ -31,10 +31,14 @@ arithmetic bodies match the saved deployed control; source adaptation and
 startup-hook changes are recorded in docs/results/source-provenance.json.
 
 The local fast loader follows Willian-Zhang's vLLM#58726 observation and the
-owner's local DeepSeek loader port. It is not a blanket relicensing of the
-DeepSeek repository. The benchmark/checker files and fresh-clone release coordinator are owner-authored local
+knapcio's local DeepSeek loader port. It is not a blanket relicensing of the
+DeepSeek repository. The benchmark/checker files and fresh-clone release gate are knapcio-authored local
 recipe tools following the Flash/DeepSeek gate protocols; the external sparkDash collector is not vendored. Its MIT
 notice is retained in LICENSES/MIT-sparkDash.txt.
+
+RigMark 1.0.0 measurements use the protocol and prompts by Alex Ellis and
+RigMark contributors at d8353e93b274e8d880ab14a5df2a55c87d7bee16.
+No RigMark code is vendored; CREDITS.md records its source and workload credit.
 
 Z.ai's native GLM-5.3 MTP and Tech2wild's target checkpoint use the GLM-5.3
 model licence, separately from the code licences. RedHat's historical DSpark
@@ -51,12 +55,12 @@ The dirty-L2 reduce kernel and its adapter are Apache-2.0-labelled local code. T
 reduce repeats the local split32 MLA reduce arithmetic and adds an NVIDIA PTX
 discard.global.L2 through Triton inline assembly; nothing is vendored. The
 diagnosis and the fix are the recipe author's own work.
-The staged glue-lite adapter is Apache-2.0-labelled local code. It wraps pinned
+The glue-lite adapter (F1+F2 default on, F3 off) is Apache-2.0-labelled local code. It wraps pinned
 vLLM functions after import (GateLinear, fused_marlin_moe, the MLA wrapper and the
 sparse index conversion), adds no kernel and vendors no source.
 The staged native MTP K-stop overlay (overlay/kstop) is Apache-2.0-labelled
 local code that transforms pinned vLLM sources at import and keeps their SPDX
-attribution; its one Triton remap kernel is local campaign code. The DeepSeek
+attribution; its one Triton remap kernel is local recipe code. The DeepSeek
 verify-cap mechanism is credited as an idea; no DeepSeek model or code is included.
 The alternate CPU allocator fixtures contain configuration geometry only;
 they do not contain model weights or select an alternative runtime.
@@ -76,3 +80,7 @@ Mia (MiaAI-Lab): FP4 KV idea only. Licence unverified; no code copied.
 kindling dispramd: external unmodified AGPL-3.0 tool, not bundled or relicensed.
 https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram
 NVFP4 sidecar converters retain Marlin (via vLLM) and NVIDIA NVFP4 format attribution; checkpoint credit remains Tech2wild/tonyd2wild and Z.ai.
+
+The FP8 draft eh_proj adapter and INIT rollback are Apache-2.0-labelled local
+code by knapcio, using pinned vLLM FP8 Marlin utilities, NVIDIA FP8 and PyTorch.
+No external source is vendored by the adapter; target verification is unchanged.

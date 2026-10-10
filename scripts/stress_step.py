@@ -462,8 +462,10 @@ def dash(a,mon,out):
 
 def receipts(a,m,out):
     records={}
+    hosts=os.environ.get('RECIPE_HOSTS','').split()
+    if len(hosts)!=4:raise ValueError('RECIPE_HOSTS must contain four rank-ordered hosts')
     for i in range(4):
-        p=subprocess.run(['ssh',f'Spark_0{i+1}','docker logs '+shlex.quote(m['boot']+f'-r{i}')+' 2>&1'],
+        p=subprocess.run(['ssh',hosts[i],'docker logs '+shlex.quote(m['boot']+f'-r{i}')+' 2>&1'],
                          capture_output=True,text=True,timeout=30,check=True)
         (out/f'rank{i}-boot.log').write_text(p.stdout)
         events=[]

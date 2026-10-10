@@ -24,3 +24,7 @@ Mia (MiaAI-Lab) is credited for the FP4 KV idea only. Its source licence is unve
 External [kindling dispramd](https://github.com/kindlingai/kindling-spark-os/tree/5a8129d0837b6eb8aa469bb04d8e8fd7958e4d3e/kindling/dispram)
 is used unmodified under its AGPL-3.0 terms and is fetched separately. No lender code or binary is bundled.
 NVFP4 sidecars are model derivatives generated locally from the pinned Tech2wild/tonyd2wild checkpoint; its Z.ai model licence continues to apply.
+
+The local FP8 draft eh_proj, qualification/rollback and glue-lite adapters retain
+Apache-2.0 SPDX headers. Their underlying vLLM, Marlin, NVIDIA and PyTorch
+dependencies keep their own terms; these adapters vendor no external source.

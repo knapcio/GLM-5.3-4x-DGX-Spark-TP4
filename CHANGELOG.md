@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-10-10 — full-model public release
+
+Det-align stays on; FP8 draft eh_proj and combined INIT qualification default on,
+as do glue-lite F1 router BF16 and F2 workspace reuse. Row selection and F3 remain off.
+The public glue defaults are `ROUTER_BF16=1`, `MOE_WS=1`, `DSA_IDX_CACHE=0`,
+`IDX_EXPECT=0` (all prefixed `GLM_GLUE_`); `GLM_GLUE_ROUTER_EXPECT=target:75,mtp:1`.
+The index expectation now matches the frozen gate's disabled F3 instead of requiring 57 layers.
+No cache trim or async v2 is included. The public K3/K2 policy and split32 layout remain.
+knapcio selected a 4.5 GiB release stress criterion to match the live floor; other floors are unchanged.
+F3, row selection, cache trim, async kstop v2 and K4 are off; tau is 0.74 and decode fairness is 4096/N40.
+The exact gen-12 configuration passed the owner-approved reduced release gate and was handed to the serving
+watchdog. sparkDash c1 prose/code/structured/json is 39.38/45.74/48.66/45.54 tok/s; RigMark
+prose/code/structured is 30.051/42.372/47.338. Temperature-0 repeatability is 30/30 across three runs and byte/token
+identical to stack-2. Stress and the 1,071-second soak passed with rank-0 minima 5.809 and 5.803 GiB respectively,
+zero swap, errors and preemptions. The reduced scope carried the preregistered 116-item quality panel and paired
+16K/128K needle evidence; it did not rerun qeval x3 or exact-config 16K/250K needles, and the documentation does not
+claim those as fresh passes.
+Handover to `glm-serving-watch` completed at approximately 18:18 Europe/Warsaw.
+The public packaging also aligns the display-lender path with `/srv/glm-dispram`,
+implements the documented monitor-adoption and serving deadman modes, and makes
+the historical pad-hygiene coordinator helper repository-relative.
+[eh_proj](docs/eh_proj.md), [glue-lite](docs/glue-lite.md), [gate notes](docs/release-1010-gate.md).
+
+
 ## 2026-10-09 — release/glm53-1009 (deterministic MoE align, temperature-0 reproducibility)
 
 `GLM_MOE_DET_ALIGN=1` is on by default. It replaces vLLM's `moe_align_block_size` for the target and native MTP
@@ -84,7 +108,9 @@ Memory safety records the bounded ballast evidence: no observed harm down to 3.5
 Release floors are live 5.5, stress/capture 6.0, admission 6.5 for 60 s and pre-capture 7.5 GiB.
 Per-lever credits, CREDITS, NOTICE and LICENSES preserve Mia's FP4 KV idea-only credit, kindling's linked
 unmodified AGPL dispramd, ajclark's loader port, Tech2wild/tonyd2wild's checkpoint, NVIDIA Marlin,
-vLLM contributors and Z.ai. [Gate result](GATE-RESULT.md), [receipt summary](docs/results/release-1006-summary.json).
+vLLM contributors and Z.ai. [Gate result](GATE-RESULT.md), [receipt summary](docs/results/release-1006-summary.json),
+[export audit](docs/publication-audit.md). Public publication remains owner-controlled; the sanitized squash
+is prepared locally without a public push.
 
 ## 2026-10-02 (stack candidate 1002b, not released)
 

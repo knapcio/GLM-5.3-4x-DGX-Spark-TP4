@@ -28,7 +28,7 @@ No kernels, clocks, graph widths, dispram carveout or scheduler slots change.
 ## Memory evidence and exact common geometry
 
 Receipt root on the Mac:
-`/srv/campaign/diagnostics/glm53-full-20261006-nvfp4a/window`.
+`receipts/glm53-full-20261006-nvfp4a/window`.
 `a/done-mem.json`, `b/done-mem.json` and `b/memwatch-minima.json` are bound
 by SHA256 in the generated `ladder.json`.
 
@@ -141,9 +141,9 @@ and output for the real future package):
 
 ```bash
 RECIPE=/srv/projects/glm53-full-integ
-D3=/srv/campaign/diagnostics/glm53-full-20260929/day3
-RECEIPTS=/srv/campaign/diagnostics/glm53-full-20261006-nvfp4a/window
-WINDOW=/srv/campaign/diagnostics/glm53-full-20261006-integ/prepared-WINDOWTAG
+D3=receipts/glm53-full-20260929/day3
+RECEIPTS=receipts/glm53-full-20261006-nvfp4a/window
+WINDOW=receipts/glm53-full-20261006-integ/prepared-WINDOWTAG
 python3 "$RECIPE/scripts/integ_1006.py" prepare \
   --tag WINDOWTAG --out "$WINDOW" --receipts "$RECEIPTS" \
   --sim-dir "$D3/release-stack" \

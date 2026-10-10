@@ -66,9 +66,9 @@ class Recipe(unittest.TestCase):
             docker.chmod(0o755)
             link = Path(tmp) / 'repo-link'
             link.symlink_to(ROOT, target_is_directory=True)
-            for args in (['/campaign/day3'], ['/campaign/day3', str(ROOT)],
-                         ['/campaign/day3', str(ROOT / 'diagnostics/new-receipts')],
-                         ['/campaign/day3', str(link / 'receipts')]):
+            for args in (['/receipts/day3'], ['/receipts/day3', str(ROOT)],
+                         ['/receipts/day3', str(ROOT / 'diagnostics/new-receipts')],
+                         ['/receipts/day3', str(link / 'receipts')]):
                 with self.subTest(args=args):
                     result = subprocess.run(['bash', str(script), *args], capture_output=True, text=True,
                         env=dict(os.environ, PATH=tmp + ':' + os.environ['PATH']))
@@ -302,7 +302,7 @@ class Recipe(unittest.TestCase):
         rc, seen, err = self.run_startup(base, modules)
         self.assertEqual((rc, seen), (0, [m for m in modules if m not in ('glm_dsa_short', 'glm_glue_lite')]), err)
         rc, seen, err = self.run_startup(dict(base, GLM_GLUE_MOE_WS='1'), modules)
-        self.assertEqual(seen[-2:], ['glm_glue_lite', 'glm_mtp_kstop'])            # kstop's hook ends up first
+        self.assertEqual(seen[-2:], ['glm_mtp_kstop', 'glm_glue_lite'])            # kstop's hook ends up first
         rc, seen, err = self.run_startup(dict(base, GLM_INDEXER_SHORTCUT='1'), modules)
         self.assertEqual(rc, 0, err)
         self.assertIn('glm_dsa_short', seen)
@@ -331,7 +331,7 @@ class Recipe(unittest.TestCase):
         current = (ROOT/'profiles/current.env').read_text()
         dspark = (ROOT/'profiles/dspark-k3.env').read_text()
         for key in ('GLM_GLUE_ROUTER_BF16', 'GLM_GLUE_MOE_WS', 'GLM_GLUE_DSA_IDX_CACHE'):
-            self.assertIn(f"export {key}='0'", current)
+            self.assertIn(f"export {key}='{0 if key == 'GLM_GLUE_DSA_IDX_CACHE' else 1}'", current)
             self.assertIn(f"export {key}='0'", dspark)
         # K-stop and its uniform-batch policy are the native default; DSpark K3 keeps them off.
         for key,value in (('GLM_MTP_KSTOP','1'),('GLM_MTP_KSTOP_UNIFORM_BATCH','k2')):

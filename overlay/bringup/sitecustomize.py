@@ -52,13 +52,6 @@ try:
         glm_dirty_l2.register()
     if os.environ.get('GLM_GLUE_LITE_BANKABLE', '0') != '0':
         raise RuntimeError('GLM_GLUE_LITE_BANKABLE needs an external in-boot A/B harness; not supported here')
-    glue = [k for k in ('GLM_GLUE_ROUTER_BF16', 'GLM_GLUE_MOE_WS', 'GLM_GLUE_DSA_IDX_CACHE')
-            if os.environ.get(k, '0') != '0']
-    if glue:
-        if any(os.environ[k] != '1' for k in glue):
-            raise ValueError('GLM_GLUE_ROUTER_BF16, GLM_GLUE_MOE_WS and GLM_GLUE_DSA_IDX_CACHE must be 0 or 1')
-        import glm_glue_lite
-        glm_glue_lite.register()
     if os.environ.get('GLM_MTP_KSTOP', '0') != '0':
         # Kstop owns the three shared transforms when the shortcut is enabled.
         sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'kstop'))
@@ -73,9 +66,22 @@ try:
     if os.environ.get('GLM_DRAFT_HEAD', '0') != '0':
         import glm_draft_head
         glm_draft_head.register()
+    if os.environ.get('GLM_DRAFT_EHPROJ', '0') != '0' or os.environ.get('GLM_DRAFT_EHPROJ_INIT', '0') != '0':
+        import glm_draft_ehproj
+        glm_draft_ehproj.register()
+    if os.environ.get('GLM_MTP_ROWSELECT', '0') != '0':
+        import glm_mtp_rowselect
+        glm_mtp_rowselect.register()
     if os.environ.get('GLM_MOE_DET_ALIGN', '0') != '0':
         import glm_moe_det
         glm_moe_det.register()
+    glue = [k for k in ('GLM_GLUE_ROUTER_BF16', 'GLM_GLUE_MOE_WS', 'GLM_GLUE_DSA_IDX_CACHE')
+            if os.environ.get(k, '0') != '0']
+    if glue:
+        if any(os.environ[k] != '1' for k in glue):
+            raise ValueError('GLM_GLUE_ROUTER_BF16, GLM_GLUE_MOE_WS and GLM_GLUE_DSA_IDX_CACHE must be 0 or 1')
+        import glm_glue_lite
+        glm_glue_lite.register()
 except BaseException:
     import traceback
     traceback.print_exc()

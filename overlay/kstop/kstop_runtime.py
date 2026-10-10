@@ -37,7 +37,7 @@ Control modes (GLM_MTP_KSTOP_CONTROL_MODE):
                    confidence stop.
                    k2: the same count-only policy drafts exactly two tokens,
                    yielding uniform q3 verify rectangles. 1 retains full K3.
-Credits: knapcio full-GLM campaign cross-domain review, mechanism #1 (rank-replicated deterministic decisions).
+Credits: knapcio, rank-replicated deterministic decisions.
 """
 import collections
 import copy

@@ -1,0 +1,185 @@
+{
+  "schema": 1,
+  "release_date": "2026-10-10",
+  "verdict": "PASS_REDUCED_GATE",
+  "scope": {
+    "owner_approved": true,
+    "fresh": [
+      "boot_and_admission",
+      "receipts_and_combined_init",
+      "temperature_zero_30x3",
+      "sparkdash_full_262144",
+      "rigmark_1.0.0",
+      "memory_stress",
+      "mixed_load_soak_15m",
+      "needle_128k_x1",
+      "collection",
+      "handover_and_verify"
+    ],
+    "carried_with_hashes": [
+      "quality_panel_116",
+      "needle_16k_x2",
+      "needle_128k_x2",
+      "glue_f1_f2_token_exactness",
+      "qeval_g5_diagnostic_KILL",
+      "qeval_g6_diagnostic_INFORMATIONAL_release_KILL",
+      "sparkdash_g6_prior_evidence_fresh_release_used"
+    ],
+    "not_run_on_exact_release": [
+      "qeval_75_x3",
+      "needle_16k_x2",
+      "needle_250k_x2",
+      "time_slicing_scenario",
+      "long_soak"
+    ]
+  },
+  "measured_private_serving_source_commit": "6f5235dc14549677704d10e6564277883686e60d",
+  "public_export_branch": "release/glm53-public-1010",
+  "context_tokens": 262144,
+  "kv_pool": {
+    "blocks": 4135,
+    "tokens": 264640
+  },
+  "sparkdash": {
+    "output_tokens": 256,
+    "temperature": 0,
+    "aggregate_tok_s": {
+      "prose": {
+        "c1": 39.38,
+        "c2": 50.9,
+        "c4": 65.89,
+        "c8": 61.31
+      },
+      "code": {
+        "c1": 45.74,
+        "c2": 54.39,
+        "c4": 72.94,
+        "c8": 62.78
+      },
+      "structured": {
+        "c1": 48.66,
+        "c2": 67.04,
+        "c4": 92.22,
+        "c8": 72.64
+      },
+      "json": {
+        "c1": 45.54,
+        "c2": 55.26,
+        "c4": 78.98,
+        "c8": 70.69
+      }
+    },
+    "per_stream_tok_s": {
+      "prose": {
+        "c2": 25.97,
+        "c4": 17.05,
+        "c8": 18.09
+      },
+      "code": {
+        "c2": 27.19,
+        "c4": 18.38,
+        "c8": 19.26
+      },
+      "structured": {
+        "c2": 33.52,
+        "c4": 24.2,
+        "c8": 24.32
+      },
+      "json": {
+        "c2": 28.4,
+        "c4": 20.22,
+        "c8": 21.34
+      }
+    },
+    "cold_prefill_tok_s": {
+      "4096": 977.17,
+      "8192": 882.43,
+      "16384": 861.96,
+      "32768": 881.01
+    },
+    "ttft_s": {
+      "4096": 4.22342,
+      "8192": 9.31859,
+      "16384": 19.04157,
+      "32768": 37.23215
+    }
+  },
+  "rigmark_1_0_0": {
+    "decode_tok_s": {
+      "prose": 30.051,
+      "code": 42.372,
+      "structured": 47.338
+    },
+    "code_c4_aggregate_tok_s": 67.904,
+    "prefill_8k_cold_tok_s": 904.667,
+    "prefill_8k_warm_replay_tok_s": 16114.311
+  },
+  "temperature_zero": {
+    "prompts": 30,
+    "repeats": 3,
+    "identical": 30,
+    "byte_equal_to_preceding_stack": true,
+    "native_token_ids_equal_to_preceding_stack": true
+  },
+  "stress": {
+    "verdict": "PASS",
+    "floor_gib": 4.5,
+    "min_gib_by_rank": [
+      5.808849334716797,
+      6.767314910888672,
+      7.456321716308594,
+      7.352359771728516
+    ],
+    "swap": 0,
+    "preemptions": 0,
+    "prefix_cache_hit_delta": 64896,
+    "prefix_cache_query_delta": 65024
+  },
+  "soak": {
+    "verdict": "PASS",
+    "seconds": 1071.0947126080282,
+    "requests": 27,
+    "errors": 0,
+    "preemptions": 0,
+    "min_gib_by_rank": [
+      5.803035736083984,
+      6.6329803466796875,
+      7.444217681884766,
+      7.311100006103516
+    ],
+    "rank0_drift_gib": -0.022
+  },
+  "needle_128k": {
+    "verdict": "PASS",
+    "score": "9/10",
+    "registry_all_correct": true,
+    "finish_reason": "stop",
+    "ttft_s": 170.86024899967015,
+    "runs": 1,
+    "missed_fields": [
+      "matching_count"
+    ]
+  },
+  "quality_panel_carried": {
+    "items": 116,
+    "baseline_pass": 112,
+    "candidate_pass": 110,
+    "batch_shape_control_pass": 110,
+    "candidate_truncations": 2,
+    "decision": "PASS_WITHIN_PREREGISTERED_TWO_ITEM_NOISE_TOLERANCE"
+  },
+  "qeval_exact_release": "NOT_RUN",
+  "qeval_carried_g6_diagnostic": {
+    "passed": 71,
+    "total": 75,
+    "truncations": 1,
+    "decision": "INFORMATIONAL",
+    "historical_release_decision": "KILL"
+  },
+  "handover": {
+    "watchdog_active": true,
+    "api_context_tokens": 262144,
+    "admin_context_tokens": 262144
+  },
+  "provenance": "docs/release-1010-gate.md#recorded-reduced-gate-and-cell-provenance"
+}

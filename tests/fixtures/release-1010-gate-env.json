@@ -1,0 +1,26 @@
+{
+  "source": "release-run.json",
+  "source_sha256": "f9bd4b1e31d6dda93702842125374ab872d3b5707e93101c2be99f36b97129e3",
+  "env": {
+    "GLM_PARAM_HASH": "1",
+    "VLLM_SERVER_DEV_MODE": "1",
+    "RECIPE_LIVE_FLOOR_GIB": "4.5",
+    "GLM_DECODE_FAIR_CONTROL": "/cache/decode-fair.json",
+    "GLM_MOE_DET_ALIGN": "1",
+    "GLM_SKIP_MLA_PLAN": "ab",
+    "GLM_SKIP_MLA_PLAN_AB_INIT": "0",
+    "GLM_PREFILL_SOLO_CAPACITY": "4096",
+    "GLM_PREFILL_SOLO_CHUNK": "0",
+    "GLM_DRAFT_EHPROJ": "fp8",
+    "GLM_DRAFT_EHPROJ_INIT": "1",
+    "GLM_GLUE_ROUTER_BF16": "1",
+    "GLM_GLUE_MOE_WS": "1",
+    "GLM_GLUE_DSA_IDX_CACHE": "0",
+    "GLM_GLUE_IDX_EXPECT": "0",
+    "GLM_KSTOP_ASYNC_PAYLOAD": "0",
+    "GLM_MTP_TAU_AB": "1",
+    "GLM_MTP_K4_CAPTURE": "0",
+    "GLM_MTP_K4_GATE": "0",
+    "GLM_MTP_TAU_INIT": "0.74"
+  }
+}

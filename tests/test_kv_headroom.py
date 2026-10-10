@@ -117,7 +117,8 @@ class Safety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             g=S.geometry(1,'pool-quarter');m={'boot':'glm53full-kvhr-test','geometry':g}
             wrong='glm-dispram-kv: '+json.dumps({'event':'pool','head':1<<30,'num_blocks':2097})
-            with patch.object(S.subprocess,'run',return_value=argparse.Namespace(stdout=wrong)):
+            with patch.dict(os.environ,RECIPE_HOSTS='rank0 rank1 rank2 rank3'), \
+                 patch.object(S.subprocess,'run',return_value=argparse.Namespace(stdout=wrong)):
                 with self.assertRaisesRegex(RuntimeError,'receipt mismatch'):S.receipts(None,m,Path(d))
 
     def test_launcher_larger_head_reaches_all_ranks_and_refuses_wrong_modes(self):

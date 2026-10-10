@@ -33,7 +33,7 @@ GLM_GLUE_DSA_IDX_CACHE=1 (F3) armed static skip_topk layers of the TARGET model 
 GLM_GLUE_STRICT (default 1): refuse source drift (all PINS, including sparse_utils,
 deepseek_v2/mtp, moe_runner and marlin_utils), refuse any MoE router outside the F1
 contract, and require exact arming counts when GLM_GLUE_ROUTER_EXPECT ("target:75,mtp:1")
-/ GLM_GLUE_IDX_EXPECT ("57") are set.
+/ GLM_GLUE_IDX_EXPECT ("0" with F3 off in the public release; "57" when F3 is armed) are set.
 GLM_GLUE_LITE_BANKABLE=1: install all hooks but decide each switch at call/capture time
 through an external in-boot A/B harness (glm_ab env(); the three names are in its
 KNOWN/DEFAULTS/normalize), so one boot captures control banks and a glue bank. The harness

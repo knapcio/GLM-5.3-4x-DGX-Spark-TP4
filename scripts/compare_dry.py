@@ -38,8 +38,11 @@ def compare():
     config += "FABRIC_IFACE=enp1s0f0np0\nIB_HCA=rocep1s0f0,roceP2p1s0f0\n"
     config += "MODEL_DIR=/srv/model\nDRAFT_DIR=/srv/draft\nNCCL_HOST_DIR=/srv/nccl\nOVERLAY_REMOTE=/srv/runtime\n"
     config += "RECIPE_DISPRAM=0\nGLM_KV_FORMAT=fp8\nRECIPE_MAX_MODEL_LEN=32768\nRECIPE_KV_HEAD_BYTES=1073741824\n"
+    config += "GLM_DRAFT_EHPROJ=0\nGLM_DRAFT_EHPROJ_INIT=0\nGLM_MTP_ROWSELECT=0\nGLM_GLUE_ROUTER_BF16=0\nGLM_GLUE_MOE_WS=0\n"
     config += "GLM_DRAFT_HEAD=0\nGLM_DRAFT_HEAD_INIT=0\nGLM_DECODE_FAIR=0\nGLM_DECODE_FAIR_DECODE_STEPS=0\nGLM_DECODE_FAIR_CONTROL=\nGLM_MOE_DET_ALIGN=0\n"
     config += "GLM_ATTN_WEIGHTS=int8\nGLM_NVFP4_GROUPS=attn\nGLM_LOADER=\nGLM_FP4_RECENT_WINDOW=0\n"
+    # This historical receipt used the staged F3 count even with its switches off.
+    config += "GLM_GLUE_IDX_EXPECT=57\n"
     config += "NCCL_SHA256="+"0"*64+"\n"
     config += "GLM_PAD_HYGIENE="+run_env.get('GLM_PAD_HYGIENE', '0')+"\nGLM_INDEXER_SHORTCUT=0\n"
     with tempfile.NamedTemporaryFile(mode='w', suffix='.env') as fixture:

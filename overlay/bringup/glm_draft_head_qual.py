@@ -157,6 +157,10 @@ def qualify(runner, sync=torch.cuda.synchronize, vote=dh.agree, mem=dh.memory,
     Target weights/graphs are never recaptured. Full request lifecycle checks
     and populated-KV accuracy remain separate fleet acceptance requirements.
     """
+    if getattr(runner.speculator, "_glm_rowselect", None) is not None:
+        from glm_rowselect_qual import qualify as qualify_rowselect
+        return qualify_rowselect(runner, sync=sync, vote=vote, mem=mem,
+                                 scratch_limit=scratch_limit)
     from vllm.config.compilation import CUDAGraphMode
     sp = runner.speculator
     snapshots = []

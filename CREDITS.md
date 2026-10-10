@@ -9,7 +9,8 @@
   recipe and the `dcp/` attribution trail used to locate this implementation. Checkpoint terms remain separate.
 
 - **Z.ai**: GLM-5.3 and the checkpoint's native multi-token prediction (MTP) layer; the current recipe reuses that layer at K2 without a separate drafter checkpoint. [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3).
-- **keys / @u1tra_instinct**: TensorFold results that pointed this campaign toward native MTP. **Ash Hart and TensorFold contributors**, and the [GLM TensorFold Spark recipe](https://github.com/jayleaton/glm53-tensorfold-spark): measured speculation and execution evidence that informed the investigation. [TensorFold](https://github.com/ashhart/TensorFold). No TensorFold kernel is copied by the MTP mapping fix.
+- **FP8 draft eh_proj**: **knapcio** wrote the source-pinned replicated projection adapter, combined INIT qualification, checkpoint-only rollback and measurement tooling. **vLLM FP8 Marlin contributors**, **NVIDIA FP8** and **PyTorch contributors** provide the underlying quantization and runtime. Target verification remains vLLM native; no external source is vendored.
+- **keys / @u1tra_instinct**: TensorFold results that pointed this recipe toward native MTP. **Ash Hart and TensorFold contributors**, and the [GLM TensorFold Spark recipe](https://github.com/jayleaton/glm53-tensorfold-spark): measured speculation and execution evidence that informed the investigation. [TensorFold](https://github.com/ashhart/TensorFold). No TensorFold kernel is copied by the MTP mapping fix.
 - **vLLM contributors**: native MTP loading, shared target embedding/head, index compaction/reset, greedy drafting and standard rejection sampling. The source-pinned local packed-module fix supplies the fused QKV/gate-up/indexer mapping required by the existing compressed-tensors checkpoint; it does not change weights or kernel arithmetic.
 - **Guess-Verify-Refine authors**: the short-sequence DSA case, where a context no longer than top-k selects
   every token and the indexer's scoring can be skipped, which the short-context shortcut applies
@@ -17,31 +18,31 @@
 - **DeepSeek**: the DSA lightning indexer with top-2048 selection used by GLM-5.3. **vLLM contributors**: the
   sparse indexer, `persistent_topk` and FULL graph manager the short-context shortcut relies on; its all-selected
   branch for rows of at most 2048 tokens is what makes skipping the query/logits path exact. The source-pinned
-  local `glm_dsa_short` adapter (knapcio full-GLM campaign) adds no kernel and keeps every stock key/cache operation.
+  local `glm_dsa_short` adapter (knapcio) adds no kernel and keeps every stock key/cache operation.
 - **NVIDIA**: the PTX `discard.global.L2` instruction used by the dirty-L2 fix. **Triton contributors**: inline
   PTX and the compiler the fix is built with. The diagnosis (dirty split-K partials slowing the next INT8 o_proj),
-  the discard reduce and its tests are our own work (knapcio full-GLM campaign, from its own profiling); the partial kernel is the
+  the discard reduce and its tests are knapcio's work (knapcio, from its own profiling); the partial kernel is the
   repository's own split32 MLA, unchanged, whose split-layout design credits CosmicRaisins (below).
 - **Native MTP K-stop** (on by default): stopping the draft early when its confidence falls follows the
   speculative-decoding literature on dynamic draft length, notably SpecDec++ (Huang, Guo and Wang: adaptive
   candidate lengths from a predicted acceptance probability) and DISCO (Mamou et al.: dynamic speculation
   lookahead); no code from either is used. The mechanism and its rank-replicated control came out of the
-  campaign's think rounds (knapcio full-GLM campaign). Z.ai's native MTP layer and shared head; **vLLM contributors**: the MTP and
+  local profiling by knapcio. Z.ai's native MTP layer and shared head; **vLLM contributors**: the MTP and
   autoregressive speculators, V2 model runner and graph manager, async scheduler rollback, rejection sampler,
   all-gather logits processor and PyNccl communicator it builds on. The dead-row expert reuse follows the
   DeepSeek recipe's verify-cap idea (rows after the bonus row reuse the request root; no DeepSeek code); the
-  remap custom op is carried unchanged from the campaign's dead-row work. The uniform cumulative stop, local
+  remap custom op is carried unchanged from the recipe's dead-row work. The uniform cumulative stop, local
   rank-replicated decisions with the digest guard, the source pins and their tests are local work (knapcio
-  full-GLM campaign, including its cross-domain review that proposed rank-replicated decisions). Source excerpts
+  full-model recipe, including rank-replicated decisions). Source excerpts
   keep their Apache-2.0 SPDX headers.
 - **vLLM contributors**: automatic prefix caching (block hashing, the prefix-cache manager and `cache_salt`),
   which the native profile turns on with one serving flag; no local code.
 - **Native MTP shard selection**: vLLM's `get_spec_layer_idx_from_weight_name` and the pinned `DeepSeekMTP` /
   `DeepseekV2Model` weight loaders it relies on (vLLM contributors); the header/index-driven shard selection and
-  its checks are local work (knapcio full-GLM campaign).
+  its checks are local work (knapcio).
 - **MLA plan skip** (optional): the vLLM FlashInfer SM90 sparse-MLA backend authors and the FlashInfer
   `BatchMLAPagedAttentionWrapper` authors; the diagnosis (two blocking host reads per cycle feeding a plan nothing
-  runs under the Triton MLA forward) and the switch are local work (knapcio full-GLM campaign).
+  runs under the Triton MLA forward) and the switch are local work (knapcio).
 - **Spec-sample** (optional): the standard speculative-sampling theorem (Leviathan, Kalman and Matias, "Fast
   Inference from Transformers via Speculative Decoding"; Chen et al., "Accelerating Large Language Model Decoding
   with Speculative Sampling"): accepting with min(1, p/q) and resampling from the normalised residual max(p - q, 0)
@@ -49,11 +50,11 @@
   sampler it switches to; the independent residual noise salt and tests are local work.
 - **vLLM contributors**: the fused CUDA `grouped_topk` kernels (their BF16 instantiation widens each logit before
   any arithmetic), the Marlin MoE kernel's lock reset (`barrier_release`) and the sparse-MLA index conversion that
-  the staged glue-lite switches rely on. The launch ledger, the exactness arguments, the source-pinned
-  `glm_glue_lite` adapter, its tests and GPU gates are local work (knapcio full-GLM campaign); no kernel is added.
+  the glue-lite switches (F1+F2 default on, F3 off) rely on. The launch ledger, the exactness arguments, the source-pinned
+  `glm_glue_lite` adapter, its tests and GPU gates are local work (knapcio); no kernel is added.
 - **vLLM contributors**: the V2 model runner's CUDA graph manager and capture-size handling that the staged
   c4 later-MTP graph switch relies on. The diagnosis (the released capture list leaves the four-request later MTP
-  pass eager) is local work (knapcio full-GLM campaign); the switch only adds width 4 to the capture list.
+  pass eager) is local work (knapcio); the switch only adds width 4 to the capture list.
 
 - **tonyd2wild (Tony)**: v11 ARM64 container and the vLLM `487ecf187` model-support build, including the
   model/backend adaptations required for this target and DSpark. The recipe references
@@ -97,7 +98,7 @@
 - **Alex Ellis and RigMark contributors**: RigMark 1.0.0 benchmark protocol and prompts, pinned to
   `d8353e93b274e8d880ab14a5df2a55c87d7bee16`; the RigMark results retain its workload settings and
   completion gates. [RigMark](https://github.com/alexellis/rigmark). Measurements only; no RigMark code is vendored.
-- **knapcio**: public fresh-clone release coordinator, teacher-logprob/Qeval checks and shared-prefix
+- **knapcio**: public fresh-clone release gate, teacher-logprob/Qeval checks and shared-prefix
   ground-truth scan, following the local Flash and DeepSeek release protocols; four-node integration, source-pinned full-model MLA adapter, independent draft pool,
   loader policy, guarded launcher, CPU tests and recorded qualification work.
 
@@ -106,7 +107,7 @@ The GLM Flash and DeepSeek repositories supplied recipe conventions and local wr
 [DeepSeek](https://github.com/knapcio/DeepSeek-V4.1-Flash-4x-DGX-Spark-TP4).
 This repository does not claim a blanket relicense of either project or of externally referenced images.
 
-- **knapcio campaign day2/w2; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
+- **knapcio; vLLM scheduler contributors (Apache-2.0)**: qualified drained prefill-cap switch, fixed constructor capacity and all-rank control readback.
 
 - **Deterministic MoE align** (on by default): **vLLM contributors**, in particular the authors of
   `moe_align_block_size` and its CUDA kernels: the align layout contract (padded expert segments, block labels,
@@ -145,7 +146,7 @@ This repository does not claim a blanket relicense of either project or of exter
 The conditional cache policy uses Linux kernel memory interfaces and the
 Tech2wild/tonyd2wild serving comparison as motivation. The memory-pool extension
 retains kindlingai's dispram integration and the existing FP4x implementation.
-The future stress harness follows the campaign's fp4x-cal clone/launcher,
+The future stress harness follows the recipe's fp4x-cal clone/launcher,
 think10 GateMetrics and sparkDash benchmark conventions. It is default-off;
 expanded memory budgets and performance remain unqualified.
 

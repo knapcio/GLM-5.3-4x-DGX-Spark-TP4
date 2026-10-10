@@ -25,7 +25,7 @@ for uniform in ('0','1','k2'):
             for pad in ('0','1'):
                 out=Path('/results')/f'controlflow-u{uniform}-s{sample}-{layout}-p{pad}.json'
                 subprocess.run([sys.executable,'-B',str(ROOT/'tests/kstop_compat_controlflow.py'),
-                    '--campaign','/campaign/day3/mtp-kstop','--uniform',uniform,'--sample',sample,
+                    '--campaign','/receipts/day3/mtp-kstop','--uniform',uniform,'--sample',sample,
                     '--capture-layout',layout,'--pad-hygiene',pad,'--out',str(out)],env=ENV,check=True)
             off=json.loads((Path('/results')/f'controlflow-u{uniform}-s{sample}-{layout}-p0.json').read_text())
             on=json.loads((Path('/results')/f'controlflow-u{uniform}-s{sample}-{layout}-p1.json').read_text())

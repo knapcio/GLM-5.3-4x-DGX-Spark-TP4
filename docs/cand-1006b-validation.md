@@ -36,7 +36,7 @@ Combined opt-in DRY preserves maxlen98176 and ordinary1GiB per rank, carries
 all recent selectors and attn,shared,dense,mtp, and mounts the new sidecar.
 
 Evidence root:
-`/srv/campaign/diagnostics/glm53-full-20261006-cand2`.
+`receipts/glm53-full-20261006-cand2`.
 `VERIFICATION.json`, `mac-tests/` and `dry-validation/` retain receipts.
 The single coordinator-window driver plan is `PLAN.md` there: online bounded
 CPU conversion on all4, one candidate boot, off/on/off/on, paired cycle and
